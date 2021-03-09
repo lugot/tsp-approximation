@@ -1,0 +1,34 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-O3",
+      "-I../include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio201/cplex/include/ilcplex",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "/home/lugot/documents/university/master/52/operation_research_2/project/src",
+    "file": "/home/lugot/documents/university/master/52/operation_research_2/project/src/main.c",
+    "output": "/home/lugot/documents/university/master/52/operation_research_2/project/src/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-O3",
+      "-I../include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio201/cplex/include/ilcplex",
+      "-c",
+      "tsp.c",
+      "-o",
+      "tsp.o"
+    ],
+    "directory": "/home/lugot/documents/university/master/52/operation_research_2/project/src",
+    "file": "/home/lugot/documents/university/master/52/operation_research_2/project/src/tsp.c",
+    "output": "/home/lugot/documents/university/master/52/operation_research_2/project/src/tsp.o"
+  }
+]
