@@ -8,6 +8,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
+
+enum tsp_sections {NAME, COMMENT, TYPE, DIMENSION, EDGE_WEIGHT_TYPE,
+    NODE_COORD_SECTION, END_OF_FILE, UNMANAGED_SECTION};
+enum tsp_sections hash2section(char* section_name);
 
 /*TODO: add this to a help*/
 void print_usage() {
@@ -20,16 +25,16 @@ void parse_command_line(int argc, char** argv, tsp_instance instance) {
 
     static struct option long_options[] = {
         {"verbose",       no_argument,       NULL, 'v'},
-        {"file",          required_argument, NULL, 'f'},
+        {"input_file",    required_argument, NULL, 'f'},
         {"time_limit",    required_argument, NULL, 'l'},
         {"model_type",    required_argument, NULL, 't'},
-        {"old_benders",   required_argument, NULL, 'o'},
+        /*{"old_benders",   required_argument, NULL, 'o'},*/
         {"seed",          required_argument, NULL, 's'},
         {"threads",       required_argument, NULL, 'T'},
         {"memory",        required_argument, NULL, 'M'},
-        {"node_file",     required_argument, NULL, 'n'},
-        {"max_nodes",     required_argument, NULL, 'N'},
-        {"cutoff",        required_argument, NULL, 'c'},
+        /*{"node_file",     required_argument, NULL, 'n'},*/
+        /*{"max_nodes",     required_argument, NULL, 'N'},*/
+        /*{"cutoff",        required_argument, NULL, 'c'},*/
         {"integer_costs", no_argument,       NULL, 'i'},
         {"help",          no_argument,       NULL, 'h'},
         {0,               0,                 NULL, 0  }
@@ -37,204 +42,164 @@ void parse_command_line(int argc, char** argv, tsp_instance instance) {
 
     int long_index, opt;
     long_index = opt = 0;
-    while ((opt = getopt_long(argc, argv,"f:l:t:o:s:T:M:n:N:C:c:",
+    while ((opt = getopt_long(argc, argv,":f:l:t:o:s:T:M:n:N:C:c:",
                     long_options, &long_index)) != -1) {
         switch (opt) {
-            case 'v' : VERBOSE = 1;
+            case 'v': VERBOSE = 1;
                 break;
-            case 'f' : strcpy(optarg, instance->input_file);
+
+            case 'f':
+                instance->input_file = (char*) malloc(strlen(optarg)*sizeof(char));
+                strcpy(instance->input_file, optarg);
                 break;
-            case 'l' : instance->timelimit = atof(optarg);
+
+            case 'l': instance->timelimit = atof(optarg);
                 break;
-            case 't' : instance->model_type = SYMMETRIC_TSP;
+
+            case 't': instance->model_type = SYMMETRIC_TSP;
                 /*if (strcmp(optarg, "TSP") == 0)  instance->model_type = SYMMETRIC_TSP;*/
                 /*if (strcmp(optarg, "TOUR") == 0) instance->model_type = TOUR;*/
                 break;
-            case 'o' : instance->old_benders = atoi(optarg);
+
+            /*case 'o': instance->old_benders = atoi(optarg);*/
+                /*break;*/
+            case 's': instance->randomseed = abs(atoi(optarg));
                 break;
-            case 's' : instance->randomseed = abs(atoi(optarg));
+
+            case 'T': instance->num_threads = atoi(optarg);
                 break;
-            case 'T' : instance->num_threads = atoi(optarg);
+
+            case 'M': instance->available_memory = atoi(optarg);
                 break;
-            case 'M' : instance->available_memory = atoi(optarg);
+
+            /*case 'n':*/
+                /*instance->node_file = (char*) malloc(strlen(optarg)*sizeof(char));*/
+                /*strcpy(instance->node_file, optarg);*/
+                /*break;*/
+            /*case 'N': instance->max_nodes = atoi(optarg);*/
+                /*break;*/
+            /*case 'C': instance->cutoff = atof(optarg);*/
+                /*break;*/
+            case 'c': instance->costs_type = INTEGER;
                 break;
-            case 'n' : strcpy(optarg, instance->node_file);
-                break;
-            case 'N' : instance->max_nodes = atoi(optarg);
-                break;
-            case 'C' : instance->cutoff = atof(optarg);
-                break;
-            case 'c' : instance->costs_type = INTEGER;
-                break;
-            case '?' :
+
+            case '?':
                 printf("Unknown option `-%c'.\n", optopt);
                 print_usage();
                 exit(EXIT_FAILURE);
         }
     }
-
-    if (VERBOSE) print_instance(instance);
 }
 
 
+enum tsp_sections hash2section(char* section_name) {
+    if (strcmp(section_name, "NAME") == 0)               return NAME;
+    if (strcmp(section_name, "COMMENT") == 0)            return COMMENT;
+    if (strcmp(section_name, "TYPE") == 0)               return TYPE;
+    if (strcmp(section_name, "DIMENSION") == 0)          return DIMENSION;
+    if (strcmp(section_name, "EDGE_WEIGHT_TYPE") == 0)   return EDGE_WEIGHT_TYPE;
+    if (strcmp(section_name, "NODE_COORD_SECTION") == 0) return NODE_COORD_SECTION;
+    if (strcmp(section_name, "EOF") == 0)                return END_OF_FILE;
 
-/*void read_input(instance *inst) // simplified CVRP parser, not all SECTIONs detected*/
-/*{*/
+    return UNMANAGED_SECTION;
+}
 
-    /*FILE *fin = fopen(inst->input_file, "r");*/
-    /*if ( fin == NULL ) print_error(" input file not found!");*/
+/*TODO: comment function*/
+void parse_input(tsp_instance instance) {
 
-    /*inst->nnodes = -1;*/
-    /*inst->depot = -1;*/
-    /*inst->nveh = -1;*/
+	if (VERBOSE) printf("Reading input file %s\n", instance->input_file);
 
-    /*char line[180];*/
-    /*char *par_name;*/
-    /*char *token1;*/
-    /*char *token2;*/
-
-    /*int active_section = 0; // =1 NODE_COORD_SECTION, =2 DEMAND_SECTION, =3 DEPOT_SECTION*/
-
-    /*int do_print = ( VERBOSE >= 1000 );*/
-
-    /*while ( fgets(line, sizeof(line), fin) != NULL )*/
-    /*{*/
-        /*if ( VERBOSE >= 2000 ) { printf("%s",line); fflush(NULL); }*/
-        /*if ( strlen(line) <= 1 ) continue; // skip empty lines*/
-        /*par_name = strtok(line, " :");*/
-        /*if ( VERBOSE >= 3000 ) { printf("parameter \"%s\" ",par_name); fflush(NULL); }*/
-
-        /*if ( strncmp(par_name, "NAME", 4) == 0 )*/
-        /*{*/
-            /*active_section = 0;*/
-            /*continue;*/
-        /*}*/
-
-        /*if ( strncmp(par_name, "COMMENT", 7) == 0 )*/
-        /*{*/
-            /*active_section = 0;*/
-            /*token1 = strtok(NULL, "");*/
-            /*if ( VERBOSE >= 10 ) printf(" ... solving instance %s with model %d\n\n", token1, inst->model_type);*/
-            /*continue;*/
-        /*}*/
-
-        /*if ( strncmp(par_name, "TYPE", 4) == 0 )*/
-        /*{*/
-            /*token1 = strtok(NULL, " :");*/
-            /*if ( strncmp(token1, "CVRP",4) != 0 ) print_error(" format error:  only TYPE == CVRP implemented so far!!!!!!");*/
-            /*active_section = 0;*/
-            /*continue;*/
-        /*}*/
+	FILE *fin = fopen(instance->input_file, "r");
+	if (fin == NULL) {
+        printf("File %s not found. Aborted\n", instance->input_file);
+        exit(EXIT_FAILURE);
+    }
 
 
-        /*if ( strncmp(par_name, "DIMENSION", 9) == 0 )*/
-        /*{*/
-            /*if ( inst->nnodes >= 0 ) print_error(" repeated DIMENSION section in input file");*/
-            /*token1 = strtok(NULL, " :");*/
-            /*inst->nnodes = atoi(token1);*/
-            /*if ( do_print ) printf(" ... nnodes %d\n", inst->nnodes);*/
-            /*inst->demand = (double *) calloc(inst->nnodes, sizeof(double));*/
-            /*inst->xcoord = (double *) calloc(inst->nnodes, sizeof(double));*/
-            /*inst->ycoord = (double *) calloc(inst->nnodes, sizeof(double));*/
-            /*active_section = 0;*/
-            /*continue;*/
-        /*}*/
+	char* line = (char*) calloc(200, sizeof(char));
+    char *model_name, *model_comment, *model_type;
+	while(fgets(line, sizeof(line), fin) != NULL) {
+		if (strlen(line) <= 1) continue;
 
-        /*if ( strncmp(par_name, "CAPACITY", 8) == 0 )*/
-        /*{*/
-            /*token1 = strtok(NULL, " :");*/
-            /*inst->capacity = atof(token1);*/
-            /*if ( do_print ) printf(" ... vehicle capacity %lf\n", inst->capacity);*/
-            /*active_section = 0;*/
-            /*continue;*/
-        /*}*/
+		char* section_name = strtok(line, " : ");
+        switch (hash2section(section_name)) {
+            case NAME:
+                model_name = strtok(NULL, " : ");
+                assert(model_name != NULL);
+                printf("nnnn |%s|\n", model_name);
+                instance->model_name = (char*) malloc(strlen(model_name)*sizeof(char));
+                strcpy(instance->model_name, "");
+                break;
 
+            case COMMENT:
+                c_syntaxhell();
+                model_comment = strtok(NULL, " : ");
+                instance->model_comment = (char*) malloc(strlen(model_comment)*sizeof(char));
+                strcpy(instance->model_comment, model_comment);
+                break;
 
-        /*if ( strncmp(par_name, "VEHICLES", 8) == 0 )*/
-        /*{*/
-            /*token1 = strtok(NULL, " :");*/
-            /*inst->nveh = atoi(token1);*/
-            /*if ( do_print ) printf(" ... n. vehicles %d\n", inst->nveh);*/
-            /*active_section = 0;*/
-            /*continue;*/
-        /*}*/
+            case TYPE:
+                /* keep the one set by user */
+                if (instance->model_type == NULL_MODEL) {
+                    model_type = strtok(NULL, " : ");
 
+                    if (strncmp(model_type, "TSP", 3) != 0) {
+                        printf("Only handles TSP. Aborted\n");
+                        exit(EXIT_FAILURE);
+                    }
 
-        /*if ( strncmp(par_name, "EDGE_WEIGHT_TYPE", 16) == 0 )*/
-        /*{*/
-            /*token1 = strtok(NULL, " :");*/
-            /*if ( strncmp(token1, "EUC_2D", 6) != 0 ) print_error(" format error:  only EDGE_WEIGHT_TYPE == EUC_2D implemented so far!!!!!!");*/
-            /*active_section = 0;*/
-            /*continue;*/
-        /*}*/
+                    /*TODO: add model types*/
+                    instance->model_type = SYMMETRIC_TSP;
+                }
+                break;
 
-        /*if ( strncmp(par_name, "NODE_COORD_SECTION", 18) == 0 )*/
-        /*{*/
-            /*if ( inst->nnodes <= 0 ) print_error(" ... DIMENSION section should appear before NODE_COORD_SECTION section");*/
-            /*active_section = 1;*/
-            /*continue;*/
-        /*}*/
+            case DIMENSION:
+                instance->num_nodes = atoi(strtok(NULL, " :"));
 
-        /*if ( strncmp(par_name, "DEMAND_SECTION", 14) == 0 )*/
-        /*{*/
-            /*if ( inst->nnodes <= 0 ) print_error(" ... DIMENSION section should appear before DEMAND_SECTION section");*/
-            /*active_section = 2;*/
-            /*continue;*/
-        /*}*/
+                instance->xcoord = (double*) calloc(instance->num_nodes, sizeof(double));
+                instance->ycoord = (double*) calloc(instance->num_nodes, sizeof(double));
+                break;
 
-        /*if ( strncmp(par_name, "DEPOT_SECTION", 13) == 0 )*/
-        /*{*/
-            /*if ( inst->depot >= 0 ) print_error(" ... DEPOT_SECTION repeated??");*/
-            /*active_section = 3;*/
-            /*continue;*/
-        /*}*/
+            case EDGE_WEIGHT_TYPE:
+                if(strncmp(strtok(NULL, " : "), "ATT", 3) != 0) {
+                    printf("Only handles ATT. Aborted\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
 
+            case NODE_COORD_SECTION:
 
-        /*if ( strncmp(par_name, "EOF", 3) == 0 )*/
-        /*{*/
-            /*active_section = 0;*/
-            /*break;*/
-        /*}*/
+                if(instance->num_nodes < 0) {
+                    printf("Define number of nodes before list of nodes. Aborted\n");
+                    exit(EXIT_FAILURE);
+                }
 
+                for (int i=1; i<=instance->num_nodes; i++) {
+                    if (fgets(line, sizeof(line), fin) == NULL) {
+                        printf("Reached end of file while reading nodes. Aborted\n");
+                        exit(EXIT_FAILURE);
+                    }
 
-        /*if ( active_section == 1 ) // within NODE_COORD_SECTION*/
-        /*{*/
-            /*int i = atoi(par_name) - 1;*/
-            /*if ( i < 0 || i >= inst->nnodes ) print_error(" ... unknown node in NODE_COORD_SECTION section");*/
-            /*token1 = strtok(NULL, " :,");*/
-            /*token2 = strtok(NULL, " :,");*/
-            /*inst->xcoord[i] = atof(token1);*/
-            /*inst->ycoord[i] = atof(token2);*/
-            /*if ( do_print ) printf(" ... node %4d at coordinates ( %15.7lf , %15.7lf )\n", i+1, inst->xcoord[i], inst->ycoord[i]);*/
-            /*continue;*/
-        /*}*/
+                    int node_index = atoi(strtok(line, " : "));
+                    if(node_index != i) {
+                        printf("Error in node indexing. Aborted\n");
+                        exit(EXIT_FAILURE);
+                    }
 
-        /*if ( active_section == 2 ) // within DEMAND_SECTION*/
-        /*{*/
-            /*int i = atoi(par_name) - 1;*/
-            /*if ( i < 0 || i >= inst->nnodes ) print_error(" ... unknown node in NODE_COORD_SECTION section");*/
-            /*token1 = strtok(NULL, " :,");*/
-            /*inst->demand[i] = atof(token1);*/
-            /*if ( do_print ) printf(" ... node %4d has demand %10.5lf\n", i+1, inst->demand[i]);*/
-            /*continue;*/
-        /*}*/
+                    instance->xcoord[i-1] = atoi(strtok(NULL, " : "));
+                    instance->ycoord[i-1] = atoi(strtok(NULL, " : "));
+                }
+                break;
 
-        /*if ( active_section == 3 ) // within DEPOT_SECTION*/
-        /*{*/
-            /*int i = atoi(par_name) - 1;*/
-            /*if ( i < 0 || i >= inst->nnodes ) continue;*/
-            /*if ( inst->depot >= 0 ) print_error(" ... multiple depots not supported in DEPOT_SECTION");*/
-            /*inst->depot = i;*/
-            /*if ( do_print ) printf(" ... depot node %d\n", inst->depot+1);*/
-            /*continue;*/
-        /*}*/
+            case END_OF_FILE:
+                break;
 
-        /*printf(" final active section %d\n", active_section);*/
-        /*print_error(" ... wrong format for the current simplified parser!!!!!!!!!");*/
+            case UNMANAGED_SECTION:
+                printf("Warning: section %s unmanaged\n", section_name);
+                break;
+        }
+	}
 
-    /*}*/
-
-    /*fclose(fin);*/
-
-/*}*/
-
+    free(line);
+	fclose(fin);
+}
