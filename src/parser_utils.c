@@ -107,7 +107,7 @@ enum tsp_sections hash2section(char* section_name) {
 /*TODO: comment function*/
 void parse_input(tsp_instance instance) {
 
-	if (VERBOSE) printf("Reading input file %s\n", instance->input_file);
+	if (VERBOSE) printf("[VERBOSE] reading input file %s\n", instance->input_file);
 
 	FILE *fin = fopen(instance->input_file, "r");
 	if (fin == NULL) {
@@ -116,34 +116,45 @@ void parse_input(tsp_instance instance) {
     }
 
 
-	char* line = (char*) calloc(200, sizeof(char));
-    char *model_name, *model_comment, *model_type;
-	while(fgets(line, sizeof(line), fin) != NULL) {
-		if (strlen(line) <= 1) continue;
+	char* line;
+    char *section_name, *section_param;
+    size_t len = 0;
 
-		char* section_name = strtok(line, " : ");
+	while((getline(&line, &len, fin) != -1)) {
+		if (strlen(line) <= 1) continue;
+        line[strlen(line)-1] = 0;  /* get rid of linefeed */
+
+        /* old style tokenization */
+        size_t i=0;
+        while (line[i] != ' ') i++;
+
+        section_name = (char*) calloc(i, sizeof(char));
+        strncpy(section_name, line, i);
+        i = (i+3 > strlen(line) ? strlen(line) : i+3);
+        section_param = (char*) calloc(strlen(line)-i, sizeof(char));
+        strcpy(section_param, line+i);
+
+        if (VERBOSE) {
+            printf("[VERBOSE] parsing |%s| on |%s|\n", section_name, section_param);
+        }
+
+        /* retrive section and inject parameter */
         switch (hash2section(section_name)) {
             case NAME:
-                model_name = strtok(NULL, " : ");
-                assert(model_name != NULL);
-                printf("nnnn |%s|\n", model_name);
-                instance->model_name = (char*) malloc(strlen(model_name)*sizeof(char));
-                strcpy(instance->model_name, "");
+                instance->model_name = (char*) malloc(strlen(section_param)*sizeof(char));
+                strcpy(instance->model_name, section_param);
                 break;
 
             case COMMENT:
-                c_syntaxhell();
-                model_comment = strtok(NULL, " : ");
-                instance->model_comment = (char*) malloc(strlen(model_comment)*sizeof(char));
-                strcpy(instance->model_comment, model_comment);
+                instance->model_comment = (char*) malloc(strlen(section_param)*sizeof(char));
+                strcpy(instance->model_comment, section_param);
                 break;
 
             case TYPE:
                 /* keep the one set by user */
                 if (instance->model_type == NULL_MODEL) {
-                    model_type = strtok(NULL, " : ");
 
-                    if (strncmp(model_type, "TSP", 3) != 0) {
+                    if (strcmp(section_param, "TSP") != 0) {
                         printf("Only handles TSP. Aborted\n");
                         exit(EXIT_FAILURE);
                     }
@@ -154,14 +165,14 @@ void parse_input(tsp_instance instance) {
                 break;
 
             case DIMENSION:
-                instance->num_nodes = atoi(strtok(NULL, " :"));
+                instance->num_nodes = atoi(section_param);
 
                 instance->xcoord = (double*) calloc(instance->num_nodes, sizeof(double));
                 instance->ycoord = (double*) calloc(instance->num_nodes, sizeof(double));
                 break;
 
             case EDGE_WEIGHT_TYPE:
-                if(strncmp(strtok(NULL, " : "), "ATT", 3) != 0) {
+                if(strcmp(section_param, "ATT") != 0) {
                     printf("Only handles ATT. Aborted\n");
                     exit(EXIT_FAILURE);
                 }
@@ -174,20 +185,34 @@ void parse_input(tsp_instance instance) {
                     exit(EXIT_FAILURE);
                 }
 
-                for (int i=1; i<=instance->num_nodes; i++) {
-                    if (fgets(line, sizeof(line), fin) == NULL) {
+                for (size_t i=1; i<=instance->num_nodes; i++) {
+                    if ((getline(&line, &len, fin) == -1)) {
                         printf("Reached end of file while reading nodes. Aborted\n");
                         exit(EXIT_FAILURE);
                     }
 
-                    int node_index = atoi(strtok(line, " : "));
-                    if(node_index != i) {
+                    size_t j,k;
+                    size_t node_idx;
+                    double x, y;
+
+                    j = 0;
+                    while (line[j] != ' ') j++;
+                    line[j] = 0;
+                    node_idx = atoi(line);
+
+                    k = j+1;
+                    while (line[j] != ' ') j++;
+                    line[j] = 0;
+                    x = atof(line+k);
+                    y = atof(line+j+1);
+
+                    if(node_idx != i) {
                         printf("Error in node indexing. Aborted\n");
                         exit(EXIT_FAILURE);
                     }
 
-                    instance->xcoord[i-1] = atoi(strtok(NULL, " : "));
-                    instance->ycoord[i-1] = atoi(strtok(NULL, " : "));
+                    instance->xcoord[i-1] = x;
+                    instance->ycoord[i-1] = y;
                 }
                 break;
 
@@ -198,6 +223,8 @@ void parse_input(tsp_instance instance) {
                 printf("Warning: section %s unmanaged\n", section_name);
                 break;
         }
+        free(section_name);
+        free(section_param);
 	}
 
     free(line);
