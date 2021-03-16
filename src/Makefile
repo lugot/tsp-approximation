@@ -1,4 +1,4 @@
-OBJS = main.o globals.o tsp.o parser_utils.o
+OBJS = main.o globals.o tsp.o parsers.o utils.o solvers.o
 HEADERS =
 EXE = tsp_approx
 all: $(EXE)
@@ -40,7 +40,7 @@ clean:
 	$(RM) $(OBJS)
 	$(RM) $(OBJS_LIBUTILS)
 	$(RM) $(LIBUTILS)
-	$(RM) $(EXE)
+	#$(RM) $(EXE)
 
 again:
 	make clean

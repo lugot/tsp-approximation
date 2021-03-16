@@ -1,18 +1,22 @@
 #include "tsp.h"
-#include "parser_utils.h"
+#include "parsers.h"
+#include "solvers.h"
 #include <stdio.h>
 #include <cplex.h>
+#include <stdlib.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
-    tsp_instance inst = create_tsp_instance();
+    instance inst = create_tsp_instance();
     print_instance(inst);
 
     parse_command_line(argc, argv, inst);
-    print_instance(inst);
-
     parse_input(inst);
     print_instance(inst);
 
-    return 0;
+    TSPopt(inst);
+
+    print_solution(inst->sol);
+
+    return EXIT_SUCCESS;
 }

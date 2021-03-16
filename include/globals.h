@@ -6,6 +6,4 @@ extern double XSMALL;
 extern double EPSILON;
 extern double TICKS_PER_SECOND;
 
-void c_syntaxhell();
-
 #endif /* _GLOBALS_H_ */
