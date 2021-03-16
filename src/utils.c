@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+double max(double a, double b) {
+	return a > b ? a : b;
+}
+
 void print_error(const char *err) {
 	printf("\n\n ERROR: %s \n\n", err);
 	fflush(NULL);

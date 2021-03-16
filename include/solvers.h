@@ -3,6 +3,6 @@
 
 #include "tsp.h"
 
-int TSPopt(instance inst);
+solution TSPopt(instance inst);
 
 #endif /* _SOLVERS_H_ */

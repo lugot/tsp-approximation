@@ -60,5 +60,6 @@ instance create_tsp_instance();
 void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp);
 void print_instance(instance inst);
 void print_solution(solution sol);
+void plot_solution_graphviz(instance inst, solution sol);
 
 #endif   /* _TSP_H_ */

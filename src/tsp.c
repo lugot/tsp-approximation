@@ -1,6 +1,7 @@
 #include "tsp.h"
 #include "utils.h"
 #include "globals.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <cplex.h>
 
@@ -156,4 +157,39 @@ void print_instance(instance inst) {
     }
 
     printf("--- ---\n\n");
+}
+
+void plot_solution_graphviz(instance inst, solution sol) {
+
+	double box_size = 20.0;
+	double max_coord = 0.0;
+	for (size_t i=0; i<inst->num_nodes; i++) {
+		max_coord = max(max_coord, inst->nodes[i].x);
+		max_coord = max(max_coord, inst->nodes[i].y);
+	}
+
+
+	char* filename;
+	filename = (char*) calloc(100, sizeof(char));
+	sprintf(filename, "../data/%s.dot", inst->model_name);
+
+	FILE* fp;
+	fp = fopen(filename, "w");
+
+	fprintf(fp, "graph %s {\n", inst->model_name);
+	for (size_t i=0; i<inst->num_nodes; i++) {
+		double plot_posx = inst->nodes[i].x / max_coord * box_size;
+		double plot_posy = inst->nodes[i].y / max_coord * box_size;
+
+		fprintf(fp, "\t%ld [ pos = \"%lf,%lf!\"]\n", i, plot_posx, plot_posy);
+	}
+	fprintf(fp, "\n");
+	for (size_t k=0; k<sol->num_edges; k++) {
+		fprintf(fp, "\t%ld -- %ld\n", sol->edges[k].i, sol->edges[k].j);
+	}
+	fprintf(fp, "}");
+
+
+	fclose(fp);
+	free(filename);
 }

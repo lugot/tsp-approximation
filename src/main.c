@@ -14,9 +14,10 @@ int main(int argc, char** argv) {
     parse_input(inst);
     print_instance(inst);
 
-    TSPopt(inst);
+    solution optimal = TSPopt(inst);
 
-    print_solution(inst->sol);
+    print_solution(optimal);
+    plot_solution_graphviz(inst, optimal);
 
     return EXIT_SUCCESS;
 }
