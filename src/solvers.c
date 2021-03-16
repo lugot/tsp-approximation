@@ -1,10 +1,10 @@
 #include "tsp.h"
 #include "utils.h"
 #include "globals.h"
-
 #include <cplex.h>
 #include <stdlib.h>
 
+// TODO:  retrive zstar from CPLEX
 solution TSPopt(instance inst) {
 
 	/* open CPLEX model */
@@ -29,7 +29,7 @@ solution TSPopt(instance inst) {
 
 	sol->optimality = OPTIMAL;
 	/*sol->zstar  */
-	sol->num_edges = inst->num_nodes-1;
+	sol->num_edges = inst->num_nodes;
 	sol->edges = (edge*) calloc(sol->num_edges, sizeof(struct edge_t));
 
 	/* index over selected edges */
@@ -43,7 +43,7 @@ solution TSPopt(instance inst) {
 		}
 	}
 
-	if (k-1 != sol->num_edges) print_error("Invalid number of edges selected. Aborted");
+	if (k != sol->num_edges) print_error("Invalid number of edges selected. Aborted");
 
 	free(xstar);
 	CPXfreeprob(env, &lp);

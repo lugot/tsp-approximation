@@ -31,6 +31,8 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp) {
 	 * typically i consider i < j
 	 */
 
+	// TODO: add CPLEX memory management thingy
+
 
 	/*double zero = 0.0;*/
 	/* variable type:
@@ -103,7 +105,14 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp) {
 	}
 	/* note: there are no subtour elimination constraints, relaxed model! */
 
-	if (VERBOSE) CPXwriteprob(env, lp, "../data/relaxed_tsp_model.lp", NULL);
+	if (VERBOSE) {
+		char* filename;
+		filename = (char*) calloc(100, sizeof(char));
+		sprintf(filename, "../data/%s/%s.model.lp", inst->model_name, inst->model_name);
+
+		CPXwriteprob(env, lp, filename, NULL);
+		free(filename);
+	}
 
 	free(cname[0]);
 	free(cname);
@@ -129,8 +138,8 @@ void print_instance(instance inst) {
     if (inst->model_type == NULL_MODEL)    printf("NULL_MODEL\n");
     if (inst->model_type == SYMMETRIC_TSP) printf("SYMMETRIC_TSP\n");
     printf("input file: ");
-    if (inst->input_file == NULL) printf("<NO INPUT FILE>\n");
-    else                              printf("%s\n", inst->input_file);
+    if (inst->model_name == NULL) printf("<NO INPUT FILE>\n");
+    else                          printf("%s\n", inst->model_name);
     printf("random seed: %d\n", inst->randomseed);
     printf("number of threads: %d\n", inst->num_threads);
     printf("time limit: %lf\n", inst->timelimit);
@@ -149,7 +158,7 @@ void print_instance(instance inst) {
     printf("model type: ");
     if (inst->model_type == NULL_MODEL)    printf("NULL_MODEL\n");
     if (inst->model_type == SYMMETRIC_TSP) printf("SYMMETRIC_TSP\n");
-    printf("number of nodes: %d\n", inst->num_nodes);
+    printf("number of nodes: %ld\n", inst->num_nodes);
     if (VERBOSE) {
         for (int i=0; i<inst->num_nodes; i++) {
             printf("%lf %lf\n", inst->nodes[i].x, inst->nodes[i].y);
@@ -159,24 +168,23 @@ void print_instance(instance inst) {
     printf("--- ---\n\n");
 }
 
-void plot_solution_graphviz(instance inst, solution sol) {
-
-	double box_size = 20.0;
+void plot_solutions_graphviz(instance inst, solution* sols, size_t num_sols) {
+	double box_size = 20.0; // TODO: make proportional to the number of nodes
 	double max_coord = 0.0;
 	for (size_t i=0; i<inst->num_nodes; i++) {
-		max_coord = max(max_coord, inst->nodes[i].x);
-		max_coord = max(max_coord, inst->nodes[i].y);
+		max_coord = max(max_coord, fabs(inst->nodes[i].x));
+		max_coord = max(max_coord, fabs(inst->nodes[i].y));
 	}
-
 
 	char* filename;
 	filename = (char*) calloc(100, sizeof(char));
-	sprintf(filename, "../data/%s.dot", inst->model_name);
+	sprintf(filename, "../data/%s/%s.dot", inst->model_name, inst->model_name);
 
 	FILE* fp;
 	fp = fopen(filename, "w");
 
 	fprintf(fp, "graph %s {\n", inst->model_name);
+	fprintf(fp, "\tnode [shape=circle fillcolor=white]\n");
 	for (size_t i=0; i<inst->num_nodes; i++) {
 		double plot_posx = inst->nodes[i].x / max_coord * box_size;
 		double plot_posy = inst->nodes[i].y / max_coord * box_size;
@@ -184,12 +192,21 @@ void plot_solution_graphviz(instance inst, solution sol) {
 		fprintf(fp, "\t%ld [ pos = \"%lf,%lf!\"]\n", i, plot_posx, plot_posy);
 	}
 	fprintf(fp, "\n");
-	for (size_t k=0; k<sol->num_edges; k++) {
-		fprintf(fp, "\t%ld -- %ld\n", sol->edges[k].i, sol->edges[k].j);
+
+	for (size_t u=0; u<num_sols; u++) {
+		for (size_t k=0; k<sols[u]->num_edges; k++) {
+			fprintf(fp, "\t%ld -- %ld", sols[u]->edges[k].i, sols[u]->edges[k].j);
+
+			if (sols[u]->optimality == OPTIMAL_TOUR) fprintf(fp, " [color = red]");
+			fprintf(fp, "\n");
+		}
 	}
 	fprintf(fp, "}");
 
-
 	fclose(fp);
 	free(filename);
+}
+
+void plot_solution_graphviz(instance inst, solution sol) {
+	plot_solutions_graphviz(inst, (solution[]) {sol}, 1);
 }

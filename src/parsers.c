@@ -1,9 +1,6 @@
 #include "parsers.h"
 #include "utils.h"
-
 #include "globals.h"
-#include "tsp.h"
-
 #include <getopt.h>
 #include <stdio.h>
 #include <string.h>
@@ -17,23 +14,23 @@ enum tsp_sections {
     DIMENSION,
     EDGE_WEIGHT_TYPE,
     NODE_COORD_SECTION,
+    TOUR_SECTION,
     END_OF_FILE,
-    UNMANAGED_SECTION
+    UNMANAGED_SECTION,
 };
 enum tsp_sections hash2section(char* section_name);
 
-/*TODO: add this to a help*/
+// TODO: add this to a help
 void print_usage() {
     printf("Usage: rectangle -file num -b num\n");
 }
 
-/*TODO: comment*/
-/*TODO: add help*/
+// TODO: comment
 void parse_command_line(int argc, char** argv, instance inst) {
 
     static struct option long_options[] = {
         {"verbose",       no_argument,       NULL, 'v'},
-        {"input_file",    required_argument, NULL, 'f'},
+        {"model_name",    required_argument, NULL, 'm'},
         {"time_limit",    required_argument, NULL, 't'},
         {"seed",          required_argument, NULL, 's'},
         {"threads",       required_argument, NULL, 'T'},
@@ -45,15 +42,15 @@ void parse_command_line(int argc, char** argv, instance inst) {
 
     int long_index, opt;
     long_index = opt = 0;
-    while ((opt = getopt_long(argc, argv,"vf:t:s:T:M:i:h",
+    while ((opt = getopt_long(argc, argv,"vm:t:s:T:M:i:h",
                     long_options, &long_index)) != -1) {
         switch (opt) {
             case 'v': VERBOSE = 1;
                 break;
 
-            case 'f':
-                inst->input_file = (char*) malloc(strlen(optarg)*sizeof(char));
-                strcpy(inst->input_file, optarg);
+            case 'm':
+                inst->model_name = (char*) malloc(strlen(optarg)*sizeof(char));
+                strcpy(inst->model_name, optarg);
                 break;
 
             case 'l': inst->timelimit = atof(optarg);
@@ -83,27 +80,23 @@ void parse_command_line(int argc, char** argv, instance inst) {
 }
 
 
-enum tsp_sections hash2section(char* section_name) {
-    if (strcmp(section_name, "NAME") == 0)               return NAME;
-    if (strcmp(section_name, "COMMENT") == 0)            return COMMENT;
-    if (strcmp(section_name, "TYPE") == 0)               return TYPE;
-    if (strcmp(section_name, "DIMENSION") == 0)          return DIMENSION;
-    if (strcmp(section_name, "EDGE_WEIGHT_TYPE") == 0)   return EDGE_WEIGHT_TYPE;
-    if (strcmp(section_name, "NODE_COORD_SECTION") == 0) return NODE_COORD_SECTION;
-    if (strcmp(section_name, "EOF") == 0)                return END_OF_FILE;
+// TODO: comment function
+// TODO: change tokenizer
+void parse_input_file(instance inst) {
 
-    return UNMANAGED_SECTION;
-}
+	if (VERBOSE) printf("[VERBOSE] reading input file %s\n", inst->model_name);
 
-/*TODO: comment function*/
-void parse_input(instance inst) {
+    char* filename;
+    filename = (char*) calloc(100, sizeof(char));
+    sprintf(filename, "../data/%s/%s.tsp", inst->model_name, inst->model_name);
 
-	if (VERBOSE) printf("[VERBOSE] reading input file %s\n", inst->input_file);
-
-	FILE *fp = fopen(inst->input_file, "r");
+	FILE *fp;
+    fp = fopen(filename, "r");
 	if (fp == NULL) {
-        printf("File %s not found. Aborted\n", inst->input_file);
-        exit(EXIT_FAILURE);
+        char* errormessage;
+        errormessage = (char*) calloc(100, sizeof(char));
+        sprintf(errormessage, "File %s not found. Aborted\n", filename);
+        print_error(errormessage);
     }
 
 
@@ -163,7 +156,7 @@ void parse_input(instance inst) {
             case EDGE_WEIGHT_TYPE:
                 if(strcmp(section_param, "ATT") != 0) {
                     printf("Only handles ATT. Aborted\n");
-                    exit(EXIT_FAILURE);
+                    /*exit(EXIT_FAILURE);*/ //  TODO: who cares
                 }
                 break;
 
@@ -206,6 +199,7 @@ void parse_input(instance inst) {
             case END_OF_FILE:
                 break;
 
+            case TOUR_SECTION:
             case UNMANAGED_SECTION:
                 printf("Warning: section %s unmanaged\n", section_name);
                 break;
@@ -216,4 +210,99 @@ void parse_input(instance inst) {
 
     free(line);
 	fclose(fp);
+    free(filename);
+}
+
+// TODO: merge with prec funct
+solution parse_optimal_tour(instance inst) {
+
+    char* filename;
+    filename = (char*) calloc(100, sizeof(char));
+    sprintf(filename, "../data/%s/%s.opt.tour", inst->model_name, inst->model_name);
+
+	FILE *fp;
+    fp = fopen(filename, "r");
+	if (fp == NULL) {
+        char* errormessage;
+        errormessage = (char*) calloc(100, sizeof(char));
+        sprintf(errormessage, "File %s not found. Aborted\n", filename);
+        print_error(errormessage);
+    }
+
+    /* prepare tour node list */
+    size_t* node_list;
+    node_list = (size_t*) calloc(inst->num_nodes, sizeof(size_t));
+
+
+	char* line;
+    size_t len = 0;
+
+	while((getline(&line, &len, fp) != -1)) {
+		if (strlen(line) <= 1) continue;
+        line[strlen(line)-1] = 0;  /* get rid of linefeed */
+
+        /* retrive section and inject parameter */
+        switch (hash2section(line)) {
+            case TOUR_SECTION:
+                /* read the nodes in the tour */
+                for (size_t k=0; k<inst->num_nodes; k++) {
+                    if ((getline(&line, &len, fp) == -1)) {
+                        print_error("Reached end of file while reading nodes. Aborted\n");
+                    }
+
+                    node_list[k] = atoi(line)-1;
+                }
+                getline(&line, &len, fp); /* get rid of -1 */
+                break;
+
+            case NAME:
+            case COMMENT:
+            case TYPE:
+            case DIMENSION:
+            case EDGE_WEIGHT_TYPE:
+            case NODE_COORD_SECTION:
+            case UNMANAGED_SECTION:
+                break;
+
+            case END_OF_FILE:
+                break;
+        }
+	}
+
+    free(line);
+	fclose(fp);
+    free(filename);
+
+	/* populate solution */
+	solution sol = (solution) malloc(sizeof(struct solution_t));
+
+	sol->optimality = OPTIMAL_TOUR;
+
+	sol->num_edges = inst->num_nodes;
+	sol->edges = (edge*) calloc(sol->num_edges, sizeof(struct edge_t));
+    for (size_t k=0; k<sol->num_edges; k++) {
+        sol->edges[k].i = node_list[k];
+        sol->edges[k].j = node_list[(k+1) % sol->num_edges];
+    }
+
+    sol->zstar = 0.0;
+    for (size_t k=0; k<sol->num_edges; k++) {
+        sol->zstar += dist(sol->edges[k].i, sol->edges[k].j, inst);
+    }
+
+    return sol;
+}
+
+enum tsp_sections hash2section(char* section_name) {
+
+    if (strcmp(section_name, "NAME") == 0)               return NAME;
+    if (strcmp(section_name, "COMMENT") == 0)            return COMMENT;
+    if (strcmp(section_name, "TYPE") == 0)               return TYPE;
+    if (strcmp(section_name, "DIMENSION") == 0)          return DIMENSION;
+    if (strcmp(section_name, "EDGE_WEIGHT_TYPE") == 0)   return EDGE_WEIGHT_TYPE;
+    if (strcmp(section_name, "NODE_COORD_SECTION") == 0) return NODE_COORD_SECTION;
+    if (strcmp(section_name, "TOUR_SECTION") == 0)       return TOUR_SECTION;
+    if (strcmp(section_name, "EOF") == 0)                return END_OF_FILE;
+
+    return UNMANAGED_SECTION;
 }

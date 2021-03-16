@@ -4,6 +4,7 @@
 #include <cplex.h>
 
 enum optimalities {
+	OPTIMAL_TOUR,
 	OPTIMAL,
 	APPROXIMATED
 };
@@ -34,25 +35,21 @@ typedef struct node_t {
 } node;
 
 typedef struct instance_t {
-
     /* input data */
-	int num_nodes;
+	size_t num_nodes;
 	node* nodes;
+
+	/* model infos */
     char* model_name;
     char* model_comment;
 
     /* parameters */
     enum model_types model_type;
-	char* input_file;
 	int randomseed;
 	int num_threads;
 	double timelimit;
 	int available_memory;
     enum costs_types costs_type;
-
-	/* solutions */
-	solution sol; /* TODO: make vector out of this */
-
 } *instance;
 
 
@@ -60,6 +57,7 @@ instance create_tsp_instance();
 void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp);
 void print_instance(instance inst);
 void print_solution(solution sol);
+void plot_solutions_graphviz(instance inst, solution* sols, size_t num_sols);
 void plot_solution_graphviz(instance inst, solution sol);
 
 #endif   /* _TSP_H_ */
