@@ -3,54 +3,83 @@
 
 #include <cplex.h>
 
+struct solution_t;
+
+enum types {
+	TSP,
+	TOUR,
+	UNMANAGED_TYPE
+};
+enum costs {
+	INTEGER,
+	REAL
+};
 enum optimalities {
 	OPTIMAL_TOUR,
 	OPTIMAL,
 	APPROXIMATED
 };
-
-typedef struct edge_t {
-	size_t i, j;
-} edge;
-
-typedef struct solution_t {
-	enum optimalities optimality;
-	double zstar;
-	size_t num_edges;
-	edge* edges;
-} *solution;
-
-
-enum model_types {
-	NULL_MODEL,
-	SYMMETRIC_TSP
+enum tsp_types {
+	SYMMETRIC,
+	ASYMMETRIC
 };
-enum costs_types {
-	INTEGER,
-	REAL
+enum weight_types {
+	ATT,
+	EUC_2D,
+	GEO,
+	EXPLICIT,
+	UNMANAGED_WEIGHT_TYPE
 };
+
 
 typedef struct node_t {
 	double x, y;
 } node;
+typedef struct edge_t {
+	size_t i, j;
+} edge;
+
 
 typedef struct instance_t {
-    /* input data */
-	size_t num_nodes;
-	node* nodes;
-
 	/* model infos */
     char* model_name;
     char* model_comment;
 
     /* parameters */
-    enum model_types model_type;
+    enum types model_type;
 	int randomseed;
 	int num_threads;
 	double timelimit;
 	int available_memory;
-    enum costs_types costs_type;
+    enum costs costs_type;
+
+	/* data */
+	enum weight_types weight_type;
+	size_t num_nodes;
+	node* nodes;
+	double** adjmatrix;
+
+	/* solutions */
+	size_t num_solutions;
+	struct solution_t** sols;
 } *instance;
+
+
+typedef struct solution_t {
+	struct instance_t* inst;
+
+	enum optimalities optimality;
+	enum tsp_types tsp_type;
+
+
+	double zstar;
+
+	size_t num_edges;
+	edge* edges;
+	size_t* parent;
+
+} *solution;
+
 
 
 instance create_tsp_instance();

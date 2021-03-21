@@ -4,7 +4,7 @@
 #include "tsp.h"
 
 double max(double a, double b);
-void print_error(const char *err);
+void print_error(const char *err, ...);
 double dist(int i, int j, instance inst);
 int xpos(int i, int j, instance inst);
 
