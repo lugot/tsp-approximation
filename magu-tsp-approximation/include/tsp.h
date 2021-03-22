@@ -5,7 +5,7 @@
 
 enum optimalities {
 	OPTIMAL_TOUR,
-	OPTIMAL,
+	SYMMETRIC_SUBTOUR,
 	APPROXIMATED
 };
 

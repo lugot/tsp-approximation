@@ -16,8 +16,8 @@ enum costs {
 };
 enum optimalities {
 	OPTIMAL_TOUR,
-	OPTIMAL,
-	APPROXIMATED
+	SYMMETRIC_SUBTOUR,
+	ASYMMETRIC_MTZ
 };
 enum tsp_types {
 	SYMMETRIC,
@@ -36,7 +36,7 @@ typedef struct node_t {
 	double x, y;
 } node;
 typedef struct edge_t {
-	size_t i, j;
+	int i, j;
 } edge;
 
 
@@ -46,7 +46,7 @@ typedef struct instance_t {
     char* model_comment;
 
     /* parameters */
-    enum types model_type;
+    enum types type;
 	int randomseed;
 	int num_threads;
 	double timelimit;
@@ -55,12 +55,12 @@ typedef struct instance_t {
 
 	/* data */
 	enum weight_types weight_type;
-	size_t num_nodes;
+	int num_nodes;
 	node* nodes;
 	double** adjmatrix;
 
 	/* solutions */
-	size_t num_solutions;
+	int num_solutions;
 	struct solution_t** sols;
 } *instance;
 
@@ -71,22 +71,22 @@ typedef struct solution_t {
 	enum optimalities optimality;
 	enum tsp_types tsp_type;
 
-
 	double zstar;
 
-	size_t num_edges;
+	int num_edges;
 	edge* edges;
-	size_t* parent;
+	int* parent;
 
 } *solution;
 
 
 
 instance create_tsp_instance();
-void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp);
-void print_instance(instance inst);
-void print_solution(solution sol);
-void plot_solutions_graphviz(instance inst, solution* sols, size_t num_sols);
-void plot_solution_graphviz(instance inst, solution sol);
+instance duplicate_instance(instance inst);
+void free_instance();
+void add_solution(instance inst, solution sol);
+
+void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalities opt);
+void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp, solution sol);
 
 #endif   /* _TSP_H_ */

@@ -64,13 +64,10 @@ int xxpos(int i, int j, instance inst) {
 	 * 4   12 13 14 15
 	 */
 
-	printf("Nodes: %ld\n",inst->num_nodes );
 	return i*inst->num_nodes + j;
 }
 
 int upos(int i, instance inst)
 {
-	printf("Ehy\n");
-	printf("%ld\n",inst->num_nodes ); 
 	return (inst->num_nodes * inst->num_nodes) + i-1;
 }

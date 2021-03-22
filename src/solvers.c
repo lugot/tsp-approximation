@@ -1,12 +1,11 @@
 #include "tsp.h"
 #include "utils.h"
-#include "globals.h"
 #include <cplex.h>
 #include <stdlib.h>
 
 // TODO:  retrive zstar from CPLEX
-solution TSPopt(instance inst) {
-	if (inst->model_type != SYMMETRIC_TSP) print_error("Need TSP instance");
+solution TSPopt(instance inst, enum optimalities opt) {
+	if (inst->type != TSP) print_error("need TSP instance");
 
 	/* open CPLEX model */
 	int error;
@@ -15,7 +14,7 @@ solution TSPopt(instance inst) {
 	CPXLPptr lp = CPXcreateprob(env, &error, "TSP");
 
 	/* populate enviorment with model data */
-	build_tsp_model(inst, env, lp);
+	build_tsp_model(inst, env, lp, opt);
 
 	if (CPXmipopt(env,lp)) print_error("CPXmipopt() error");
 
@@ -26,60 +25,50 @@ solution TSPopt(instance inst) {
 
 
 	/* populate solution */
-	solution sol = (solution) malloc(sizeof(struct solution_t));
+	solution sol = (solution) calloc(1, sizeof(struct solution_t));
+	sol->optimality = opt;
+	sol->tsp_type = (opt == SYMMETRIC_SUBTOUR) ? SYMMETRIC : ASYMMETRIC;
+	sol->zstar = 0.0; // TODO: change
 
-	sol->optimality = OPTIMAL;
-	/*sol->zstar  */
 	sol->num_edges = inst->num_nodes;
 	sol->edges = (edge*) calloc(sol->num_edges, sizeof(struct edge_t));
+	sol->parent = (int*) calloc(sol->num_edges, sizeof(int));
+
+	int (*pos_checker)(int, int, instance) = opt == SYMMETRIC_SUBTOUR ?
+		xpos : xxpos;
 
 	/* index over selected edges */
-	size_t k = 0;
+	int k = 0;
 	/* check for all edges if is selected */
-	for (size_t i=0; i<inst->num_nodes; i++) for (size_t j=i+1; j<inst->num_nodes; j++) {
-		if (xstar[xpos(i, j, inst)] > 0.5) { // TODO: add EPSILON check
-			sol->edges[k].i = i;
-			sol->edges[k].j = j;
-			k++;
+	for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<inst->num_nodes; j++) {
+		if (opt == SYMMETRIC_SUBTOUR && j < i) continue;
+
+		if (xstar[pos_checker(i, j, inst)] > 0.5) {
+			sol->parent[i] = j;
+			sol->edges[k++] = (edge) {i, j};
 		}
 	}
 
-	if (k != sol->num_edges) print_error("Invalid number of edges selected. Aborted");
+	if (opt == ASYMMETRIC_MTZ) {
+
+		add_MTZ_subtour(inst, env, lp, sol);
+
+		CPXwriteprob (env, lp, "myprob.mps", NULL);
+
+		printf("Qui!\n");
+
+		ncols = CPXgetnumcols(env, lp);
+		double* xstar2 = (double*) calloc(ncols, sizeof(double));
+		if (CPXgetx(env, lp, xstar2, 0, ncols-1)) print_error("CPXgetx() error");
+	}
+
+	if (k != sol->num_edges) print_error("invalid number of edges");
+
+	add_solution(inst, sol);
 
 	free(xstar);
 	CPXfreeprob(env, &lp);
 	CPXcloseCPLEX(&env);
-
-	return sol;
-}
-
-solution optimal_tour(instance inst) {
-	if (inst->model_type != OPTIMAL_TOUR) print_error("Need optimal tour instance");
-	instance_tour tour = (instance_tour) inst;
-
-	/* populate solution */
-	solution sol = (solution) malloc(sizeof(struct solution_t));
-
-	sol->optimality = OPTIMAL_TOUR;
-	sol->num_edges = tour->num_nodes;
-	sol->edges = (edge*) calloc(tour->num_nodes, sizeof(struct edge_t));
-
-	size_t act;
-	act = 0;
-
-	size_t k = 0;
-	while (tour->parent[act] != 0) {
-		sol->edges[k].j = act;
-		sol->edges[k].i = tour->parent[act];
-
-		k++;
-	}
-
-
-	/*sol->zstar = 0.0;*/
-	/*for (size_t k=0; k<sol->num_edges; k++) {*/
-		/*sol->zstar += dist(sol->edges[k].i, sol->edges[k].j, inst);*/
-	/*}*/
 
 	return sol;
 }

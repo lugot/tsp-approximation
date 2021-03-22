@@ -1,12 +1,10 @@
 #include "parsers.h"
-#include "tsp.h"
 #include "utils.h"
 #include "globals.h"
 #include <getopt.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <float.h>
 
 
@@ -72,7 +70,7 @@ void parse_command_line(int argc, char** argv, instance inst) {
             case 'l': inst->timelimit = atof(optarg);
                 break;
 
-            case 't': inst->model_type = TSP;
+            case 't': inst->type = TSP;
                 break;
 
             case 's': inst->randomseed = abs(atoi(optarg));
@@ -128,14 +126,17 @@ void parse_input_file(instance inst, const char* file_extension) {
 
             /* specification part */
             case NAME:
-                free(inst->model_name);
-                inst->model_name = (char*) malloc(strlen(section_param)*sizeof(char));
-                strcpy(inst->model_name, section_param);
+                /*if we open the optimal tour file, this will overwrite its content,
+                 * that makes incoherent the model name in common sense*/
+
+                /*free(inst->model_name);*/
+                /*inst->model_name = (char*) malloc(strlen(section_param)*sizeof(char));*/
+                /*strcpy(inst->model_name, section_param);*/
                 break;
 
             case TYPE:
-                inst->model_type = type_hasher(section_param);
-                if (inst->model_type == UNMANAGED_TYPE) {
+                inst->type = type_hasher(section_param);
+                if (inst->type == UNMANAGED_TYPE) {
                     print_error("type %s unmanaged", section_param);
                 }
                 break;
@@ -167,10 +168,12 @@ void parse_input_file(instance inst, const char* file_extension) {
             case NODE_COORD_SECTION:
             case DISPLAY_DATA_SECTION: {
 
-                size_t i;
+                inst->nodes = (node*) calloc(inst->num_nodes, sizeof(node));
+
+                int i;
                 for (i=1; i<=inst->num_nodes && getline(&line, &len, fp) != -1; i++) {
 
-                    size_t node_idx;
+                    int node_idx;
                     double x, y;
 
                     /*while (line[0] == ' ') line++;  [> avoid initial formatting spaces <]*/
@@ -178,53 +181,53 @@ void parse_input_file(instance inst, const char* file_extension) {
                     x = atof(strtok(NULL, " "));
                     y = atof(strtok(NULL, " "));
 
-                    if(node_idx != i) print_error("Node indexing incoherent\n");
+                    if(node_idx != i) print_error("incoherent node indexing\n");
 
-                    inst->nodes[i-1]= (node) {x, y};
+                    inst->nodes[i-1] = (node) {x, y};
                 }
-                if (i-1 != inst->num_nodes) print_error("Reached end of file while reading nodes\n");
+                if (i-1 != inst->num_nodes) print_error("reached eof while reading nodes\n");
 
                 break;
             }
             case TOUR_SECTION: {
 
-                solution sol = (solution) calloc(1, sizeof(solution));
-
-                inst->sols = realloc(inst->sols, inst->num_solutions+1);
-                inst->sols[inst->num_solutions++] = sol;
-                sol->inst = inst;
-
+                solution sol = (solution) calloc(1, sizeof(struct solution_t));
                 sol->optimality = OPTIMAL_TOUR;
                 sol->tsp_type = SYMMETRIC;
                 sol->zstar = DBL_MAX;
 
-                sol->edges = (edge*) calloc(inst->num_nodes, sizeof(struct edge_t));
-                sol->parent = (size_t*) calloc(inst->num_nodes, sizeof(size_t));
+                sol->num_edges = inst->num_nodes;
+                sol->edges = (edge*) calloc(sol->num_edges, sizeof(struct edge_t));
+                sol->parent = (int*) calloc(sol->num_edges, sizeof(int));
 
-                size_t prev, first, act;
-                if (getline(&line, &len, fp) == -1) print_error("Reached end of file while reading nodes\n");
+                int prev, first, act;
+                if (getline(&line, &len, fp) == -1) print_error("reached eof while reading tour \n");
                 prev = first = atoi(line)-1;
 
-                size_t i;
-                for (i=0; i<inst->num_nodes && getline(&line, &len, fp) == -1; i++) {
+                int i;
+                for (i=1; i<=inst->num_nodes-1 && getline(&line, &len, fp) != -1; i++) {
                     act = atoi(line)-1;
 
                     sol->parent[prev] = act;
-                    sol->edges[i] = (edge) {prev, act};
+                    sol->edges[i-1] = (edge) {prev, act};
                     prev = act;
                 }
                 sol->parent[prev] = first;
+                sol->edges[i-1] = (edge) {prev, first};
 
-                if (i != inst->num_nodes) print_error("Reached end of file while reading nodes\n");
+                if (i != inst->num_nodes) print_error("reached oef while reading tour\n");
+
+                add_solution(inst, sol);
 
                 break;
             }
 
             case EDGE_WEIGHT_SECTION: {
-                size_t num_weights = inst->num_nodes + inst->num_nodes*(inst->num_nodes-1)/2;
+
+                int num_weights = inst->num_nodes + inst->num_nodes*(inst->num_nodes-1)/2;
                 double* full_weights = (double*) calloc(num_weights, sizeof(double));
 
-                size_t k=0;
+                int k=0;
                 while (getline(&line, &len, fp) && strcmp(line, "EOF\n")) {
                     char* weight_str;
                     weight_str = strtok(line, " ");
@@ -238,10 +241,10 @@ void parse_input_file(instance inst, const char* file_extension) {
 
                 k=0;
                 inst->adjmatrix = (double**) calloc(inst->num_nodes, sizeof(double*));
-                for (size_t i=0; i<inst->num_nodes; i++) {
+                for (int i=0; i<inst->num_nodes; i++) {
                     inst->adjmatrix[i] = (double*) calloc(i+1, sizeof(double));
 
-                    for (size_t j=0; j<=i; j++) inst->adjmatrix[i][j] = full_weights[k++];
+                    for (int j=0; j<=i; j++) inst->adjmatrix[i][j] = full_weights[k++];
                 }
 
                 break;
@@ -273,7 +276,7 @@ enum sections section_hasher(char* section_name) {
         "EDGE_DATA_FORMAT",
         "NODE_COORD_TYPE",
         "DISPLAY_DATA_TYPE",
-        "END_OF_FILE",
+        "EOF",
         "NODE_COORD_SECTION",
         "DEPOT_SECTION",
         "DEMAND_SECTION",
@@ -285,7 +288,7 @@ enum sections section_hasher(char* section_name) {
         "UNMANAGED_SECTION",
     };
 
-    for (size_t i=NAME; i<=EDGE_WEIGHT_SECTION; i++) {
+    for (int i=NAME; i<=EDGE_WEIGHT_SECTION; i++) {
         if (!strcmp(section_name, sections[i])) return i;
     }
 
@@ -298,7 +301,7 @@ enum types type_hasher (char* section_param) {
         "UNMANAGED_TYPE"
     };
 
-    for (size_t i=TSP; i<=TOUR; i++) {
+    for (int i=TSP; i<=TOUR; i++) {
         if (!strcmp(section_param, types[i])) return i;
     }
     return UNMANAGED_TYPE;
@@ -311,7 +314,7 @@ enum weight_types weight_type_hasher(char* section_param) {
         "EXPLICIT"
     };
 
-    for (size_t i=ATT; i<=EXPLICIT; i++) {
+    for (int i=ATT; i<=EXPLICIT; i++) {
         if (!strcmp(section_param, weight_types[i])) return i;
     }
     return UNMANAGED_WEIGHT_TYPE;

@@ -286,10 +286,7 @@ void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp)
 		}
 		
 		/* test of xxpos function */
-		if (CPXgetnumcols(env, lp)-1 != upos(i)) {
-			
-			printf("Pos: %d\n", upos(i));
-			printf("Column: %d\n", CPXgetnumcols(env, lp)-1);
+		if (CPXgetnumcols(env, lp)-1 != upos(i, inst)) {
 			print_error(" wrong position for x var.s");
 		}
 
