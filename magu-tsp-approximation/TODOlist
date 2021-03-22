@@ -1,8 +1,0 @@
-mah, ghe xe mia tant da far
-- refactoring
-- verbose a randa
-- alcune robe son scritte col culo
-- troppo codice copypastato, soprattutto sui parsers
-- i vari errori son da uniformare di aspetto
-- dobbiamo fare in modo da formattare print_error come printf
-- spostare il makefile in /build che ho sempre una caga quando eliminino l'eseguibile con rm

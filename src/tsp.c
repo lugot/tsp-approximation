@@ -201,6 +201,8 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
                 }
             }
         }
+
+        add_MTZ_subtour(inst, env, lp);
     }
 
     if (VERBOSE) {
@@ -217,59 +219,12 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
     free(cname);
 }
 
-void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp, solution sol)
-{
-	int u[inst->num_nodes - 1];
+void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp) {
 
-	for(int i=0; i<inst->num_nodes - 1; i++)
-	{
-		u[i]=0;
-	}
-
-	int count = 1;
-
-	//node 0 is considered as starting node
-	for(int k=0; k<sol->num_edges; k++)
-	{
-
-		//Check if the subtour has been already filled
-		if (sol->edges[k].i !=0 && u[sol->edges[k].i - 1] == 0)
-		{
-
-
-			u[sol->edges[k].i -1] = count;
-			count++;
-
-			int start = sol->edges[k].i;
-			int node = sol->edges[k].j;
-
-			printf("Tour starts at %d\n", start);
-
-			//Check the subtour
-			while(node != start)
-			{
-				printf("... %d\n",node);
-
-				if(sol->edges[node].i!=0)
-				{
-					u[node - 1] = count;
-					count++;
-				}
-				node = sol->edges[node].j;
-			}
-
-		}
-	}
-
-	for(int i=0; i<inst->num_nodes - 1; i++)
-	{
-		printf("%d\n",u[i]);
-	}
-
-	char continuous = 'C';
+	char continuous = 'I';
 	/* lower and upper bound of the variable */
-	double lb = 0.0;
-	double ub = 1.0;
+	double lb = 1.0;
+	double ub = inst->num_nodes-1;
 
 
 	int offset = inst->num_nodes * inst->num_nodes;
@@ -296,57 +251,53 @@ void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp, solution sol)
 		}
 
 		/* test of xxpos function */
-		if (CPXgetnumcols(env, lp)-1 != offset +i-1) {
+		if (CPXgetnumcols(env, lp)-1 != upos(i, inst)) {
 			print_error(" wrong position for x var.s");
 		}
 
 	}
 
+	int izero = 0;
+	int index[3];
+	double value[3];
 
-	/* right hand site scalar */
-	double rhs = inst->num_nodes - 1.0;
-	/* sense of the constraint:
-	 * E: equality
-	 * G: greater or equal
-	 * L: less or equal */
+	// add lazy constraints  1.0 * u_i - 1.0 * u_j + M * x_ij <= M - 1, for each arc (i,j) not touching node 0
+	double big_M = inst->num_nodes - 1.0;
+	double rhs = big_M -1.0;
 	char sense = 'L';
-
-	/* add one constraint at the time */
-	for (size_t i=1; i<inst->num_nodes; i++) {
-		for (size_t h = 1; h<inst->num_nodes; h++) {
-
-			/* fetch last row position in current model (better: the new one)
-			 * in CPLEX row == constraint */
-			int lastrow = CPXgetnumrows(env, lp);
-
-			/* write the constraint name inside CPLEX */
-			sprintf(cname[0], "u(%ld,%ld)", h+1, i+1);
-
-			/* add the new constraint (with coefficent zero, null lhs) */
-			if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-				print_error("wrong CPXnewrows [degree]");
-			}
-
-			/* the graph is complete so we only skip self loops */
-			if (i == h) continue;
-
-			/* change the two u_s variables cofficient*/
-			/* change the coefficent from 0 to 1.0 */
-			if (CPXchgcoef(env, lp, lastrow, offset + i-1, u[i-1])) {
-				print_error("wrong CPXchgcoef [degree]");
-			}
-			/* change the coefficent from 0 to 1.0 */
-			if (CPXchgcoef(env, lp, lastrow, offset + h-1, u[h-1])) {
-				print_error("wrong CPXchgcoef [degree]");
-			}
-
-			// uses big_M coefficient with M = num_nodes
-			if (CPXchgcoef(env, lp, lastrow, xxpos(i, h, inst), inst -> num_nodes)) {
-				print_error("wrong CPXchgcoef [degree]");
-			}
-
+	int nnz = 3;
+	for ( int i = 1; i < inst->num_nodes; i++ ) // excluding node 0
+	{
+		for ( int j = 1; j < inst->num_nodes; j++ ) // excluding node 0
+		{
+			if ( i == j ) continue;
+			sprintf(cname[0], "u-consistency for arc (%d,%d)", i+1, j+1);
+			index[0] = upos(i,inst);
+			value[0] = 1.0;
+			index[1] = upos(j,inst);
+			value[1] = -1.0;
+			index[2] = xxpos(i,j,inst);
+			value[2] = big_M;
+			if ( CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero, index, value, cname) ) print_error("wrong CPXlazyconstraints() for u-consistency");
 		}
 	}
+
+	// add lazy constraints 1.0 * x_ij + 1.0 * x_ji <= 1, for each arc (i,j) with i < j
+	rhs = 1.0;
+	nnz = 2;
+	for ( int i = 0; i < inst->num_nodes; i++ )
+	{
+		for ( int j = i+1; j < inst->num_nodes; j++ )
+		{
+			sprintf(cname[0], "SEC on node pair (%d,%d)", i+1, j+1);
+			index[0] = xxpos(i,j,inst);
+			value[0] = 1.0;
+			index[1] = xxpos(j,i,inst);
+			value[1] = 1.0;
+			if ( CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero, index, value, cname) ) print_error("wrong CPXlazyconstraints on 2-node SECs");
+		}
+	}
+
 
 
 

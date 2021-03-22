@@ -49,6 +49,9 @@ int xxpos(int i, int j, instance inst) {
 
 	return i*inst->num_nodes + j;
 }
+int upos(int i, instance inst) {
+	return (inst->num_nodes * inst->num_nodes) + i-1;
+}
 
 
 /* distance functions helpers */

@@ -87,6 +87,6 @@ void free_instance();
 void add_solution(instance inst, solution sol);
 
 void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalities opt);
-void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp, solution sol);
+void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp);
 
 #endif   /* _TSP_H_ */

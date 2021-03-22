@@ -49,19 +49,6 @@ solution TSPopt(instance inst, enum optimalities opt) {
 		}
 	}
 
-	if (opt == ASYMMETRIC_MTZ) {
-
-		add_MTZ_subtour(inst, env, lp, sol);
-
-		CPXwriteprob (env, lp, "myprob.mps", NULL);
-
-		printf("Qui!\n");
-
-		ncols = CPXgetnumcols(env, lp);
-		double* xstar2 = (double*) calloc(ncols, sizeof(double));
-		if (CPXgetx(env, lp, xstar2, 0, ncols-1)) print_error("CPXgetx() error");
-	}
-
 	if (k != sol->num_edges) print_error("invalid number of edges");
 
 	add_solution(inst, sol);

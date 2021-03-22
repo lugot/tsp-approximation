@@ -5,6 +5,7 @@
 
 int xpos(int i, int j, instance inst);
 int xxpos(int i, int j, instance inst);
+int upos(int i, instance inst);
 
 double dist(int i, int j, instance inst);
 
