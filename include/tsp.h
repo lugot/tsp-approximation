@@ -5,30 +5,26 @@
 
 struct solution_t;
 
-enum types {
+enum instance_types {
 	TSP,
 	TOUR,
-	UNMANAGED_TYPE
+	UNHANDLED_INSTANCE_TYPE
 };
 enum costs {
 	INTEGER,
 	REAL
 };
-enum optimalities {
+enum model_types {
 	OPTIMAL_TOUR,
-	SYMMETRIC_SUBTOUR,
-	ASYMMETRIC_MTZ
-};
-enum tsp_types {
 	SYMMETRIC,
-	ASYMMETRIC
+	ASYMMETRIC_MTZ
 };
 enum weight_types {
 	ATT,
 	EUC_2D,
 	GEO,
 	EXPLICIT,
-	UNMANAGED_WEIGHT_TYPE
+	UNHANDLED_WEIGHT_TYPE
 };
 
 
@@ -46,7 +42,7 @@ typedef struct instance_t {
     char* model_comment;
 
     /* parameters */
-    enum types type;
+    enum instance_types instance_type;
 	int randomseed;
 	int num_threads;
 	double timelimit;
@@ -67,16 +63,16 @@ typedef struct instance_t {
 
 typedef struct solution_t {
 	struct instance_t* inst;
-
-	enum optimalities optimality;
-	enum tsp_types tsp_type;
+	enum model_types model_type;
 
 	double zstar;
-
 	int num_edges;
 	edge* edges;
 	int* parent;
 
+	double distance_time;
+	double build_time;
+	double solve_time;
 } *solution;
 
 
@@ -86,7 +82,7 @@ instance duplicate_instance(instance inst);
 void free_instance();
 void add_solution(instance inst, solution sol);
 
-void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalities opt);
+double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_types type);
 void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp);
 
 #endif   /* _TSP_H_ */

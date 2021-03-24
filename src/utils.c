@@ -5,11 +5,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <sys/time.h>
 
 
 double geodist(size_t i, size_t j, instance inst);
 double l2dist(size_t i, size_t j, instance inst);
-void compute_dist(instance inst);
 
 int xpos(int i, int j, instance inst) {
 	/*
@@ -77,7 +77,12 @@ double l2dist(size_t i, size_t j, instance inst) {
 	return 0.0 + (int) (sqrt(dx*dx+dy*dy) + 0.499999999);
 }
 
-void compute_dist(instance inst) {
+double compute_dist(instance inst) {
+	if (inst->adjmatrix != NULL) return 0.0;
+
+	struct timeval start, end;
+    gettimeofday(&start, NULL);
+
 	inst->adjmatrix = (double**) calloc(inst->num_nodes, sizeof(double*));
 
 	for (int i=0; i<inst->num_nodes; i++) {
@@ -102,10 +107,17 @@ void compute_dist(instance inst) {
 			}
 		}
 	}
+
+    gettimeofday(&end, NULL);
+    long seconds = (end.tv_sec - start.tv_sec);
+    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
+	return micros / 1000.0;
 }
 
 double dist(int i, int j, instance inst) {
-	if (inst->adjmatrix == NULL) compute_dist(inst);
+	if (inst->adjmatrix == NULL) {
+		print_error("distances not computed yet");
+	}
 
 	return i > j ? inst->adjmatrix[i][j] : inst->adjmatrix[j][i];
 }
@@ -133,7 +145,7 @@ void print_instance(instance inst) {
 
 	printf("parameters:\n");
 	printf("- model type: ");
-	switch (inst->type) {
+	switch (inst->instance_type) {
 		case TSP:
 			printf("TSP\n");
 			break;
@@ -238,11 +250,11 @@ void print_instance(instance inst) {
 
 void print_solution(solution sol) {
 	printf("- optimality: ");
-	switch (sol->optimality) {
+	switch (sol->model_type) {
 		case OPTIMAL_TOUR:
 			printf("optimal tour from file\n");
 			break;
-		case SYMMETRIC_SUBTOUR:
+		case SYMMETRIC:
 			printf("symmetric, no subtour elimination\n");
 			break;
 		case ASYMMETRIC_MTZ:
@@ -287,6 +299,9 @@ void print_solution(solution sol) {
 		printf("\n");
 		free(buffer);
 	}
+	printf("- distance time: %lf ms\n", sol->distance_time);
+	printf("- build time: %lf ms\n", sol->build_time);
+	printf("- solve time: %lf s\n", sol->solve_time / 1000.0);
 }
 
 void plot_solution_graphviz(solution sol) {
@@ -298,7 +313,7 @@ void plot_solutions_graphviz(solution* sols, int num_sols) {
 	double max_coord = 0.0;
 
 	instance inst = sols[0]->inst;
-	for (int i=0; i<inst->num_nodes && inst->type == TSP; i++) {
+	for (int i=0; i<inst->num_nodes && inst->instance_type == TSP; i++) {
 		max_coord = max(max_coord, fabs(inst->nodes[i].x));
 		max_coord = max(max_coord, fabs(inst->nodes[i].y));
 	}
@@ -312,7 +327,7 @@ void plot_solutions_graphviz(solution* sols, int num_sols) {
 
 	fprintf(fp, "graph %s {\n", inst->model_name);
 	fprintf(fp, "\tnode [shape=circle fillcolor=white]\n");
-	for (int i=0; i<inst->num_nodes && inst->type == TSP; i++) {
+	for (int i=0; i<inst->num_nodes && inst->instance_type == TSP; i++) {
 		double plot_posx = inst->nodes[i].x / max_coord * box_size;
 		double plot_posy = inst->nodes[i].y / max_coord * box_size;
 
@@ -324,7 +339,7 @@ void plot_solutions_graphviz(solution* sols, int num_sols) {
 		for (int k=0; k<sols[u]->num_edges; k++) {
 			fprintf(fp, "\t%d -- %d", sols[u]->edges[k].i, sols[u]->edges[k].j);
 
-			if (sols[u]->optimality == OPTIMAL_TOUR) fprintf(fp, " [color = red]");
+			if (sols[u]->model_type == OPTIMAL_TOUR) fprintf(fp, " [color = red]");
 			fprintf(fp, "\n");
 		}
 	}

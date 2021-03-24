@@ -8,6 +8,7 @@ int xxpos(int i, int j, instance inst);
 int upos(int i, instance inst);
 
 double dist(int i, int j, instance inst);
+double compute_dist(instance inst);
 
 void print_error(const char *err, ...);
 void print_instance(instance inst);

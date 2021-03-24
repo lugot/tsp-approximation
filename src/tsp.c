@@ -5,12 +5,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cplex.h>
+#include <sys/time.h>
 
 instance create_tsp_instance() {
     instance inst = (instance) calloc(1, sizeof(struct instance_t));
 
     /* initializing only the non-zero default parameters */
-    inst->type = TSP;
+    inst->instance_type = TSP;
     inst->num_threads = -1;
     inst->timelimit = CPX_INFBOUND;
     inst->available_memory = 4096;
@@ -63,7 +64,7 @@ void add_solution(instance inst, solution sol) {
     sol->inst = inst;
 }
 
-void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalities opt) {
+double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_types model_type) {
 	/*
 	 * our model is a complete graph G=(V,E), |V|=n, |E|=m
 	 * no self loop: m = n chooses 2 = n*(n-1)/2
@@ -78,6 +79,9 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
 
     // TODO: add CPLEX memory management thingy
 
+	struct timeval start, end;
+    gettimeofday(&start, NULL);
+
     /* double zero = 0.0; */
 	/* variable type:
 	 * B: binary
@@ -86,7 +90,7 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
 	/* lower and upper bound of the variable */
     double lb = 0.0;
     double ub = 1.0;
-    int (*pos_checker)(int, int, instance);
+    int (*cplex_pos)(int, int, instance);
 
 	/* ColumnNAME: array of array used to inject variables in CPLEX */
     char** cname = (char**) calloc(1, sizeof(char *));
@@ -95,7 +99,7 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
 	/* add a single binary variables x(i,j) for i < j at the time */
     for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<inst->num_nodes; j++) {
 
-        if (opt == SYMMETRIC_SUBTOUR && j <= i) continue;
+        if (model_type == SYMMETRIC && j <= i) continue;
 
 		/* write name of 1-indexed variable inside CPLEX */
         sprintf(cname[0], "x(%d,%d)", i+1, j+1);
@@ -103,14 +107,14 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
 		/* cost of the variable x(i, j): distance between nodes i and j */
         double obj = dist(i, j,inst);
 
-        switch (opt) {
-            case SYMMETRIC_SUBTOUR:
+        switch (model_type) {
+            case SYMMETRIC:
                 ub = 1.0;
-                pos_checker = xpos;
+                cplex_pos = xpos;
                 break;
             case ASYMMETRIC_MTZ:
                 ub = (i == j) ? 0.0 : 1.0;
-                pos_checker = xxpos;
+                cplex_pos = xxpos;
             default:
                 break;
         }
@@ -122,8 +126,8 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
             print_error("wrong CPXnewcols on x var.s");
         }
 
-		/* test of xpos function */
-        if (CPXgetnumcols(env, lp)-1 != pos_checker(i, j, inst)) {
+		/* test of cplex_position function */
+        if (CPXgetnumcols(env, lp)-1 != cplex_pos(i, j, inst)) {
             print_error("wrong position for x var.s");
         }
     }
@@ -147,14 +151,14 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
 		/* write the constraint name inside CPLEX */
         sprintf(cname[0], "degree(%d)", h+1);
 
-        switch (opt) {
-            case SYMMETRIC_SUBTOUR:
+        switch (model_type) {
+            case SYMMETRIC:
                 rhs = 2.0;
-                pos_checker = xpos;
+                cplex_pos = xpos;
                 break;
             case ASYMMETRIC_MTZ:
                 rhs = 1.0;
-                pos_checker = xxpos;
+                cplex_pos = xxpos;
             default:
                 break;
         }
@@ -170,12 +174,12 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
             if (i == h) continue;
 
             /* change the coefficent from 0 to 1.0 */
-            if (CPXchgcoef(env, lp, lastrow, pos_checker(i, h, inst), 1.0)) {
+            if (CPXchgcoef(env, lp, lastrow, cplex_pos(i, h, inst), 1.0)) {
                 print_error("wrong CPXchgcoef [degree]");
             }
         }
     }
-    if (opt == ASYMMETRIC_MTZ) {
+    if (model_type == ASYMMETRIC_MTZ) {
         /* note: there are no subtour elimination constraints, relaxed model! */
         for (size_t i=0; i<inst->num_nodes; i++) {
 
@@ -215,8 +219,10 @@ void build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum optimalitie
         free(filename);
     }
 
-    free(cname[0]);
-    free(cname);
+    gettimeofday(&end, NULL);
+    long seconds = (end.tv_sec - start.tv_sec);
+    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
+	return micros / 1000.0;
 }
 
 void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp) {

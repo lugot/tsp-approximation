@@ -1,4 +1,5 @@
 #include "parsers.h"
+#include "tsp.h"
 #include "utils.h"
 #include "globals.h"
 #include <getopt.h>
@@ -28,10 +29,10 @@ enum sections {
     DISPLAY_DATA_SECTION,
     TOUR_SECTION,
     EDGE_WEIGHT_SECTION,
-    UNMANAGED_SECTION,
+    UNHANDLED_SECTION,
 };
 enum sections section_hasher(char* section_name);
-enum types type_hasher(char* section_param);
+enum instance_types instance_type_hasher (char* section_param);
 enum weight_types weight_type_hasher(char* section_param);
 
 // TODO: add this to a help
@@ -68,9 +69,6 @@ void parse_command_line(int argc, char** argv, instance inst) {
                 break;
 
             case 'l': inst->timelimit = atof(optarg);
-                break;
-
-            case 't': inst->type = TSP;
                 break;
 
             case 's': inst->randomseed = abs(atoi(optarg));
@@ -135,8 +133,8 @@ void parse_input_file(instance inst, const char* file_extension) {
                 break;
 
             case TYPE:
-                inst->type = type_hasher(section_param);
-                if (inst->type == UNMANAGED_TYPE) {
+                inst->instance_type = instance_type_hasher(section_param);
+                if (inst->instance_type == UNHANDLED_INSTANCE_TYPE) {
                     print_error("type %s unmanaged", section_param);
                 }
                 break;
@@ -152,7 +150,7 @@ void parse_input_file(instance inst, const char* file_extension) {
 
             case EDGE_WEIGHT_TYPE:
                 inst->weight_type = weight_type_hasher(section_param);
-                if (inst->weight_type == UNMANAGED_WEIGHT_TYPE) {
+                if (inst->weight_type == UNHANDLED_WEIGHT_TYPE) {
                     print_error("weight type %s unhandled", section_param);
                 }
                 break;
@@ -192,8 +190,7 @@ void parse_input_file(instance inst, const char* file_extension) {
             case TOUR_SECTION: {
 
                 solution sol = (solution) calloc(1, sizeof(struct solution_t));
-                sol->optimality = OPTIMAL_TOUR;
-                sol->tsp_type = SYMMETRIC;
+                sol->model_type = OPTIMAL_TOUR;
                 sol->zstar = DBL_MAX;
 
                 sol->num_edges = inst->num_nodes;
@@ -254,7 +251,7 @@ void parse_input_file(instance inst, const char* file_extension) {
             default:
             case END_OF_FILE:
                 break;
-            case UNMANAGED_SECTION:
+            case UNHANDLED_SECTION:
                 printf("Warning: section %s unmanaged\n", section_name);
                 break;
         }
@@ -285,26 +282,24 @@ enum sections section_hasher(char* section_name) {
         "DISPLAY_DATA_SECTION",
         "TOUR_SECTION",
         "EDGE_WEIGHT_SECTION",
-        "UNMANAGED_SECTION",
     };
 
     for (int i=NAME; i<=EDGE_WEIGHT_SECTION; i++) {
         if (!strcmp(section_name, sections[i])) return i;
     }
 
-    return UNMANAGED_SECTION;
+    return UNHANDLED_SECTION;
 }
-enum types type_hasher (char* section_param) {
-    char* types[] = {
+enum instance_types instance_type_hasher (char* section_param) {
+    char* instance_types[] = {
         "TSP",
         "TOUR",
-        "UNMANAGED_TYPE"
     };
 
     for (int i=TSP; i<=TOUR; i++) {
-        if (!strcmp(section_param, types[i])) return i;
+        if (!strcmp(section_param, instance_types[i])) return i;
     }
-    return UNMANAGED_TYPE;
+    return UNHANDLED_INSTANCE_TYPE;
 }
 enum weight_types weight_type_hasher(char* section_param) {
     char* weight_types[] = {
@@ -317,5 +312,5 @@ enum weight_types weight_type_hasher(char* section_param) {
     for (int i=ATT; i<=EXPLICIT; i++) {
         if (!strcmp(section_param, weight_types[i])) return i;
     }
-    return UNMANAGED_WEIGHT_TYPE;
+    return UNHANDLED_WEIGHT_TYPE;
 }
