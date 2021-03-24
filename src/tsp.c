@@ -7,6 +7,9 @@
 #include <cplex.h>
 #include <sys/time.h>
 
+void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp);
+void add_GG_subtour(instance inst, CPXENVptr env, CPXLPptr lp);
+
 instance create_tsp_instance() {
     instance inst = (instance) calloc(1, sizeof(struct instance_t));
 
@@ -105,9 +108,10 @@ double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_typ
                 cplex_pos = xpos;
                 break;
             case ASYMMETRIC_MTZ:
+            case ASYMMETRIC_GG:
                 ub = (i == j) ? 0.0 : 1.0;
                 cplex_pos = xxpos;
-            default:
+            case OPTIMAL_TOUR:
                 break;
         }
 
@@ -149,9 +153,10 @@ double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_typ
                 cplex_pos = xpos;
                 break;
             case ASYMMETRIC_MTZ:
+            case ASYMMETRIC_GG:
                 rhs = 1.0;
                 cplex_pos = xxpos;
-            default:
+            case OPTIMAL_TOUR:
                 break;
         }
 
@@ -171,7 +176,7 @@ double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_typ
             }
         }
     }
-    if (model_type == ASYMMETRIC_MTZ) {
+    if (model_type == ASYMMETRIC_MTZ || model_type == ASYMMETRIC_GG) {
         /* note: there are no subtour elimination constraints, relaxed model! */
         for (size_t i=0; i<inst->num_nodes; i++) {
 
@@ -198,7 +203,8 @@ double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_typ
             }
         }
 
-        add_MTZ_subtour(inst, env, lp);
+        if (model_type == ASYMMETRIC_MTZ) add_MTZ_subtour(inst, env, lp);
+        if (model_type == ASYMMETRIC_GG) add_GG_subtour(inst, env, lp);
     }
 
     if (VERBOSE) {
@@ -301,3 +307,136 @@ void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp) {
 
 }
 
+void add_GG_subtour(instance inst, CPXENVptr env, CPXLPptr lp) {
+
+	char integer = 'I';
+	/* lower and upper bound of the variable */
+	double lb = 0.0;
+	double ub = inst->num_nodes-1;
+
+
+	/* ColumnNAME: array of array used to inject variables in CPLEX */
+	char** cname = (char**) calloc(1, sizeof(char *));
+	cname[0] = (char*) calloc(100, sizeof(char));
+
+	/* add a single binary variables x(i,j) for i < j at the time*/
+	for (size_t i=0; i<inst->num_nodes; i++) for(size_t j=0; j<inst->num_nodes; j++){
+
+		if(i==j) continue;
+		/* write name of 1-indexed variable inside CPLEX */
+		sprintf(cname[0], "y(%ld)(%ld)", i+1,j+1);
+
+		/* cost of the variable x(i, j): distance between nodes i and j */
+		double obj = 0;
+
+		/* insert a single variable at the time so we can avoid passing arrays
+		 * for the parameters
+		 * in CPLEX variable == column */
+
+		if (CPXnewcols(env, lp, 1, &obj, &lb, &ub, &integer, cname)) {
+			print_error("wrong CPXnewcols on x var.s");
+		}
+
+		/* test of xxpos function */
+		if (CPXgetnumcols(env, lp)-1 != ypos(i, j, inst)) {
+			print_error(" wrong position for x var.s");
+		}
+
+	}
+
+	double rhs = 0;
+	char sense = 'L';
+
+	for (size_t i=0; i<inst->num_nodes; i++)
+		for (size_t h=0; h<inst->num_nodes; h++) {
+
+			if (i == h) continue;
+
+            /* fetch last row position in current model (better: the new one)
+             * in CPLEX row == constraint */
+            int lastrow = CPXgetnumrows(env, lp);
+
+            /* write the constraint name inside CPLEX */
+            sprintf(cname[0], "xy(%ld)(%ld)", i+1,h+1);
+
+            /* add the new constraint (with coefficent zero, null lhs) */
+            if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
+                print_error("wrong CPXnewrows [degree]");
+            }
+
+            /* change the coefficent from 0 to 1.0 */
+            if (CPXchgcoef(env, lp, lastrow, xxpos(i, h, inst), 1-inst->num_nodes)) {
+                print_error("wrong CPXchgcoef [degree]");
+            }
+
+            /* change the coefficent from 0 to 1.0 */
+            if (CPXchgcoef(env, lp, lastrow, ypos(i, h, inst), 1.0)) {
+                print_error("wrong CPXchgcoef [degree]");
+            }
+
+    }
+
+
+    rhs = inst->num_nodes - 1;
+    sense = 'E';
+
+    int lastrow = CPXgetnumrows(env, lp);
+
+    /* write the constraint name inside CPLEX */
+    sprintf(cname[0], "y1j");
+
+    /* add the new constraint (with coefficent zero, null lhs) */
+    if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
+        print_error("wrong CPXnewrows [degree]");
+        }
+
+    for (size_t h=1; h<inst->num_nodes; h++) {
+
+         	if (CPXchgcoef(env, lp, lastrow, ypos(0, h, inst), 1.0)) {
+            	print_error("wrong CPXchgcoef [degree]");
+        }
+    }
+
+    rhs = 1;
+    sense = 'E';
+
+    for (size_t j=1; j<inst->num_nodes; j++) {
+
+            /* fetch last row position in current model (better: the new one)
+             * in CPLEX row == constraint */
+            int lastrow = CPXgetnumrows(env, lp);
+
+            /* write the constraint name inside CPLEX */
+            sprintf(cname[0], "y(%ld)", j+1);
+
+            /* add the new constraint (with coefficent zero, null lhs) */
+            if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
+                print_error("wrong CPXnewrows [degree]");
+            }
+
+            /* and change the coefficent if node i is adiacent to h */
+            for (int i = 0; i<inst->num_nodes; i++) {
+                /* the graph is complete so we only skip self loops */
+                if (i == j) continue;
+
+                /* change the coefficent from 0 to 1.0 */
+                if (CPXchgcoef(env, lp, lastrow, ypos(i, j, inst), 1.0)) {
+                    print_error("wrong CPXchgcoef [degree]");
+                }
+            }
+
+            /* and change the coefficent if node i is adiacent to h */
+            for (int h = 0; h<inst->num_nodes; h++) {
+                /* the graph is complete so we only skip self loops */
+                if (h == j) continue;
+
+                /* change the coefficent from 0 to 1.0 */
+                if (CPXchgcoef(env, lp, lastrow, ypos(j, h, inst), -1.0)) {
+                    print_error("wrong CPXchgcoef [degree]");
+                }
+            }
+        }
+
+
+
+}

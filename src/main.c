@@ -18,11 +18,12 @@ int main(int argc, char** argv) {
     parse_input_file(dummy, "opt.tour");
 
     TSPopt(inst, ASYMMETRIC_MTZ);
+    TSPopt(inst, ASYMMETRIC_GG);
     zstar(inst, dummy->sols[0]);
     add_solution(inst, dummy->sols[0]);
 
     print_instance(inst, 0);
-    plot_solution_graphviz(inst->sols[0]);
+    plot_solutions_graphviz(inst->sols, inst->num_solutions);
 
 
     return EXIT_SUCCESS;

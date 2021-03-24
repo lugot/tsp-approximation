@@ -6,6 +6,7 @@
 int xpos(int i, int j, instance inst);
 int xxpos(int i, int j, instance inst);
 int upos(int i, instance inst);
+int ypos(int i, int j, instance inst);
 
 double zstar(instance inst, solution sol);
 

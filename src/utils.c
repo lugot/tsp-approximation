@@ -52,6 +52,26 @@ int xxpos(int i, int j, instance inst) {
 int upos(int i, instance inst) {
 	return (inst->num_nodes * inst->num_nodes) + i-1;
 }
+int ypos(int i, int j, instance inst) {
+
+	/*
+	* for n=4 variables
+	 *   j 1 2 3 4
+	 * i
+	 * 1   x 0 1 2
+	 * 2   3 x 4 5
+	 * 3   6 7 x 8
+	 * 4   9 10 11 x
+	 */
+
+	if (i==j) print_error("variable y does not exist for same i and j");
+
+	int n = inst->num_nodes * inst->num_nodes + i*(inst->num_nodes-1) + j;
+	if (i < j) n--;
+
+	return n;
+}
+
 
 double zstar(instance inst, solution sol) {
 	if (inst->adjmatrix == NULL) {
@@ -277,6 +297,9 @@ void print_solution(solution sol, int print_data) {
 			break;
 		case ASYMMETRIC_MTZ:
 			printf("asymmetric, mtz subtour elimination\n");
+			break;
+		case ASYMMETRIC_GG:
+			printf("asymmetric, gg subtour elimination\n");
 			break;
 		default:
 			printf("\n");

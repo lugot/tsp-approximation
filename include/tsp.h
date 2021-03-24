@@ -17,7 +17,8 @@ enum costs {
 enum model_types {
 	OPTIMAL_TOUR,
 	SYMMETRIC,
-	ASYMMETRIC_MTZ
+	ASYMMETRIC_MTZ,
+	ASYMMETRIC_GG
 };
 enum weight_types {
 	ATT,
@@ -83,6 +84,5 @@ void free_instance();
 void add_solution(instance inst, solution sol);
 
 double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_types type);
-void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp);
 
 #endif   /* _TSP_H_ */
