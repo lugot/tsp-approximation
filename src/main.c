@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
     parse_input_file(dummy, "opt.tour");
 
     TSPopt(inst, ASYMMETRIC_MTZ);
+    zstar(inst, dummy->sols[0]);
     add_solution(inst, dummy->sols[0]);
 
     print_instance(inst, 0);

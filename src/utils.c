@@ -65,6 +65,7 @@ double zstar(instance inst, solution sol) {
 		zstar += inst->adjmatrix[maxi(e.i, e.j)][mini(e.i, e.j)];
 	}
 
+	sol->zstar = zstar;
 	return zstar;
 }
 
