@@ -53,6 +53,10 @@ int upos(int i, instance inst) {
 	return (inst->num_nodes * inst->num_nodes) + i-1;
 }
 
+double compute_cost(instance inst, solution sol) {
+
+}
+
 
 /* distance functions helpers */
 
@@ -139,7 +143,7 @@ void print_error(const char *err, ...) {
 	exit(EXIT_FAILURE);
 }
 
-void print_instance(instance inst) {
+void print_instance(instance inst, int print_data) {
 	printf("\nmodel: %s\n", inst->model_name);
 	printf("comment: %s\n", inst->model_comment);
 
@@ -189,66 +193,68 @@ void print_instance(instance inst) {
 			break;
 	}
 	printf("- number of nodes: %d\n", inst->num_nodes);
-	printf("- weights:\n");
-	if (inst->adjmatrix != NULL) {
-		/* compute numof figures for spacing */
-		int column_width = 0;
-		for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<=i; j++) {
-			column_width = max(column_width, 1 + (int) log10(inst->adjmatrix[i][j]));
-		}
-		column_width = 2 + max(column_width, 1 + (int) log10(inst->num_nodes));
-
-		/* figures.ab so max 1 decimal figures */
-		char* buffer = (char*) calloc(column_width, sizeof(char));
-
-		for (int i=0; i<inst->num_nodes; i++) {
-			sprintf(buffer, "%d | ", i+1);
-			printf("%*s", column_width+1, buffer);
-
-			for (int j=0; j<=i; j++) {
-				sprintf(buffer, "%.1lf ", inst->adjmatrix[i][j]);
-				printf("%*s", column_width+1, buffer);
+	if (print_data) {
+		printf("- weights:\n");
+		if (inst->adjmatrix != NULL) {
+			/* compute numof figures for spacing */
+			int column_width = 0;
+			for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<=i; j++) {
+				column_width = max(column_width, 1 + (int) log10(inst->adjmatrix[i][j]));
 			}
-			printf("\n");
+			column_width = 2 + max(column_width, 1 + (int) log10(inst->num_nodes));
+
+			/* figures.ab so max 1 decimal figures */
+			char* buffer = (char*) calloc(column_width, sizeof(char));
+
+			for (int i=0; i<inst->num_nodes; i++) {
+				sprintf(buffer, "%d | ", i+1);
+				printf("%*s", column_width+1, buffer);
+
+				for (int j=0; j<=i; j++) {
+					sprintf(buffer, "%.1lf ", inst->adjmatrix[i][j]);
+					printf("%*s", column_width+1, buffer);
+				}
+				printf("\n");
+			}
+			free(buffer);
 		}
-		free(buffer);
-	}
-	printf("- nodes:\n");
-	if (inst->nodes != NULL) {
-		int column_width = 0;
-		for (int i=0; i<inst->num_nodes; i++) {
-			column_width = max(column_width, 1 + (int) log10(inst->nodes[i].x));
-			column_width = max(column_width, 1 + (int) log10(inst->nodes[i].y));
+		printf("- nodes:\n");
+		if (inst->nodes != NULL) {
+			int column_width = 0;
+			for (int i=0; i<inst->num_nodes; i++) {
+				column_width = max(column_width, 1 + (int) log10(inst->nodes[i].x));
+				column_width = max(column_width, 1 + (int) log10(inst->nodes[i].y));
+			}
+			column_width = 2 + max(column_width, 1 + (int) log10(inst->num_nodes));
+
+			/* figures.ab so max 1 decimal figures */
+			char* buffer = (char*) calloc(column_width, sizeof(char));
+
+			for (int i=0; i<inst->num_nodes; i++) {
+				sprintf(buffer, "%d | ", i+1);
+				printf("%*s", column_width+1, buffer);
+
+				sprintf(buffer, "%.1lf ", inst->nodes[i].x);
+				printf("%*s", column_width+1, buffer);
+
+				sprintf(buffer, "%.1lf ", inst->nodes[i].y);
+				printf("%*s\n", column_width+1, buffer);
+			}
+			free(buffer);
 		}
-		column_width = 2 + max(column_width, 1 + (int) log10(inst->num_nodes));
-
-		/* figures.ab so max 1 decimal figures */
-		char* buffer = (char*) calloc(column_width, sizeof(char));
-
-		for (int i=0; i<inst->num_nodes; i++) {
-			sprintf(buffer, "%d | ", i+1);
-			printf("%*s", column_width+1, buffer);
-
-			sprintf(buffer, "%.1lf ", inst->nodes[i].x);
-			printf("%*s", column_width+1, buffer);
-
-			sprintf(buffer, "%.1lf ", inst->nodes[i].y);
-			printf("%*s\n", column_width+1, buffer);
-		}
-		free(buffer);
 	}
 
 	printf("solutions:\n");
 	printf("- num of solutions: %d\n", inst->num_solutions);
 	for (int i=0; i<inst->num_solutions; i++) {
 		printf("solution %d:\n", i+1);
-		print_solution(inst->sols[i]);
+		print_solution(inst->sols[i], print_data);
 	}
 
 	printf("--- ---\n\n");
 }
 
-void print_solution(solution sol) {
+void print_solution(solution sol, int print_data) {
 	printf("- optimality: ");
 	switch (sol->model_type) {
 		case OPTIMAL_TOUR:
@@ -266,38 +272,40 @@ void print_solution(solution sol) {
 	}
 	printf("- zstar: %lf\n", sol->zstar);
 	printf("- num edges: %d\n", sol->num_edges);
-	printf("- edges:\n");
-	if (sol->edges != NULL) {
-		int column_width = 2 + (int) log10(sol->num_edges);
-		char* buffer = (char*) calloc(column_width, sizeof(char));
+	if (print_data) {
+		printf("- edges:\n");
+		if (sol->edges != NULL) {
+			int column_width = 2 + (int) log10(sol->num_edges);
+			char* buffer = (char*) calloc(column_width, sizeof(char));
 
-		for (int i=0; i<sol->num_edges; i++) {
-			sprintf(buffer, "%d | ", i+1);
-			printf("%*s", column_width+2, buffer);
+			for (int i=0; i<sol->num_edges; i++) {
+				sprintf(buffer, "%d | ", i+1);
+				printf("%*s", column_width+2, buffer);
 
-			sprintf(buffer, "%d ", sol->edges[i].i+1);
-			printf("%*s", column_width, buffer);
+				sprintf(buffer, "%d ", sol->edges[i].i+1);
+				printf("%*s", column_width, buffer);
 
-			sprintf(buffer, "%d ", sol->edges[i].j+1);
-			printf("%*s\n", column_width, buffer);
+				sprintf(buffer, "%d ", sol->edges[i].j+1);
+				printf("%*s\n", column_width, buffer);
+			}
+			free(buffer);
 		}
-		free(buffer);
-	}
-	printf("- parent:\n");
-	if (sol->parent != NULL) {
-		int column_width = 1 + (int) log10(sol->num_edges);
-		char* buffer = (char*) calloc(column_width, sizeof(char));
+		printf("- parent:\n");
+		if (sol->parent != NULL) {
+			int column_width = 1 + (int) log10(sol->num_edges);
+			char* buffer = (char*) calloc(column_width, sizeof(char));
 
-		for (int i=0; i<sol->num_edges; i++) {
-			sprintf(buffer, "%d", i+1);
-			printf("%*s", column_width+1, buffer);
+			for (int i=0; i<sol->num_edges; i++) {
+				sprintf(buffer, "%d", i+1);
+				printf("%*s", column_width+1, buffer);
+			}
+			for (int i=0; i<sol->num_edges; i++) {
+				sprintf(buffer, "%d", sol->parent[i]+1);
+				printf("%*s", column_width+1, buffer);
+			}
+			printf("\n");
+			free(buffer);
 		}
-		for (int i=0; i<sol->num_edges; i++) {
-			sprintf(buffer, "%d", sol->parent[i]+1);
-			printf("%*s", column_width+1, buffer);
-		}
-		printf("\n");
-		free(buffer);
 	}
 	printf("- distance time: %lf ms\n", sol->distance_time);
 	printf("- build time: %lf ms\n", sol->build_time);

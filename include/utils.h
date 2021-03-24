@@ -11,8 +11,8 @@ double dist(int i, int j, instance inst);
 double compute_dist(instance inst);
 
 void print_error(const char *err, ...);
-void print_instance(instance inst);
-void print_solution(solution sol);
+void print_instance(instance inst, int print_data);
+void print_solution(solution sol, int print_data);
 void plot_solution_graphviz(solution sol);
 void plot_solutions_graphviz(solution* sols, int num_sols);
 
