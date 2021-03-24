@@ -11,7 +11,6 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	/* populate solution */
 	solution sol = (solution) calloc(1, sizeof(struct solution_t));
 	sol->model_type = model_type;
-	sol->zstar = 0.0; // TODO: change
 
 	sol->num_edges = inst->num_nodes;
 	sol->edges = (edge*) calloc(sol->num_edges, sizeof(struct edge_t));
@@ -65,6 +64,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	if (k != sol->num_edges) print_error("invalid number of edges");
 
 	add_solution(inst, sol);
+
+	sol->zstar = zstar(inst, sol);
 
 	free(xstar);
 	CPXfreeprob(env, &lp);

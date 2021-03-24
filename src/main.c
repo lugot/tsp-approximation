@@ -12,15 +12,15 @@ int main(int argc, char** argv) {
     /*print_instance(inst);*/
 
     parse_command_line(argc, argv, inst);
-    printf("here\n");
-    /*parse_input_file(inst, "tsp");*/
     parse_input_file(inst, "tsp");
-    print_instance(inst);
-    /*print_instance(inst);*/
 
-    solution optimal_cplex = TSPopt(inst, ASYMMETRIC_MTZ);
+    instance dummy = duplicate_instance_parameters(inst);
+    parse_input_file(dummy, "opt.tour");
 
-    print_solution(optimal_cplex);
+    TSPopt(inst, ASYMMETRIC_MTZ);
+    add_solution(inst, dummy->sols[0]);
+
+    print_instance(inst, 0);
     plot_solution_graphviz(inst->sols[0]);
 
 

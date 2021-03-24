@@ -78,7 +78,7 @@ typedef struct solution_t {
 
 
 instance create_tsp_instance();
-instance duplicate_instance(instance inst);
+instance duplicate_instance_parameters(instance inst);
 void free_instance();
 void add_solution(instance inst, solution sol);
 

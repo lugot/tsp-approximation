@@ -20,7 +20,7 @@ instance create_tsp_instance() {
     return inst;
 }
 
-instance duplicate_instance(instance inst) {
+instance duplicate_instance_parameters(instance inst) {
     instance newone = (instance) calloc(1, sizeof(struct instance_t));
 
     newone->model_name = (char*) calloc(strlen(inst->model_name), sizeof(char));
@@ -28,22 +28,14 @@ instance duplicate_instance(instance inst) {
     newone->model_comment = (char*) calloc(strlen(inst->model_comment), sizeof(char));
     strcpy(newone->model_comment, inst->model_comment);
 
-    // TODO: add duplication
-    /*newone->type = inst->type;*/
-    /*newone->randomseed = inst->type;*/
-    /*newone->num_threads = inst->type;*/
-    /*newone->timelimit = inst->type;*/
-    /*newone->= inst->type;*/
+    newone->instance_type = inst->instance_type;
+    newone->randomseed = inst->randomseed;
+    newone->num_threads = inst->num_threads;
+    newone->timelimit = inst->timelimit;
+    newone->available_memory = inst->available_memory;
+    newone->costs_type = inst->costs_type;
 
-
-    /*[> initializing only the non-zero default parameters <]*/
-    /*inst->type = TSP;*/
-    /*inst->num_threads = -1;*/
-    /*inst->timelimit = CPX_INFBOUND;*/
-    /*inst->available_memory = 4096;*/
-    /*inst->costs_type = REAL;*/
-
-    return inst;
+    return newone;
 }
 void free_intance(instance inst) {
     free(inst->model_name);

@@ -53,8 +53,19 @@ int upos(int i, instance inst) {
 	return (inst->num_nodes * inst->num_nodes) + i-1;
 }
 
-double compute_cost(instance inst, solution sol) {
+double zstar(instance inst, solution sol) {
+	if (inst->adjmatrix == NULL) {
+		print_error("distances not computed yet");
+	}
 
+	double zstar = 0.0;
+	for (int i=0; i<sol->num_edges; i++) {
+		edge e = sol->edges[i];
+
+		zstar += inst->adjmatrix[maxi(e.i, e.j)][mini(e.i, e.j)];
+	}
+
+	return zstar;
 }
 
 
@@ -364,5 +375,11 @@ double max(double a, double b) {
 	return a > b ? a : b;
 }
 double min(double a, double b) {
+	return a < b ? a : b;
+}
+int maxi(int a, int b) {
+	return a > b ? a : b;
+}
+int mini(int a, int b) {
 	return a < b ? a : b;
 }
