@@ -169,7 +169,7 @@ void print_error(const char *err, ...) {
 	printf("\n\n--- ERROR ---\n");
     vprintf(err, args);
 
-    va_end( args );
+    va_end(args);
 	fflush(NULL);
 
 	exit(EXIT_FAILURE);

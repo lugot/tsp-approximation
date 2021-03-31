@@ -18,7 +18,8 @@ enum model_types {
 	OPTIMAL_TOUR,
 	SYMMETRIC,
 	ASYMMETRIC_MTZ,
-	ASYMMETRIC_GG
+	ASYMMETRIC_GG,
+	SYMMETRIC_BENDERS
 };
 enum weight_types {
 	ATT,

@@ -1,8 +1,7 @@
 mah, ghe xe mia tant da far
 - refactoring
 - verbose a randa
-- alcune robe son scritte col culo
-- troppo codice copypastato, soprattutto sui parsers
 - i vari errori son da uniformare di aspetto
-- dobbiamo fare in modo da formattare print_error come printf
-- spostare il makefile in /build che ho sempre una caga quando eliminino l'eseguibile con rm
+- spostare makefile in build e mettere a posto dir strucuture
+- aggiungere commenti sul modello ai vari add_ in tsp.c
+- (solo luca: studiati GG)

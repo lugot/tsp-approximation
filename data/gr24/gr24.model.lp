@@ -119,10 +119,6 @@ Minimize
        + 126 x(24,11) + 55 x(24,12) + 249 x(24,13) + 104 x(24,14)
        + 178 x(24,15) + 60 x(24,16) + 96 x(24,17) + 175 x(24,18) + 153 x(24,19)
        + 146 x(24,20) + 47 x(24,21) + 135 x(24,22) + 169 x(24,23) + 0 x(24,24)
-       + 0 u(2) + 0 u(3) + 0 u(4) + 0 u(5) + 0 u(6) + 0 u(7) + 0 u(8) + 0 u(9)
-       + 0 u(10) + 0 u(11) + 0 u(12) + 0 u(13) + 0 u(14) + 0 u(15) + 0 u(16)
-       + 0 u(17) + 0 u(18) + 0 u(19) + 0 u(20) + 0 u(21) + 0 u(22) + 0 u(23)
-       + 0 u(24)
 Subject To
  degree(1):  x(2,1) + x(3,1) + x(4,1) + x(5,1) + x(6,1) + x(7,1) + x(8,1)
              + x(9,1) + x(10,1) + x(11,1) + x(12,1) + x(13,1) + x(14,1)
@@ -316,789 +312,761 @@ Subject To
              + x(24,7) + x(24,8) + x(24,9) + x(24,10) + x(24,11) + x(24,12)
              + x(24,13) + x(24,14) + x(24,15) + x(24,16) + x(24,17) + x(24,18)
              + x(24,19) + x(24,20) + x(24,21) + x(24,22) + x(24,23)  = 1
-Lazy Constraints
- umconsistency_for_arc_(2,3)#0:  u(2) - u(3) + 23 x(2,3) <= 22
- umconsistency_for_arc_(2,4)#1:  u(2) - u(4) + 23 x(2,4) <= 22
- umconsistency_for_arc_(2,5)#2:  u(2) - u(5) + 23 x(2,5) <= 22
- umconsistency_for_arc_(2,6)#3:  u(2) - u(6) + 23 x(2,6) <= 22
- umconsistency_for_arc_(2,7)#4:  u(2) - u(7) + 23 x(2,7) <= 22
- umconsistency_for_arc_(2,8)#5:  u(2) - u(8) + 23 x(2,8) <= 22
- umconsistency_for_arc_(2,9)#6:  u(2) - u(9) + 23 x(2,9) <= 22
- umconsistency_for_arc_(2,10)#7: u(2) - u(10) + 23 x(2,10) <= 22
- umconsistency_for_arc_(2,11)#8: u(2) - u(11) + 23 x(2,11) <= 22
- umconsistency_for_arc_(2,12)#9: u(2) - u(12) + 23 x(2,12) <= 22
- umconsistency_for_arc_(2,13)#10: u(2) - u(13) + 23 x(2,13) <= 22
- umconsistency_for_arc_(2,14)#11: u(2) - u(14) + 23 x(2,14) <= 22
- umconsistency_for_arc_(2,15)#12: u(2) - u(15) + 23 x(2,15) <= 22
- umconsistency_for_arc_(2,16)#13: u(2) - u(16) + 23 x(2,16) <= 22
- umconsistency_for_arc_(2,17)#14: u(2) - u(17) + 23 x(2,17) <= 22
- umconsistency_for_arc_(2,18)#15: u(2) - u(18) + 23 x(2,18) <= 22
- umconsistency_for_arc_(2,19)#16: u(2) - u(19) + 23 x(2,19) <= 22
- umconsistency_for_arc_(2,20)#17: u(2) - u(20) + 23 x(2,20) <= 22
- umconsistency_for_arc_(2,21)#18: u(2) - u(21) + 23 x(2,21) <= 22
- umconsistency_for_arc_(2,22)#19: u(2) - u(22) + 23 x(2,22) <= 22
- umconsistency_for_arc_(2,23)#20: u(2) - u(23) + 23 x(2,23) <= 22
- umconsistency_for_arc_(2,24)#21: u(2) - u(24) + 23 x(2,24) <= 22
- umconsistency_for_arc_(3,2)#22: u(3) - u(2) + 23 x(3,2) <= 22
- umconsistency_for_arc_(3,4)#23: u(3) - u(4) + 23 x(3,4) <= 22
- umconsistency_for_arc_(3,5)#24: u(3) - u(5) + 23 x(3,5) <= 22
- umconsistency_for_arc_(3,6)#25: u(3) - u(6) + 23 x(3,6) <= 22
- umconsistency_for_arc_(3,7)#26: u(3) - u(7) + 23 x(3,7) <= 22
- umconsistency_for_arc_(3,8)#27: u(3) - u(8) + 23 x(3,8) <= 22
- umconsistency_for_arc_(3,9)#28: u(3) - u(9) + 23 x(3,9) <= 22
- umconsistency_for_arc_(3,10)#29: u(3) - u(10) + 23 x(3,10) <= 22
- umconsistency_for_arc_(3,11)#30: u(3) - u(11) + 23 x(3,11) <= 22
- umconsistency_for_arc_(3,12)#31: u(3) - u(12) + 23 x(3,12) <= 22
- umconsistency_for_arc_(3,13)#32: u(3) - u(13) + 23 x(3,13) <= 22
- umconsistency_for_arc_(3,14)#33: u(3) - u(14) + 23 x(3,14) <= 22
- umconsistency_for_arc_(3,15)#34: u(3) - u(15) + 23 x(3,15) <= 22
- umconsistency_for_arc_(3,16)#35: u(3) - u(16) + 23 x(3,16) <= 22
- umconsistency_for_arc_(3,17)#36: u(3) - u(17) + 23 x(3,17) <= 22
- umconsistency_for_arc_(3,18)#37: u(3) - u(18) + 23 x(3,18) <= 22
- umconsistency_for_arc_(3,19)#38: u(3) - u(19) + 23 x(3,19) <= 22
- umconsistency_for_arc_(3,20)#39: u(3) - u(20) + 23 x(3,20) <= 22
- umconsistency_for_arc_(3,21)#40: u(3) - u(21) + 23 x(3,21) <= 22
- umconsistency_for_arc_(3,22)#41: u(3) - u(22) + 23 x(3,22) <= 22
- umconsistency_for_arc_(3,23)#42: u(3) - u(23) + 23 x(3,23) <= 22
- umconsistency_for_arc_(3,24)#43: u(3) - u(24) + 23 x(3,24) <= 22
- umconsistency_for_arc_(4,2)#44: u(4) - u(2) + 23 x(4,2) <= 22
- umconsistency_for_arc_(4,3)#45: u(4) - u(3) + 23 x(4,3) <= 22
- umconsistency_for_arc_(4,5)#46: u(4) - u(5) + 23 x(4,5) <= 22
- umconsistency_for_arc_(4,6)#47: u(4) - u(6) + 23 x(4,6) <= 22
- umconsistency_for_arc_(4,7)#48: u(4) - u(7) + 23 x(4,7) <= 22
- umconsistency_for_arc_(4,8)#49: u(4) - u(8) + 23 x(4,8) <= 22
- umconsistency_for_arc_(4,9)#50: u(4) - u(9) + 23 x(4,9) <= 22
- umconsistency_for_arc_(4,10)#51: u(4) - u(10) + 23 x(4,10) <= 22
- umconsistency_for_arc_(4,11)#52: u(4) - u(11) + 23 x(4,11) <= 22
- umconsistency_for_arc_(4,12)#53: u(4) - u(12) + 23 x(4,12) <= 22
- umconsistency_for_arc_(4,13)#54: u(4) - u(13) + 23 x(4,13) <= 22
- umconsistency_for_arc_(4,14)#55: u(4) - u(14) + 23 x(4,14) <= 22
- umconsistency_for_arc_(4,15)#56: u(4) - u(15) + 23 x(4,15) <= 22
- umconsistency_for_arc_(4,16)#57: u(4) - u(16) + 23 x(4,16) <= 22
- umconsistency_for_arc_(4,17)#58: u(4) - u(17) + 23 x(4,17) <= 22
- umconsistency_for_arc_(4,18)#59: u(4) - u(18) + 23 x(4,18) <= 22
- umconsistency_for_arc_(4,19)#60: u(4) - u(19) + 23 x(4,19) <= 22
- umconsistency_for_arc_(4,20)#61: u(4) - u(20) + 23 x(4,20) <= 22
- umconsistency_for_arc_(4,21)#62: u(4) - u(21) + 23 x(4,21) <= 22
- umconsistency_for_arc_(4,22)#63: u(4) - u(22) + 23 x(4,22) <= 22
- umconsistency_for_arc_(4,23)#64: u(4) - u(23) + 23 x(4,23) <= 22
- umconsistency_for_arc_(4,24)#65: u(4) - u(24) + 23 x(4,24) <= 22
- umconsistency_for_arc_(5,2)#66: u(5) - u(2) + 23 x(5,2) <= 22
- umconsistency_for_arc_(5,3)#67: u(5) - u(3) + 23 x(5,3) <= 22
- umconsistency_for_arc_(5,4)#68: u(5) - u(4) + 23 x(5,4) <= 22
- umconsistency_for_arc_(5,6)#69: u(5) - u(6) + 23 x(5,6) <= 22
- umconsistency_for_arc_(5,7)#70: u(5) - u(7) + 23 x(5,7) <= 22
- umconsistency_for_arc_(5,8)#71: u(5) - u(8) + 23 x(5,8) <= 22
- umconsistency_for_arc_(5,9)#72: u(5) - u(9) + 23 x(5,9) <= 22
- umconsistency_for_arc_(5,10)#73: u(5) - u(10) + 23 x(5,10) <= 22
- umconsistency_for_arc_(5,11)#74: u(5) - u(11) + 23 x(5,11) <= 22
- umconsistency_for_arc_(5,12)#75: u(5) - u(12) + 23 x(5,12) <= 22
- umconsistency_for_arc_(5,13)#76: u(5) - u(13) + 23 x(5,13) <= 22
- umconsistency_for_arc_(5,14)#77: u(5) - u(14) + 23 x(5,14) <= 22
- umconsistency_for_arc_(5,15)#78: u(5) - u(15) + 23 x(5,15) <= 22
- umconsistency_for_arc_(5,16)#79: u(5) - u(16) + 23 x(5,16) <= 22
- umconsistency_for_arc_(5,17)#80: u(5) - u(17) + 23 x(5,17) <= 22
- umconsistency_for_arc_(5,18)#81: u(5) - u(18) + 23 x(5,18) <= 22
- umconsistency_for_arc_(5,19)#82: u(5) - u(19) + 23 x(5,19) <= 22
- umconsistency_for_arc_(5,20)#83: u(5) - u(20) + 23 x(5,20) <= 22
- umconsistency_for_arc_(5,21)#84: u(5) - u(21) + 23 x(5,21) <= 22
- umconsistency_for_arc_(5,22)#85: u(5) - u(22) + 23 x(5,22) <= 22
- umconsistency_for_arc_(5,23)#86: u(5) - u(23) + 23 x(5,23) <= 22
- umconsistency_for_arc_(5,24)#87: u(5) - u(24) + 23 x(5,24) <= 22
- umconsistency_for_arc_(6,2)#88: u(6) - u(2) + 23 x(6,2) <= 22
- umconsistency_for_arc_(6,3)#89: u(6) - u(3) + 23 x(6,3) <= 22
- umconsistency_for_arc_(6,4)#90: u(6) - u(4) + 23 x(6,4) <= 22
- umconsistency_for_arc_(6,5)#91: u(6) - u(5) + 23 x(6,5) <= 22
- umconsistency_for_arc_(6,7)#92: u(6) - u(7) + 23 x(6,7) <= 22
- umconsistency_for_arc_(6,8)#93: u(6) - u(8) + 23 x(6,8) <= 22
- umconsistency_for_arc_(6,9)#94: u(6) - u(9) + 23 x(6,9) <= 22
- umconsistency_for_arc_(6,10)#95: u(6) - u(10) + 23 x(6,10) <= 22
- umconsistency_for_arc_(6,11)#96: u(6) - u(11) + 23 x(6,11) <= 22
- umconsistency_for_arc_(6,12)#97: u(6) - u(12) + 23 x(6,12) <= 22
- umconsistency_for_arc_(6,13)#98: u(6) - u(13) + 23 x(6,13) <= 22
- umconsistency_for_arc_(6,14)#99: u(6) - u(14) + 23 x(6,14) <= 22
- umconsistency_for_arc_(6,15)#100: u(6) - u(15) + 23 x(6,15) <= 22
- umconsistency_for_arc_(6,16)#101: u(6) - u(16) + 23 x(6,16) <= 22
- umconsistency_for_arc_(6,17)#102: u(6) - u(17) + 23 x(6,17) <= 22
- umconsistency_for_arc_(6,18)#103: u(6) - u(18) + 23 x(6,18) <= 22
- umconsistency_for_arc_(6,19)#104: u(6) - u(19) + 23 x(6,19) <= 22
- umconsistency_for_arc_(6,20)#105: u(6) - u(20) + 23 x(6,20) <= 22
- umconsistency_for_arc_(6,21)#106: u(6) - u(21) + 23 x(6,21) <= 22
- umconsistency_for_arc_(6,22)#107: u(6) - u(22) + 23 x(6,22) <= 22
- umconsistency_for_arc_(6,23)#108: u(6) - u(23) + 23 x(6,23) <= 22
- umconsistency_for_arc_(6,24)#109: u(6) - u(24) + 23 x(6,24) <= 22
- umconsistency_for_arc_(7,2)#110: u(7) - u(2) + 23 x(7,2) <= 22
- umconsistency_for_arc_(7,3)#111: u(7) - u(3) + 23 x(7,3) <= 22
- umconsistency_for_arc_(7,4)#112: u(7) - u(4) + 23 x(7,4) <= 22
- umconsistency_for_arc_(7,5)#113: u(7) - u(5) + 23 x(7,5) <= 22
- umconsistency_for_arc_(7,6)#114: u(7) - u(6) + 23 x(7,6) <= 22
- umconsistency_for_arc_(7,8)#115: u(7) - u(8) + 23 x(7,8) <= 22
- umconsistency_for_arc_(7,9)#116: u(7) - u(9) + 23 x(7,9) <= 22
- umconsistency_for_arc_(7,10)#117: u(7) - u(10) + 23 x(7,10) <= 22
- umconsistency_for_arc_(7,11)#118: u(7) - u(11) + 23 x(7,11) <= 22
- umconsistency_for_arc_(7,12)#119: u(7) - u(12) + 23 x(7,12) <= 22
- umconsistency_for_arc_(7,13)#120: u(7) - u(13) + 23 x(7,13) <= 22
- umconsistency_for_arc_(7,14)#121: u(7) - u(14) + 23 x(7,14) <= 22
- umconsistency_for_arc_(7,15)#122: u(7) - u(15) + 23 x(7,15) <= 22
- umconsistency_for_arc_(7,16)#123: u(7) - u(16) + 23 x(7,16) <= 22
- umconsistency_for_arc_(7,17)#124: u(7) - u(17) + 23 x(7,17) <= 22
- umconsistency_for_arc_(7,18)#125: u(7) - u(18) + 23 x(7,18) <= 22
- umconsistency_for_arc_(7,19)#126: u(7) - u(19) + 23 x(7,19) <= 22
- umconsistency_for_arc_(7,20)#127: u(7) - u(20) + 23 x(7,20) <= 22
- umconsistency_for_arc_(7,21)#128: u(7) - u(21) + 23 x(7,21) <= 22
- umconsistency_for_arc_(7,22)#129: u(7) - u(22) + 23 x(7,22) <= 22
- umconsistency_for_arc_(7,23)#130: u(7) - u(23) + 23 x(7,23) <= 22
- umconsistency_for_arc_(7,24)#131: u(7) - u(24) + 23 x(7,24) <= 22
- umconsistency_for_arc_(8,2)#132: u(8) - u(2) + 23 x(8,2) <= 22
- umconsistency_for_arc_(8,3)#133: u(8) - u(3) + 23 x(8,3) <= 22
- umconsistency_for_arc_(8,4)#134: u(8) - u(4) + 23 x(8,4) <= 22
- umconsistency_for_arc_(8,5)#135: u(8) - u(5) + 23 x(8,5) <= 22
- umconsistency_for_arc_(8,6)#136: u(8) - u(6) + 23 x(8,6) <= 22
- umconsistency_for_arc_(8,7)#137: u(8) - u(7) + 23 x(8,7) <= 22
- umconsistency_for_arc_(8,9)#138: u(8) - u(9) + 23 x(8,9) <= 22
- umconsistency_for_arc_(8,10)#139: u(8) - u(10) + 23 x(8,10) <= 22
- umconsistency_for_arc_(8,11)#140: u(8) - u(11) + 23 x(8,11) <= 22
- umconsistency_for_arc_(8,12)#141: u(8) - u(12) + 23 x(8,12) <= 22
- umconsistency_for_arc_(8,13)#142: u(8) - u(13) + 23 x(8,13) <= 22
- umconsistency_for_arc_(8,14)#143: u(8) - u(14) + 23 x(8,14) <= 22
- umconsistency_for_arc_(8,15)#144: u(8) - u(15) + 23 x(8,15) <= 22
- umconsistency_for_arc_(8,16)#145: u(8) - u(16) + 23 x(8,16) <= 22
- umconsistency_for_arc_(8,17)#146: u(8) - u(17) + 23 x(8,17) <= 22
- umconsistency_for_arc_(8,18)#147: u(8) - u(18) + 23 x(8,18) <= 22
- umconsistency_for_arc_(8,19)#148: u(8) - u(19) + 23 x(8,19) <= 22
- umconsistency_for_arc_(8,20)#149: u(8) - u(20) + 23 x(8,20) <= 22
- umconsistency_for_arc_(8,21)#150: u(8) - u(21) + 23 x(8,21) <= 22
- umconsistency_for_arc_(8,22)#151: u(8) - u(22) + 23 x(8,22) <= 22
- umconsistency_for_arc_(8,23)#152: u(8) - u(23) + 23 x(8,23) <= 22
- umconsistency_for_arc_(8,24)#153: u(8) - u(24) + 23 x(8,24) <= 22
- umconsistency_for_arc_(9,2)#154: u(9) - u(2) + 23 x(9,2) <= 22
- umconsistency_for_arc_(9,3)#155: u(9) - u(3) + 23 x(9,3) <= 22
- umconsistency_for_arc_(9,4)#156: u(9) - u(4) + 23 x(9,4) <= 22
- umconsistency_for_arc_(9,5)#157: u(9) - u(5) + 23 x(9,5) <= 22
- umconsistency_for_arc_(9,6)#158: u(9) - u(6) + 23 x(9,6) <= 22
- umconsistency_for_arc_(9,7)#159: u(9) - u(7) + 23 x(9,7) <= 22
- umconsistency_for_arc_(9,8)#160: u(9) - u(8) + 23 x(9,8) <= 22
- umconsistency_for_arc_(9,10)#161: u(9) - u(10) + 23 x(9,10) <= 22
- umconsistency_for_arc_(9,11)#162: u(9) - u(11) + 23 x(9,11) <= 22
- umconsistency_for_arc_(9,12)#163: u(9) - u(12) + 23 x(9,12) <= 22
- umconsistency_for_arc_(9,13)#164: u(9) - u(13) + 23 x(9,13) <= 22
- umconsistency_for_arc_(9,14)#165: u(9) - u(14) + 23 x(9,14) <= 22
- umconsistency_for_arc_(9,15)#166: u(9) - u(15) + 23 x(9,15) <= 22
- umconsistency_for_arc_(9,16)#167: u(9) - u(16) + 23 x(9,16) <= 22
- umconsistency_for_arc_(9,17)#168: u(9) - u(17) + 23 x(9,17) <= 22
- umconsistency_for_arc_(9,18)#169: u(9) - u(18) + 23 x(9,18) <= 22
- umconsistency_for_arc_(9,19)#170: u(9) - u(19) + 23 x(9,19) <= 22
- umconsistency_for_arc_(9,20)#171: u(9) - u(20) + 23 x(9,20) <= 22
- umconsistency_for_arc_(9,21)#172: u(9) - u(21) + 23 x(9,21) <= 22
- umconsistency_for_arc_(9,22)#173: u(9) - u(22) + 23 x(9,22) <= 22
- umconsistency_for_arc_(9,23)#174: u(9) - u(23) + 23 x(9,23) <= 22
- umconsistency_for_arc_(9,24)#175: u(9) - u(24) + 23 x(9,24) <= 22
- umconsistency_for_arc_(10,2)#176: u(10) - u(2) + 23 x(10,2) <= 22
- umconsistency_for_arc_(10,3)#177: u(10) - u(3) + 23 x(10,3) <= 22
- umconsistency_for_arc_(10,4)#178: u(10) - u(4) + 23 x(10,4) <= 22
- umconsistency_for_arc_(10,5)#179: u(10) - u(5) + 23 x(10,5) <= 22
- umconsistency_for_arc_(10,6)#180: u(10) - u(6) + 23 x(10,6) <= 22
- umconsistency_for_arc_(10,7)#181: u(10) - u(7) + 23 x(10,7) <= 22
- umconsistency_for_arc_(10,8)#182: u(10) - u(8) + 23 x(10,8) <= 22
- umconsistency_for_arc_(10,9)#183: u(10) - u(9) + 23 x(10,9) <= 22
- umconsistency_for_arc_(10,11)#184: u(10) - u(11) + 23 x(10,11) <= 22
- umconsistency_for_arc_(10,12)#185: u(10) - u(12) + 23 x(10,12) <= 22
- umconsistency_for_arc_(10,13)#186: u(10) - u(13) + 23 x(10,13) <= 22
- umconsistency_for_arc_(10,14)#187: u(10) - u(14) + 23 x(10,14) <= 22
- umconsistency_for_arc_(10,15)#188: u(10) - u(15) + 23 x(10,15) <= 22
- umconsistency_for_arc_(10,16)#189: u(10) - u(16) + 23 x(10,16) <= 22
- umconsistency_for_arc_(10,17)#190: u(10) - u(17) + 23 x(10,17) <= 22
- umconsistency_for_arc_(10,18)#191: u(10) - u(18) + 23 x(10,18) <= 22
- umconsistency_for_arc_(10,19)#192: u(10) - u(19) + 23 x(10,19) <= 22
- umconsistency_for_arc_(10,20)#193: u(10) - u(20) + 23 x(10,20) <= 22
- umconsistency_for_arc_(10,21)#194: u(10) - u(21) + 23 x(10,21) <= 22
- umconsistency_for_arc_(10,22)#195: u(10) - u(22) + 23 x(10,22) <= 22
- umconsistency_for_arc_(10,23)#196: u(10) - u(23) + 23 x(10,23) <= 22
- umconsistency_for_arc_(10,24)#197: u(10) - u(24) + 23 x(10,24) <= 22
- umconsistency_for_arc_(11,2)#198: u(11) - u(2) + 23 x(11,2) <= 22
- umconsistency_for_arc_(11,3)#199: u(11) - u(3) + 23 x(11,3) <= 22
- umconsistency_for_arc_(11,4)#200: u(11) - u(4) + 23 x(11,4) <= 22
- umconsistency_for_arc_(11,5)#201: u(11) - u(5) + 23 x(11,5) <= 22
- umconsistency_for_arc_(11,6)#202: u(11) - u(6) + 23 x(11,6) <= 22
- umconsistency_for_arc_(11,7)#203: u(11) - u(7) + 23 x(11,7) <= 22
- umconsistency_for_arc_(11,8)#204: u(11) - u(8) + 23 x(11,8) <= 22
- umconsistency_for_arc_(11,9)#205: u(11) - u(9) + 23 x(11,9) <= 22
- umconsistency_for_arc_(11,10)#206: u(11) - u(10) + 23 x(11,10) <= 22
- umconsistency_for_arc_(11,12)#207: u(11) - u(12) + 23 x(11,12) <= 22
- umconsistency_for_arc_(11,13)#208: u(11) - u(13) + 23 x(11,13) <= 22
- umconsistency_for_arc_(11,14)#209: u(11) - u(14) + 23 x(11,14) <= 22
- umconsistency_for_arc_(11,15)#210: u(11) - u(15) + 23 x(11,15) <= 22
- umconsistency_for_arc_(11,16)#211: u(11) - u(16) + 23 x(11,16) <= 22
- umconsistency_for_arc_(11,17)#212: u(11) - u(17) + 23 x(11,17) <= 22
- umconsistency_for_arc_(11,18)#213: u(11) - u(18) + 23 x(11,18) <= 22
- umconsistency_for_arc_(11,19)#214: u(11) - u(19) + 23 x(11,19) <= 22
- umconsistency_for_arc_(11,20)#215: u(11) - u(20) + 23 x(11,20) <= 22
- umconsistency_for_arc_(11,21)#216: u(11) - u(21) + 23 x(11,21) <= 22
- umconsistency_for_arc_(11,22)#217: u(11) - u(22) + 23 x(11,22) <= 22
- umconsistency_for_arc_(11,23)#218: u(11) - u(23) + 23 x(11,23) <= 22
- umconsistency_for_arc_(11,24)#219: u(11) - u(24) + 23 x(11,24) <= 22
- umconsistency_for_arc_(12,2)#220: u(12) - u(2) + 23 x(12,2) <= 22
- umconsistency_for_arc_(12,3)#221: u(12) - u(3) + 23 x(12,3) <= 22
- umconsistency_for_arc_(12,4)#222: u(12) - u(4) + 23 x(12,4) <= 22
- umconsistency_for_arc_(12,5)#223: u(12) - u(5) + 23 x(12,5) <= 22
- umconsistency_for_arc_(12,6)#224: u(12) - u(6) + 23 x(12,6) <= 22
- umconsistency_for_arc_(12,7)#225: u(12) - u(7) + 23 x(12,7) <= 22
- umconsistency_for_arc_(12,8)#226: u(12) - u(8) + 23 x(12,8) <= 22
- umconsistency_for_arc_(12,9)#227: u(12) - u(9) + 23 x(12,9) <= 22
- umconsistency_for_arc_(12,10)#228: u(12) - u(10) + 23 x(12,10) <= 22
- umconsistency_for_arc_(12,11)#229: u(12) - u(11) + 23 x(12,11) <= 22
- umconsistency_for_arc_(12,13)#230: u(12) - u(13) + 23 x(12,13) <= 22
- umconsistency_for_arc_(12,14)#231: u(12) - u(14) + 23 x(12,14) <= 22
- umconsistency_for_arc_(12,15)#232: u(12) - u(15) + 23 x(12,15) <= 22
- umconsistency_for_arc_(12,16)#233: u(12) - u(16) + 23 x(12,16) <= 22
- umconsistency_for_arc_(12,17)#234: u(12) - u(17) + 23 x(12,17) <= 22
- umconsistency_for_arc_(12,18)#235: u(12) - u(18) + 23 x(12,18) <= 22
- umconsistency_for_arc_(12,19)#236: u(12) - u(19) + 23 x(12,19) <= 22
- umconsistency_for_arc_(12,20)#237: u(12) - u(20) + 23 x(12,20) <= 22
- umconsistency_for_arc_(12,21)#238: u(12) - u(21) + 23 x(12,21) <= 22
- umconsistency_for_arc_(12,22)#239: u(12) - u(22) + 23 x(12,22) <= 22
- umconsistency_for_arc_(12,23)#240: u(12) - u(23) + 23 x(12,23) <= 22
- umconsistency_for_arc_(12,24)#241: u(12) - u(24) + 23 x(12,24) <= 22
- umconsistency_for_arc_(13,2)#242: u(13) - u(2) + 23 x(13,2) <= 22
- umconsistency_for_arc_(13,3)#243: u(13) - u(3) + 23 x(13,3) <= 22
- umconsistency_for_arc_(13,4)#244: u(13) - u(4) + 23 x(13,4) <= 22
- umconsistency_for_arc_(13,5)#245: u(13) - u(5) + 23 x(13,5) <= 22
- umconsistency_for_arc_(13,6)#246: u(13) - u(6) + 23 x(13,6) <= 22
- umconsistency_for_arc_(13,7)#247: u(13) - u(7) + 23 x(13,7) <= 22
- umconsistency_for_arc_(13,8)#248: u(13) - u(8) + 23 x(13,8) <= 22
- umconsistency_for_arc_(13,9)#249: u(13) - u(9) + 23 x(13,9) <= 22
- umconsistency_for_arc_(13,10)#250: u(13) - u(10) + 23 x(13,10) <= 22
- umconsistency_for_arc_(13,11)#251: u(13) - u(11) + 23 x(13,11) <= 22
- umconsistency_for_arc_(13,12)#252: u(13) - u(12) + 23 x(13,12) <= 22
- umconsistency_for_arc_(13,14)#253: u(13) - u(14) + 23 x(13,14) <= 22
- umconsistency_for_arc_(13,15)#254: u(13) - u(15) + 23 x(13,15) <= 22
- umconsistency_for_arc_(13,16)#255: u(13) - u(16) + 23 x(13,16) <= 22
- umconsistency_for_arc_(13,17)#256: u(13) - u(17) + 23 x(13,17) <= 22
- umconsistency_for_arc_(13,18)#257: u(13) - u(18) + 23 x(13,18) <= 22
- umconsistency_for_arc_(13,19)#258: u(13) - u(19) + 23 x(13,19) <= 22
- umconsistency_for_arc_(13,20)#259: u(13) - u(20) + 23 x(13,20) <= 22
- umconsistency_for_arc_(13,21)#260: u(13) - u(21) + 23 x(13,21) <= 22
- umconsistency_for_arc_(13,22)#261: u(13) - u(22) + 23 x(13,22) <= 22
- umconsistency_for_arc_(13,23)#262: u(13) - u(23) + 23 x(13,23) <= 22
- umconsistency_for_arc_(13,24)#263: u(13) - u(24) + 23 x(13,24) <= 22
- umconsistency_for_arc_(14,2)#264: u(14) - u(2) + 23 x(14,2) <= 22
- umconsistency_for_arc_(14,3)#265: u(14) - u(3) + 23 x(14,3) <= 22
- umconsistency_for_arc_(14,4)#266: u(14) - u(4) + 23 x(14,4) <= 22
- umconsistency_for_arc_(14,5)#267: u(14) - u(5) + 23 x(14,5) <= 22
- umconsistency_for_arc_(14,6)#268: u(14) - u(6) + 23 x(14,6) <= 22
- umconsistency_for_arc_(14,7)#269: u(14) - u(7) + 23 x(14,7) <= 22
- umconsistency_for_arc_(14,8)#270: u(14) - u(8) + 23 x(14,8) <= 22
- umconsistency_for_arc_(14,9)#271: u(14) - u(9) + 23 x(14,9) <= 22
- umconsistency_for_arc_(14,10)#272: u(14) - u(10) + 23 x(14,10) <= 22
- umconsistency_for_arc_(14,11)#273: u(14) - u(11) + 23 x(14,11) <= 22
- umconsistency_for_arc_(14,12)#274: u(14) - u(12) + 23 x(14,12) <= 22
- umconsistency_for_arc_(14,13)#275: u(14) - u(13) + 23 x(14,13) <= 22
- umconsistency_for_arc_(14,15)#276: u(14) - u(15) + 23 x(14,15) <= 22
- umconsistency_for_arc_(14,16)#277: u(14) - u(16) + 23 x(14,16) <= 22
- umconsistency_for_arc_(14,17)#278: u(14) - u(17) + 23 x(14,17) <= 22
- umconsistency_for_arc_(14,18)#279: u(14) - u(18) + 23 x(14,18) <= 22
- umconsistency_for_arc_(14,19)#280: u(14) - u(19) + 23 x(14,19) <= 22
- umconsistency_for_arc_(14,20)#281: u(14) - u(20) + 23 x(14,20) <= 22
- umconsistency_for_arc_(14,21)#282: u(14) - u(21) + 23 x(14,21) <= 22
- umconsistency_for_arc_(14,22)#283: u(14) - u(22) + 23 x(14,22) <= 22
- umconsistency_for_arc_(14,23)#284: u(14) - u(23) + 23 x(14,23) <= 22
- umconsistency_for_arc_(14,24)#285: u(14) - u(24) + 23 x(14,24) <= 22
- umconsistency_for_arc_(15,2)#286: u(15) - u(2) + 23 x(15,2) <= 22
- umconsistency_for_arc_(15,3)#287: u(15) - u(3) + 23 x(15,3) <= 22
- umconsistency_for_arc_(15,4)#288: u(15) - u(4) + 23 x(15,4) <= 22
- umconsistency_for_arc_(15,5)#289: u(15) - u(5) + 23 x(15,5) <= 22
- umconsistency_for_arc_(15,6)#290: u(15) - u(6) + 23 x(15,6) <= 22
- umconsistency_for_arc_(15,7)#291: u(15) - u(7) + 23 x(15,7) <= 22
- umconsistency_for_arc_(15,8)#292: u(15) - u(8) + 23 x(15,8) <= 22
- umconsistency_for_arc_(15,9)#293: u(15) - u(9) + 23 x(15,9) <= 22
- umconsistency_for_arc_(15,10)#294: u(15) - u(10) + 23 x(15,10) <= 22
- umconsistency_for_arc_(15,11)#295: u(15) - u(11) + 23 x(15,11) <= 22
- umconsistency_for_arc_(15,12)#296: u(15) - u(12) + 23 x(15,12) <= 22
- umconsistency_for_arc_(15,13)#297: u(15) - u(13) + 23 x(15,13) <= 22
- umconsistency_for_arc_(15,14)#298: u(15) - u(14) + 23 x(15,14) <= 22
- umconsistency_for_arc_(15,16)#299: u(15) - u(16) + 23 x(15,16) <= 22
- umconsistency_for_arc_(15,17)#300: u(15) - u(17) + 23 x(15,17) <= 22
- umconsistency_for_arc_(15,18)#301: u(15) - u(18) + 23 x(15,18) <= 22
- umconsistency_for_arc_(15,19)#302: u(15) - u(19) + 23 x(15,19) <= 22
- umconsistency_for_arc_(15,20)#303: u(15) - u(20) + 23 x(15,20) <= 22
- umconsistency_for_arc_(15,21)#304: u(15) - u(21) + 23 x(15,21) <= 22
- umconsistency_for_arc_(15,22)#305: u(15) - u(22) + 23 x(15,22) <= 22
- umconsistency_for_arc_(15,23)#306: u(15) - u(23) + 23 x(15,23) <= 22
- umconsistency_for_arc_(15,24)#307: u(15) - u(24) + 23 x(15,24) <= 22
- umconsistency_for_arc_(16,2)#308: u(16) - u(2) + 23 x(16,2) <= 22
- umconsistency_for_arc_(16,3)#309: u(16) - u(3) + 23 x(16,3) <= 22
- umconsistency_for_arc_(16,4)#310: u(16) - u(4) + 23 x(16,4) <= 22
- umconsistency_for_arc_(16,5)#311: u(16) - u(5) + 23 x(16,5) <= 22
- umconsistency_for_arc_(16,6)#312: u(16) - u(6) + 23 x(16,6) <= 22
- umconsistency_for_arc_(16,7)#313: u(16) - u(7) + 23 x(16,7) <= 22
- umconsistency_for_arc_(16,8)#314: u(16) - u(8) + 23 x(16,8) <= 22
- umconsistency_for_arc_(16,9)#315: u(16) - u(9) + 23 x(16,9) <= 22
- umconsistency_for_arc_(16,10)#316: u(16) - u(10) + 23 x(16,10) <= 22
- umconsistency_for_arc_(16,11)#317: u(16) - u(11) + 23 x(16,11) <= 22
- umconsistency_for_arc_(16,12)#318: u(16) - u(12) + 23 x(16,12) <= 22
- umconsistency_for_arc_(16,13)#319: u(16) - u(13) + 23 x(16,13) <= 22
- umconsistency_for_arc_(16,14)#320: u(16) - u(14) + 23 x(16,14) <= 22
- umconsistency_for_arc_(16,15)#321: u(16) - u(15) + 23 x(16,15) <= 22
- umconsistency_for_arc_(16,17)#322: u(16) - u(17) + 23 x(16,17) <= 22
- umconsistency_for_arc_(16,18)#323: u(16) - u(18) + 23 x(16,18) <= 22
- umconsistency_for_arc_(16,19)#324: u(16) - u(19) + 23 x(16,19) <= 22
- umconsistency_for_arc_(16,20)#325: u(16) - u(20) + 23 x(16,20) <= 22
- umconsistency_for_arc_(16,21)#326: u(16) - u(21) + 23 x(16,21) <= 22
- umconsistency_for_arc_(16,22)#327: u(16) - u(22) + 23 x(16,22) <= 22
- umconsistency_for_arc_(16,23)#328: u(16) - u(23) + 23 x(16,23) <= 22
- umconsistency_for_arc_(16,24)#329: u(16) - u(24) + 23 x(16,24) <= 22
- umconsistency_for_arc_(17,2)#330: u(17) - u(2) + 23 x(17,2) <= 22
- umconsistency_for_arc_(17,3)#331: u(17) - u(3) + 23 x(17,3) <= 22
- umconsistency_for_arc_(17,4)#332: u(17) - u(4) + 23 x(17,4) <= 22
- umconsistency_for_arc_(17,5)#333: u(17) - u(5) + 23 x(17,5) <= 22
- umconsistency_for_arc_(17,6)#334: u(17) - u(6) + 23 x(17,6) <= 22
- umconsistency_for_arc_(17,7)#335: u(17) - u(7) + 23 x(17,7) <= 22
- umconsistency_for_arc_(17,8)#336: u(17) - u(8) + 23 x(17,8) <= 22
- umconsistency_for_arc_(17,9)#337: u(17) - u(9) + 23 x(17,9) <= 22
- umconsistency_for_arc_(17,10)#338: u(17) - u(10) + 23 x(17,10) <= 22
- umconsistency_for_arc_(17,11)#339: u(17) - u(11) + 23 x(17,11) <= 22
- umconsistency_for_arc_(17,12)#340: u(17) - u(12) + 23 x(17,12) <= 22
- umconsistency_for_arc_(17,13)#341: u(17) - u(13) + 23 x(17,13) <= 22
- umconsistency_for_arc_(17,14)#342: u(17) - u(14) + 23 x(17,14) <= 22
- umconsistency_for_arc_(17,15)#343: u(17) - u(15) + 23 x(17,15) <= 22
- umconsistency_for_arc_(17,16)#344: u(17) - u(16) + 23 x(17,16) <= 22
- umconsistency_for_arc_(17,18)#345: u(17) - u(18) + 23 x(17,18) <= 22
- umconsistency_for_arc_(17,19)#346: u(17) - u(19) + 23 x(17,19) <= 22
- umconsistency_for_arc_(17,20)#347: u(17) - u(20) + 23 x(17,20) <= 22
- umconsistency_for_arc_(17,21)#348: u(17) - u(21) + 23 x(17,21) <= 22
- umconsistency_for_arc_(17,22)#349: u(17) - u(22) + 23 x(17,22) <= 22
- umconsistency_for_arc_(17,23)#350: u(17) - u(23) + 23 x(17,23) <= 22
- umconsistency_for_arc_(17,24)#351: u(17) - u(24) + 23 x(17,24) <= 22
- umconsistency_for_arc_(18,2)#352: u(18) - u(2) + 23 x(18,2) <= 22
- umconsistency_for_arc_(18,3)#353: u(18) - u(3) + 23 x(18,3) <= 22
- umconsistency_for_arc_(18,4)#354: u(18) - u(4) + 23 x(18,4) <= 22
- umconsistency_for_arc_(18,5)#355: u(18) - u(5) + 23 x(18,5) <= 22
- umconsistency_for_arc_(18,6)#356: u(18) - u(6) + 23 x(18,6) <= 22
- umconsistency_for_arc_(18,7)#357: u(18) - u(7) + 23 x(18,7) <= 22
- umconsistency_for_arc_(18,8)#358: u(18) - u(8) + 23 x(18,8) <= 22
- umconsistency_for_arc_(18,9)#359: u(18) - u(9) + 23 x(18,9) <= 22
- umconsistency_for_arc_(18,10)#360: u(18) - u(10) + 23 x(18,10) <= 22
- umconsistency_for_arc_(18,11)#361: u(18) - u(11) + 23 x(18,11) <= 22
- umconsistency_for_arc_(18,12)#362: u(18) - u(12) + 23 x(18,12) <= 22
- umconsistency_for_arc_(18,13)#363: u(18) - u(13) + 23 x(18,13) <= 22
- umconsistency_for_arc_(18,14)#364: u(18) - u(14) + 23 x(18,14) <= 22
- umconsistency_for_arc_(18,15)#365: u(18) - u(15) + 23 x(18,15) <= 22
- umconsistency_for_arc_(18,16)#366: u(18) - u(16) + 23 x(18,16) <= 22
- umconsistency_for_arc_(18,17)#367: u(18) - u(17) + 23 x(18,17) <= 22
- umconsistency_for_arc_(18,19)#368: u(18) - u(19) + 23 x(18,19) <= 22
- umconsistency_for_arc_(18,20)#369: u(18) - u(20) + 23 x(18,20) <= 22
- umconsistency_for_arc_(18,21)#370: u(18) - u(21) + 23 x(18,21) <= 22
- umconsistency_for_arc_(18,22)#371: u(18) - u(22) + 23 x(18,22) <= 22
- umconsistency_for_arc_(18,23)#372: u(18) - u(23) + 23 x(18,23) <= 22
- umconsistency_for_arc_(18,24)#373: u(18) - u(24) + 23 x(18,24) <= 22
- umconsistency_for_arc_(19,2)#374: u(19) - u(2) + 23 x(19,2) <= 22
- umconsistency_for_arc_(19,3)#375: u(19) - u(3) + 23 x(19,3) <= 22
- umconsistency_for_arc_(19,4)#376: u(19) - u(4) + 23 x(19,4) <= 22
- umconsistency_for_arc_(19,5)#377: u(19) - u(5) + 23 x(19,5) <= 22
- umconsistency_for_arc_(19,6)#378: u(19) - u(6) + 23 x(19,6) <= 22
- umconsistency_for_arc_(19,7)#379: u(19) - u(7) + 23 x(19,7) <= 22
- umconsistency_for_arc_(19,8)#380: u(19) - u(8) + 23 x(19,8) <= 22
- umconsistency_for_arc_(19,9)#381: u(19) - u(9) + 23 x(19,9) <= 22
- umconsistency_for_arc_(19,10)#382: u(19) - u(10) + 23 x(19,10) <= 22
- umconsistency_for_arc_(19,11)#383: u(19) - u(11) + 23 x(19,11) <= 22
- umconsistency_for_arc_(19,12)#384: u(19) - u(12) + 23 x(19,12) <= 22
- umconsistency_for_arc_(19,13)#385: u(19) - u(13) + 23 x(19,13) <= 22
- umconsistency_for_arc_(19,14)#386: u(19) - u(14) + 23 x(19,14) <= 22
- umconsistency_for_arc_(19,15)#387: u(19) - u(15) + 23 x(19,15) <= 22
- umconsistency_for_arc_(19,16)#388: u(19) - u(16) + 23 x(19,16) <= 22
- umconsistency_for_arc_(19,17)#389: u(19) - u(17) + 23 x(19,17) <= 22
- umconsistency_for_arc_(19,18)#390: u(19) - u(18) + 23 x(19,18) <= 22
- umconsistency_for_arc_(19,20)#391: u(19) - u(20) + 23 x(19,20) <= 22
- umconsistency_for_arc_(19,21)#392: u(19) - u(21) + 23 x(19,21) <= 22
- umconsistency_for_arc_(19,22)#393: u(19) - u(22) + 23 x(19,22) <= 22
- umconsistency_for_arc_(19,23)#394: u(19) - u(23) + 23 x(19,23) <= 22
- umconsistency_for_arc_(19,24)#395: u(19) - u(24) + 23 x(19,24) <= 22
- umconsistency_for_arc_(20,2)#396: u(20) - u(2) + 23 x(20,2) <= 22
- umconsistency_for_arc_(20,3)#397: u(20) - u(3) + 23 x(20,3) <= 22
- umconsistency_for_arc_(20,4)#398: u(20) - u(4) + 23 x(20,4) <= 22
- umconsistency_for_arc_(20,5)#399: u(20) - u(5) + 23 x(20,5) <= 22
- umconsistency_for_arc_(20,6)#400: u(20) - u(6) + 23 x(20,6) <= 22
- umconsistency_for_arc_(20,7)#401: u(20) - u(7) + 23 x(20,7) <= 22
- umconsistency_for_arc_(20,8)#402: u(20) - u(8) + 23 x(20,8) <= 22
- umconsistency_for_arc_(20,9)#403: u(20) - u(9) + 23 x(20,9) <= 22
- umconsistency_for_arc_(20,10)#404: u(20) - u(10) + 23 x(20,10) <= 22
- umconsistency_for_arc_(20,11)#405: u(20) - u(11) + 23 x(20,11) <= 22
- umconsistency_for_arc_(20,12)#406: u(20) - u(12) + 23 x(20,12) <= 22
- umconsistency_for_arc_(20,13)#407: u(20) - u(13) + 23 x(20,13) <= 22
- umconsistency_for_arc_(20,14)#408: u(20) - u(14) + 23 x(20,14) <= 22
- umconsistency_for_arc_(20,15)#409: u(20) - u(15) + 23 x(20,15) <= 22
- umconsistency_for_arc_(20,16)#410: u(20) - u(16) + 23 x(20,16) <= 22
- umconsistency_for_arc_(20,17)#411: u(20) - u(17) + 23 x(20,17) <= 22
- umconsistency_for_arc_(20,18)#412: u(20) - u(18) + 23 x(20,18) <= 22
- umconsistency_for_arc_(20,19)#413: u(20) - u(19) + 23 x(20,19) <= 22
- umconsistency_for_arc_(20,21)#414: u(20) - u(21) + 23 x(20,21) <= 22
- umconsistency_for_arc_(20,22)#415: u(20) - u(22) + 23 x(20,22) <= 22
- umconsistency_for_arc_(20,23)#416: u(20) - u(23) + 23 x(20,23) <= 22
- umconsistency_for_arc_(20,24)#417: u(20) - u(24) + 23 x(20,24) <= 22
- umconsistency_for_arc_(21,2)#418: u(21) - u(2) + 23 x(21,2) <= 22
- umconsistency_for_arc_(21,3)#419: u(21) - u(3) + 23 x(21,3) <= 22
- umconsistency_for_arc_(21,4)#420: u(21) - u(4) + 23 x(21,4) <= 22
- umconsistency_for_arc_(21,5)#421: u(21) - u(5) + 23 x(21,5) <= 22
- umconsistency_for_arc_(21,6)#422: u(21) - u(6) + 23 x(21,6) <= 22
- umconsistency_for_arc_(21,7)#423: u(21) - u(7) + 23 x(21,7) <= 22
- umconsistency_for_arc_(21,8)#424: u(21) - u(8) + 23 x(21,8) <= 22
- umconsistency_for_arc_(21,9)#425: u(21) - u(9) + 23 x(21,9) <= 22
- umconsistency_for_arc_(21,10)#426: u(21) - u(10) + 23 x(21,10) <= 22
- umconsistency_for_arc_(21,11)#427: u(21) - u(11) + 23 x(21,11) <= 22
- umconsistency_for_arc_(21,12)#428: u(21) - u(12) + 23 x(21,12) <= 22
- umconsistency_for_arc_(21,13)#429: u(21) - u(13) + 23 x(21,13) <= 22
- umconsistency_for_arc_(21,14)#430: u(21) - u(14) + 23 x(21,14) <= 22
- umconsistency_for_arc_(21,15)#431: u(21) - u(15) + 23 x(21,15) <= 22
- umconsistency_for_arc_(21,16)#432: u(21) - u(16) + 23 x(21,16) <= 22
- umconsistency_for_arc_(21,17)#433: u(21) - u(17) + 23 x(21,17) <= 22
- umconsistency_for_arc_(21,18)#434: u(21) - u(18) + 23 x(21,18) <= 22
- umconsistency_for_arc_(21,19)#435: u(21) - u(19) + 23 x(21,19) <= 22
- umconsistency_for_arc_(21,20)#436: u(21) - u(20) + 23 x(21,20) <= 22
- umconsistency_for_arc_(21,22)#437: u(21) - u(22) + 23 x(21,22) <= 22
- umconsistency_for_arc_(21,23)#438: u(21) - u(23) + 23 x(21,23) <= 22
- umconsistency_for_arc_(21,24)#439: u(21) - u(24) + 23 x(21,24) <= 22
- umconsistency_for_arc_(22,2)#440: u(22) - u(2) + 23 x(22,2) <= 22
- umconsistency_for_arc_(22,3)#441: u(22) - u(3) + 23 x(22,3) <= 22
- umconsistency_for_arc_(22,4)#442: u(22) - u(4) + 23 x(22,4) <= 22
- umconsistency_for_arc_(22,5)#443: u(22) - u(5) + 23 x(22,5) <= 22
- umconsistency_for_arc_(22,6)#444: u(22) - u(6) + 23 x(22,6) <= 22
- umconsistency_for_arc_(22,7)#445: u(22) - u(7) + 23 x(22,7) <= 22
- umconsistency_for_arc_(22,8)#446: u(22) - u(8) + 23 x(22,8) <= 22
- umconsistency_for_arc_(22,9)#447: u(22) - u(9) + 23 x(22,9) <= 22
- umconsistency_for_arc_(22,10)#448: u(22) - u(10) + 23 x(22,10) <= 22
- umconsistency_for_arc_(22,11)#449: u(22) - u(11) + 23 x(22,11) <= 22
- umconsistency_for_arc_(22,12)#450: u(22) - u(12) + 23 x(22,12) <= 22
- umconsistency_for_arc_(22,13)#451: u(22) - u(13) + 23 x(22,13) <= 22
- umconsistency_for_arc_(22,14)#452: u(22) - u(14) + 23 x(22,14) <= 22
- umconsistency_for_arc_(22,15)#453: u(22) - u(15) + 23 x(22,15) <= 22
- umconsistency_for_arc_(22,16)#454: u(22) - u(16) + 23 x(22,16) <= 22
- umconsistency_for_arc_(22,17)#455: u(22) - u(17) + 23 x(22,17) <= 22
- umconsistency_for_arc_(22,18)#456: u(22) - u(18) + 23 x(22,18) <= 22
- umconsistency_for_arc_(22,19)#457: u(22) - u(19) + 23 x(22,19) <= 22
- umconsistency_for_arc_(22,20)#458: u(22) - u(20) + 23 x(22,20) <= 22
- umconsistency_for_arc_(22,21)#459: u(22) - u(21) + 23 x(22,21) <= 22
- umconsistency_for_arc_(22,23)#460: u(22) - u(23) + 23 x(22,23) <= 22
- umconsistency_for_arc_(22,24)#461: u(22) - u(24) + 23 x(22,24) <= 22
- umconsistency_for_arc_(23,2)#462: u(23) - u(2) + 23 x(23,2) <= 22
- umconsistency_for_arc_(23,3)#463: u(23) - u(3) + 23 x(23,3) <= 22
- umconsistency_for_arc_(23,4)#464: u(23) - u(4) + 23 x(23,4) <= 22
- umconsistency_for_arc_(23,5)#465: u(23) - u(5) + 23 x(23,5) <= 22
- umconsistency_for_arc_(23,6)#466: u(23) - u(6) + 23 x(23,6) <= 22
- umconsistency_for_arc_(23,7)#467: u(23) - u(7) + 23 x(23,7) <= 22
- umconsistency_for_arc_(23,8)#468: u(23) - u(8) + 23 x(23,8) <= 22
- umconsistency_for_arc_(23,9)#469: u(23) - u(9) + 23 x(23,9) <= 22
- umconsistency_for_arc_(23,10)#470: u(23) - u(10) + 23 x(23,10) <= 22
- umconsistency_for_arc_(23,11)#471: u(23) - u(11) + 23 x(23,11) <= 22
- umconsistency_for_arc_(23,12)#472: u(23) - u(12) + 23 x(23,12) <= 22
- umconsistency_for_arc_(23,13)#473: u(23) - u(13) + 23 x(23,13) <= 22
- umconsistency_for_arc_(23,14)#474: u(23) - u(14) + 23 x(23,14) <= 22
- umconsistency_for_arc_(23,15)#475: u(23) - u(15) + 23 x(23,15) <= 22
- umconsistency_for_arc_(23,16)#476: u(23) - u(16) + 23 x(23,16) <= 22
- umconsistency_for_arc_(23,17)#477: u(23) - u(17) + 23 x(23,17) <= 22
- umconsistency_for_arc_(23,18)#478: u(23) - u(18) + 23 x(23,18) <= 22
- umconsistency_for_arc_(23,19)#479: u(23) - u(19) + 23 x(23,19) <= 22
- umconsistency_for_arc_(23,20)#480: u(23) - u(20) + 23 x(23,20) <= 22
- umconsistency_for_arc_(23,21)#481: u(23) - u(21) + 23 x(23,21) <= 22
- umconsistency_for_arc_(23,22)#482: u(23) - u(22) + 23 x(23,22) <= 22
- umconsistency_for_arc_(23,24)#483: u(23) - u(24) + 23 x(23,24) <= 22
- umconsistency_for_arc_(24,2)#484: u(24) - u(2) + 23 x(24,2) <= 22
- umconsistency_for_arc_(24,3)#485: u(24) - u(3) + 23 x(24,3) <= 22
- umconsistency_for_arc_(24,4)#486: u(24) - u(4) + 23 x(24,4) <= 22
- umconsistency_for_arc_(24,5)#487: u(24) - u(5) + 23 x(24,5) <= 22
- umconsistency_for_arc_(24,6)#488: u(24) - u(6) + 23 x(24,6) <= 22
- umconsistency_for_arc_(24,7)#489: u(24) - u(7) + 23 x(24,7) <= 22
- umconsistency_for_arc_(24,8)#490: u(24) - u(8) + 23 x(24,8) <= 22
- umconsistency_for_arc_(24,9)#491: u(24) - u(9) + 23 x(24,9) <= 22
- umconsistency_for_arc_(24,10)#492: u(24) - u(10) + 23 x(24,10) <= 22
- umconsistency_for_arc_(24,11)#493: u(24) - u(11) + 23 x(24,11) <= 22
- umconsistency_for_arc_(24,12)#494: u(24) - u(12) + 23 x(24,12) <= 22
- umconsistency_for_arc_(24,13)#495: u(24) - u(13) + 23 x(24,13) <= 22
- umconsistency_for_arc_(24,14)#496: u(24) - u(14) + 23 x(24,14) <= 22
- umconsistency_for_arc_(24,15)#497: u(24) - u(15) + 23 x(24,15) <= 22
- umconsistency_for_arc_(24,16)#498: u(24) - u(16) + 23 x(24,16) <= 22
- umconsistency_for_arc_(24,17)#499: u(24) - u(17) + 23 x(24,17) <= 22
- umconsistency_for_arc_(24,18)#500: u(24) - u(18) + 23 x(24,18) <= 22
- umconsistency_for_arc_(24,19)#501: u(24) - u(19) + 23 x(24,19) <= 22
- umconsistency_for_arc_(24,20)#502: u(24) - u(20) + 23 x(24,20) <= 22
- umconsistency_for_arc_(24,21)#503: u(24) - u(21) + 23 x(24,21) <= 22
- umconsistency_for_arc_(24,22)#504: u(24) - u(22) + 23 x(24,22) <= 22
- umconsistency_for_arc_(24,23)#505: u(24) - u(23) + 23 x(24,23) <= 22
- SEC_on_node_pair_(1,2)#506:     x(1,2) + x(2,1) <= 1
- SEC_on_node_pair_(1,3)#507:     x(1,3) + x(3,1) <= 1
- SEC_on_node_pair_(1,4)#508:     x(1,4) + x(4,1) <= 1
- SEC_on_node_pair_(1,5)#509:     x(1,5) + x(5,1) <= 1
- SEC_on_node_pair_(1,6)#510:     x(1,6) + x(6,1) <= 1
- SEC_on_node_pair_(1,7)#511:     x(1,7) + x(7,1) <= 1
- SEC_on_node_pair_(1,8)#512:     x(1,8) + x(8,1) <= 1
- SEC_on_node_pair_(1,9)#513:     x(1,9) + x(9,1) <= 1
- SEC_on_node_pair_(1,10)#514:    x(1,10) + x(10,1) <= 1
- SEC_on_node_pair_(1,11)#515:    x(1,11) + x(11,1) <= 1
- SEC_on_node_pair_(1,12)#516:    x(1,12) + x(12,1) <= 1
- SEC_on_node_pair_(1,13)#517:    x(1,13) + x(13,1) <= 1
- SEC_on_node_pair_(1,14)#518:    x(1,14) + x(14,1) <= 1
- SEC_on_node_pair_(1,15)#519:    x(1,15) + x(15,1) <= 1
- SEC_on_node_pair_(1,16)#520:    x(1,16) + x(16,1) <= 1
- SEC_on_node_pair_(1,17)#521:    x(1,17) + x(17,1) <= 1
- SEC_on_node_pair_(1,18)#522:    x(1,18) + x(18,1) <= 1
- SEC_on_node_pair_(1,19)#523:    x(1,19) + x(19,1) <= 1
- SEC_on_node_pair_(1,20)#524:    x(1,20) + x(20,1) <= 1
- SEC_on_node_pair_(1,21)#525:    x(1,21) + x(21,1) <= 1
- SEC_on_node_pair_(1,22)#526:    x(1,22) + x(22,1) <= 1
- SEC_on_node_pair_(1,23)#527:    x(1,23) + x(23,1) <= 1
- SEC_on_node_pair_(1,24)#528:    x(1,24) + x(24,1) <= 1
- SEC_on_node_pair_(2,3)#529:     x(2,3) + x(3,2) <= 1
- SEC_on_node_pair_(2,4)#530:     x(2,4) + x(4,2) <= 1
- SEC_on_node_pair_(2,5)#531:     x(2,5) + x(5,2) <= 1
- SEC_on_node_pair_(2,6)#532:     x(2,6) + x(6,2) <= 1
- SEC_on_node_pair_(2,7)#533:     x(2,7) + x(7,2) <= 1
- SEC_on_node_pair_(2,8)#534:     x(2,8) + x(8,2) <= 1
- SEC_on_node_pair_(2,9)#535:     x(2,9) + x(9,2) <= 1
- SEC_on_node_pair_(2,10)#536:    x(2,10) + x(10,2) <= 1
- SEC_on_node_pair_(2,11)#537:    x(2,11) + x(11,2) <= 1
- SEC_on_node_pair_(2,12)#538:    x(2,12) + x(12,2) <= 1
- SEC_on_node_pair_(2,13)#539:    x(2,13) + x(13,2) <= 1
- SEC_on_node_pair_(2,14)#540:    x(2,14) + x(14,2) <= 1
- SEC_on_node_pair_(2,15)#541:    x(2,15) + x(15,2) <= 1
- SEC_on_node_pair_(2,16)#542:    x(2,16) + x(16,2) <= 1
- SEC_on_node_pair_(2,17)#543:    x(2,17) + x(17,2) <= 1
- SEC_on_node_pair_(2,18)#544:    x(2,18) + x(18,2) <= 1
- SEC_on_node_pair_(2,19)#545:    x(2,19) + x(19,2) <= 1
- SEC_on_node_pair_(2,20)#546:    x(2,20) + x(20,2) <= 1
- SEC_on_node_pair_(2,21)#547:    x(2,21) + x(21,2) <= 1
- SEC_on_node_pair_(2,22)#548:    x(2,22) + x(22,2) <= 1
- SEC_on_node_pair_(2,23)#549:    x(2,23) + x(23,2) <= 1
- SEC_on_node_pair_(2,24)#550:    x(2,24) + x(24,2) <= 1
- SEC_on_node_pair_(3,4)#551:     x(3,4) + x(4,3) <= 1
- SEC_on_node_pair_(3,5)#552:     x(3,5) + x(5,3) <= 1
- SEC_on_node_pair_(3,6)#553:     x(3,6) + x(6,3) <= 1
- SEC_on_node_pair_(3,7)#554:     x(3,7) + x(7,3) <= 1
- SEC_on_node_pair_(3,8)#555:     x(3,8) + x(8,3) <= 1
- SEC_on_node_pair_(3,9)#556:     x(3,9) + x(9,3) <= 1
- SEC_on_node_pair_(3,10)#557:    x(3,10) + x(10,3) <= 1
- SEC_on_node_pair_(3,11)#558:    x(3,11) + x(11,3) <= 1
- SEC_on_node_pair_(3,12)#559:    x(3,12) + x(12,3) <= 1
- SEC_on_node_pair_(3,13)#560:    x(3,13) + x(13,3) <= 1
- SEC_on_node_pair_(3,14)#561:    x(3,14) + x(14,3) <= 1
- SEC_on_node_pair_(3,15)#562:    x(3,15) + x(15,3) <= 1
- SEC_on_node_pair_(3,16)#563:    x(3,16) + x(16,3) <= 1
- SEC_on_node_pair_(3,17)#564:    x(3,17) + x(17,3) <= 1
- SEC_on_node_pair_(3,18)#565:    x(3,18) + x(18,3) <= 1
- SEC_on_node_pair_(3,19)#566:    x(3,19) + x(19,3) <= 1
- SEC_on_node_pair_(3,20)#567:    x(3,20) + x(20,3) <= 1
- SEC_on_node_pair_(3,21)#568:    x(3,21) + x(21,3) <= 1
- SEC_on_node_pair_(3,22)#569:    x(3,22) + x(22,3) <= 1
- SEC_on_node_pair_(3,23)#570:    x(3,23) + x(23,3) <= 1
- SEC_on_node_pair_(3,24)#571:    x(3,24) + x(24,3) <= 1
- SEC_on_node_pair_(4,5)#572:     x(4,5) + x(5,4) <= 1
- SEC_on_node_pair_(4,6)#573:     x(4,6) + x(6,4) <= 1
- SEC_on_node_pair_(4,7)#574:     x(4,7) + x(7,4) <= 1
- SEC_on_node_pair_(4,8)#575:     x(4,8) + x(8,4) <= 1
- SEC_on_node_pair_(4,9)#576:     x(4,9) + x(9,4) <= 1
- SEC_on_node_pair_(4,10)#577:    x(4,10) + x(10,4) <= 1
- SEC_on_node_pair_(4,11)#578:    x(4,11) + x(11,4) <= 1
- SEC_on_node_pair_(4,12)#579:    x(4,12) + x(12,4) <= 1
- SEC_on_node_pair_(4,13)#580:    x(4,13) + x(13,4) <= 1
- SEC_on_node_pair_(4,14)#581:    x(4,14) + x(14,4) <= 1
- SEC_on_node_pair_(4,15)#582:    x(4,15) + x(15,4) <= 1
- SEC_on_node_pair_(4,16)#583:    x(4,16) + x(16,4) <= 1
- SEC_on_node_pair_(4,17)#584:    x(4,17) + x(17,4) <= 1
- SEC_on_node_pair_(4,18)#585:    x(4,18) + x(18,4) <= 1
- SEC_on_node_pair_(4,19)#586:    x(4,19) + x(19,4) <= 1
- SEC_on_node_pair_(4,20)#587:    x(4,20) + x(20,4) <= 1
- SEC_on_node_pair_(4,21)#588:    x(4,21) + x(21,4) <= 1
- SEC_on_node_pair_(4,22)#589:    x(4,22) + x(22,4) <= 1
- SEC_on_node_pair_(4,23)#590:    x(4,23) + x(23,4) <= 1
- SEC_on_node_pair_(4,24)#591:    x(4,24) + x(24,4) <= 1
- SEC_on_node_pair_(5,6)#592:     x(5,6) + x(6,5) <= 1
- SEC_on_node_pair_(5,7)#593:     x(5,7) + x(7,5) <= 1
- SEC_on_node_pair_(5,8)#594:     x(5,8) + x(8,5) <= 1
- SEC_on_node_pair_(5,9)#595:     x(5,9) + x(9,5) <= 1
- SEC_on_node_pair_(5,10)#596:    x(5,10) + x(10,5) <= 1
- SEC_on_node_pair_(5,11)#597:    x(5,11) + x(11,5) <= 1
- SEC_on_node_pair_(5,12)#598:    x(5,12) + x(12,5) <= 1
- SEC_on_node_pair_(5,13)#599:    x(5,13) + x(13,5) <= 1
- SEC_on_node_pair_(5,14)#600:    x(5,14) + x(14,5) <= 1
- SEC_on_node_pair_(5,15)#601:    x(5,15) + x(15,5) <= 1
- SEC_on_node_pair_(5,16)#602:    x(5,16) + x(16,5) <= 1
- SEC_on_node_pair_(5,17)#603:    x(5,17) + x(17,5) <= 1
- SEC_on_node_pair_(5,18)#604:    x(5,18) + x(18,5) <= 1
- SEC_on_node_pair_(5,19)#605:    x(5,19) + x(19,5) <= 1
- SEC_on_node_pair_(5,20)#606:    x(5,20) + x(20,5) <= 1
- SEC_on_node_pair_(5,21)#607:    x(5,21) + x(21,5) <= 1
- SEC_on_node_pair_(5,22)#608:    x(5,22) + x(22,5) <= 1
- SEC_on_node_pair_(5,23)#609:    x(5,23) + x(23,5) <= 1
- SEC_on_node_pair_(5,24)#610:    x(5,24) + x(24,5) <= 1
- SEC_on_node_pair_(6,7)#611:     x(6,7) + x(7,6) <= 1
- SEC_on_node_pair_(6,8)#612:     x(6,8) + x(8,6) <= 1
- SEC_on_node_pair_(6,9)#613:     x(6,9) + x(9,6) <= 1
- SEC_on_node_pair_(6,10)#614:    x(6,10) + x(10,6) <= 1
- SEC_on_node_pair_(6,11)#615:    x(6,11) + x(11,6) <= 1
- SEC_on_node_pair_(6,12)#616:    x(6,12) + x(12,6) <= 1
- SEC_on_node_pair_(6,13)#617:    x(6,13) + x(13,6) <= 1
- SEC_on_node_pair_(6,14)#618:    x(6,14) + x(14,6) <= 1
- SEC_on_node_pair_(6,15)#619:    x(6,15) + x(15,6) <= 1
- SEC_on_node_pair_(6,16)#620:    x(6,16) + x(16,6) <= 1
- SEC_on_node_pair_(6,17)#621:    x(6,17) + x(17,6) <= 1
- SEC_on_node_pair_(6,18)#622:    x(6,18) + x(18,6) <= 1
- SEC_on_node_pair_(6,19)#623:    x(6,19) + x(19,6) <= 1
- SEC_on_node_pair_(6,20)#624:    x(6,20) + x(20,6) <= 1
- SEC_on_node_pair_(6,21)#625:    x(6,21) + x(21,6) <= 1
- SEC_on_node_pair_(6,22)#626:    x(6,22) + x(22,6) <= 1
- SEC_on_node_pair_(6,23)#627:    x(6,23) + x(23,6) <= 1
- SEC_on_node_pair_(6,24)#628:    x(6,24) + x(24,6) <= 1
- SEC_on_node_pair_(7,8)#629:     x(7,8) + x(8,7) <= 1
- SEC_on_node_pair_(7,9)#630:     x(7,9) + x(9,7) <= 1
- SEC_on_node_pair_(7,10)#631:    x(7,10) + x(10,7) <= 1
- SEC_on_node_pair_(7,11)#632:    x(7,11) + x(11,7) <= 1
- SEC_on_node_pair_(7,12)#633:    x(7,12) + x(12,7) <= 1
- SEC_on_node_pair_(7,13)#634:    x(7,13) + x(13,7) <= 1
- SEC_on_node_pair_(7,14)#635:    x(7,14) + x(14,7) <= 1
- SEC_on_node_pair_(7,15)#636:    x(7,15) + x(15,7) <= 1
- SEC_on_node_pair_(7,16)#637:    x(7,16) + x(16,7) <= 1
- SEC_on_node_pair_(7,17)#638:    x(7,17) + x(17,7) <= 1
- SEC_on_node_pair_(7,18)#639:    x(7,18) + x(18,7) <= 1
- SEC_on_node_pair_(7,19)#640:    x(7,19) + x(19,7) <= 1
- SEC_on_node_pair_(7,20)#641:    x(7,20) + x(20,7) <= 1
- SEC_on_node_pair_(7,21)#642:    x(7,21) + x(21,7) <= 1
- SEC_on_node_pair_(7,22)#643:    x(7,22) + x(22,7) <= 1
- SEC_on_node_pair_(7,23)#644:    x(7,23) + x(23,7) <= 1
- SEC_on_node_pair_(7,24)#645:    x(7,24) + x(24,7) <= 1
- SEC_on_node_pair_(8,9)#646:     x(8,9) + x(9,8) <= 1
- SEC_on_node_pair_(8,10)#647:    x(8,10) + x(10,8) <= 1
- SEC_on_node_pair_(8,11)#648:    x(8,11) + x(11,8) <= 1
- SEC_on_node_pair_(8,12)#649:    x(8,12) + x(12,8) <= 1
- SEC_on_node_pair_(8,13)#650:    x(8,13) + x(13,8) <= 1
- SEC_on_node_pair_(8,14)#651:    x(8,14) + x(14,8) <= 1
- SEC_on_node_pair_(8,15)#652:    x(8,15) + x(15,8) <= 1
- SEC_on_node_pair_(8,16)#653:    x(8,16) + x(16,8) <= 1
- SEC_on_node_pair_(8,17)#654:    x(8,17) + x(17,8) <= 1
- SEC_on_node_pair_(8,18)#655:    x(8,18) + x(18,8) <= 1
- SEC_on_node_pair_(8,19)#656:    x(8,19) + x(19,8) <= 1
- SEC_on_node_pair_(8,20)#657:    x(8,20) + x(20,8) <= 1
- SEC_on_node_pair_(8,21)#658:    x(8,21) + x(21,8) <= 1
- SEC_on_node_pair_(8,22)#659:    x(8,22) + x(22,8) <= 1
- SEC_on_node_pair_(8,23)#660:    x(8,23) + x(23,8) <= 1
- SEC_on_node_pair_(8,24)#661:    x(8,24) + x(24,8) <= 1
- SEC_on_node_pair_(9,10)#662:    x(9,10) + x(10,9) <= 1
- SEC_on_node_pair_(9,11)#663:    x(9,11) + x(11,9) <= 1
- SEC_on_node_pair_(9,12)#664:    x(9,12) + x(12,9) <= 1
- SEC_on_node_pair_(9,13)#665:    x(9,13) + x(13,9) <= 1
- SEC_on_node_pair_(9,14)#666:    x(9,14) + x(14,9) <= 1
- SEC_on_node_pair_(9,15)#667:    x(9,15) + x(15,9) <= 1
- SEC_on_node_pair_(9,16)#668:    x(9,16) + x(16,9) <= 1
- SEC_on_node_pair_(9,17)#669:    x(9,17) + x(17,9) <= 1
- SEC_on_node_pair_(9,18)#670:    x(9,18) + x(18,9) <= 1
- SEC_on_node_pair_(9,19)#671:    x(9,19) + x(19,9) <= 1
- SEC_on_node_pair_(9,20)#672:    x(9,20) + x(20,9) <= 1
- SEC_on_node_pair_(9,21)#673:    x(9,21) + x(21,9) <= 1
- SEC_on_node_pair_(9,22)#674:    x(9,22) + x(22,9) <= 1
- SEC_on_node_pair_(9,23)#675:    x(9,23) + x(23,9) <= 1
- SEC_on_node_pair_(9,24)#676:    x(9,24) + x(24,9) <= 1
- SEC_on_node_pair_(10,11)#677:   x(10,11) + x(11,10) <= 1
- SEC_on_node_pair_(10,12)#678:   x(10,12) + x(12,10) <= 1
- SEC_on_node_pair_(10,13)#679:   x(10,13) + x(13,10) <= 1
- SEC_on_node_pair_(10,14)#680:   x(10,14) + x(14,10) <= 1
- SEC_on_node_pair_(10,15)#681:   x(10,15) + x(15,10) <= 1
- SEC_on_node_pair_(10,16)#682:   x(10,16) + x(16,10) <= 1
- SEC_on_node_pair_(10,17)#683:   x(10,17) + x(17,10) <= 1
- SEC_on_node_pair_(10,18)#684:   x(10,18) + x(18,10) <= 1
- SEC_on_node_pair_(10,19)#685:   x(10,19) + x(19,10) <= 1
- SEC_on_node_pair_(10,20)#686:   x(10,20) + x(20,10) <= 1
- SEC_on_node_pair_(10,21)#687:   x(10,21) + x(21,10) <= 1
- SEC_on_node_pair_(10,22)#688:   x(10,22) + x(22,10) <= 1
- SEC_on_node_pair_(10,23)#689:   x(10,23) + x(23,10) <= 1
- SEC_on_node_pair_(10,24)#690:   x(10,24) + x(24,10) <= 1
- SEC_on_node_pair_(11,12)#691:   x(11,12) + x(12,11) <= 1
- SEC_on_node_pair_(11,13)#692:   x(11,13) + x(13,11) <= 1
- SEC_on_node_pair_(11,14)#693:   x(11,14) + x(14,11) <= 1
- SEC_on_node_pair_(11,15)#694:   x(11,15) + x(15,11) <= 1
- SEC_on_node_pair_(11,16)#695:   x(11,16) + x(16,11) <= 1
- SEC_on_node_pair_(11,17)#696:   x(11,17) + x(17,11) <= 1
- SEC_on_node_pair_(11,18)#697:   x(11,18) + x(18,11) <= 1
- SEC_on_node_pair_(11,19)#698:   x(11,19) + x(19,11) <= 1
- SEC_on_node_pair_(11,20)#699:   x(11,20) + x(20,11) <= 1
- SEC_on_node_pair_(11,21)#700:   x(11,21) + x(21,11) <= 1
- SEC_on_node_pair_(11,22)#701:   x(11,22) + x(22,11) <= 1
- SEC_on_node_pair_(11,23)#702:   x(11,23) + x(23,11) <= 1
- SEC_on_node_pair_(11,24)#703:   x(11,24) + x(24,11) <= 1
- SEC_on_node_pair_(12,13)#704:   x(12,13) + x(13,12) <= 1
- SEC_on_node_pair_(12,14)#705:   x(12,14) + x(14,12) <= 1
- SEC_on_node_pair_(12,15)#706:   x(12,15) + x(15,12) <= 1
- SEC_on_node_pair_(12,16)#707:   x(12,16) + x(16,12) <= 1
- SEC_on_node_pair_(12,17)#708:   x(12,17) + x(17,12) <= 1
- SEC_on_node_pair_(12,18)#709:   x(12,18) + x(18,12) <= 1
- SEC_on_node_pair_(12,19)#710:   x(12,19) + x(19,12) <= 1
- SEC_on_node_pair_(12,20)#711:   x(12,20) + x(20,12) <= 1
- SEC_on_node_pair_(12,21)#712:   x(12,21) + x(21,12) <= 1
- SEC_on_node_pair_(12,22)#713:   x(12,22) + x(22,12) <= 1
- SEC_on_node_pair_(12,23)#714:   x(12,23) + x(23,12) <= 1
- SEC_on_node_pair_(12,24)#715:   x(12,24) + x(24,12) <= 1
- SEC_on_node_pair_(13,14)#716:   x(13,14) + x(14,13) <= 1
- SEC_on_node_pair_(13,15)#717:   x(13,15) + x(15,13) <= 1
- SEC_on_node_pair_(13,16)#718:   x(13,16) + x(16,13) <= 1
- SEC_on_node_pair_(13,17)#719:   x(13,17) + x(17,13) <= 1
- SEC_on_node_pair_(13,18)#720:   x(13,18) + x(18,13) <= 1
- SEC_on_node_pair_(13,19)#721:   x(13,19) + x(19,13) <= 1
- SEC_on_node_pair_(13,20)#722:   x(13,20) + x(20,13) <= 1
- SEC_on_node_pair_(13,21)#723:   x(13,21) + x(21,13) <= 1
- SEC_on_node_pair_(13,22)#724:   x(13,22) + x(22,13) <= 1
- SEC_on_node_pair_(13,23)#725:   x(13,23) + x(23,13) <= 1
- SEC_on_node_pair_(13,24)#726:   x(13,24) + x(24,13) <= 1
- SEC_on_node_pair_(14,15)#727:   x(14,15) + x(15,14) <= 1
- SEC_on_node_pair_(14,16)#728:   x(14,16) + x(16,14) <= 1
- SEC_on_node_pair_(14,17)#729:   x(14,17) + x(17,14) <= 1
- SEC_on_node_pair_(14,18)#730:   x(14,18) + x(18,14) <= 1
- SEC_on_node_pair_(14,19)#731:   x(14,19) + x(19,14) <= 1
- SEC_on_node_pair_(14,20)#732:   x(14,20) + x(20,14) <= 1
- SEC_on_node_pair_(14,21)#733:   x(14,21) + x(21,14) <= 1
- SEC_on_node_pair_(14,22)#734:   x(14,22) + x(22,14) <= 1
- SEC_on_node_pair_(14,23)#735:   x(14,23) + x(23,14) <= 1
- SEC_on_node_pair_(14,24)#736:   x(14,24) + x(24,14) <= 1
- SEC_on_node_pair_(15,16)#737:   x(15,16) + x(16,15) <= 1
- SEC_on_node_pair_(15,17)#738:   x(15,17) + x(17,15) <= 1
- SEC_on_node_pair_(15,18)#739:   x(15,18) + x(18,15) <= 1
- SEC_on_node_pair_(15,19)#740:   x(15,19) + x(19,15) <= 1
- SEC_on_node_pair_(15,20)#741:   x(15,20) + x(20,15) <= 1
- SEC_on_node_pair_(15,21)#742:   x(15,21) + x(21,15) <= 1
- SEC_on_node_pair_(15,22)#743:   x(15,22) + x(22,15) <= 1
- SEC_on_node_pair_(15,23)#744:   x(15,23) + x(23,15) <= 1
- SEC_on_node_pair_(15,24)#745:   x(15,24) + x(24,15) <= 1
- SEC_on_node_pair_(16,17)#746:   x(16,17) + x(17,16) <= 1
- SEC_on_node_pair_(16,18)#747:   x(16,18) + x(18,16) <= 1
- SEC_on_node_pair_(16,19)#748:   x(16,19) + x(19,16) <= 1
- SEC_on_node_pair_(16,20)#749:   x(16,20) + x(20,16) <= 1
- SEC_on_node_pair_(16,21)#750:   x(16,21) + x(21,16) <= 1
- SEC_on_node_pair_(16,22)#751:   x(16,22) + x(22,16) <= 1
- SEC_on_node_pair_(16,23)#752:   x(16,23) + x(23,16) <= 1
- SEC_on_node_pair_(16,24)#753:   x(16,24) + x(24,16) <= 1
- SEC_on_node_pair_(17,18)#754:   x(17,18) + x(18,17) <= 1
- SEC_on_node_pair_(17,19)#755:   x(17,19) + x(19,17) <= 1
- SEC_on_node_pair_(17,20)#756:   x(17,20) + x(20,17) <= 1
- SEC_on_node_pair_(17,21)#757:   x(17,21) + x(21,17) <= 1
- SEC_on_node_pair_(17,22)#758:   x(17,22) + x(22,17) <= 1
- SEC_on_node_pair_(17,23)#759:   x(17,23) + x(23,17) <= 1
- SEC_on_node_pair_(17,24)#760:   x(17,24) + x(24,17) <= 1
- SEC_on_node_pair_(18,19)#761:   x(18,19) + x(19,18) <= 1
- SEC_on_node_pair_(18,20)#762:   x(18,20) + x(20,18) <= 1
- SEC_on_node_pair_(18,21)#763:   x(18,21) + x(21,18) <= 1
- SEC_on_node_pair_(18,22)#764:   x(18,22) + x(22,18) <= 1
- SEC_on_node_pair_(18,23)#765:   x(18,23) + x(23,18) <= 1
- SEC_on_node_pair_(18,24)#766:   x(18,24) + x(24,18) <= 1
- SEC_on_node_pair_(19,20)#767:   x(19,20) + x(20,19) <= 1
- SEC_on_node_pair_(19,21)#768:   x(19,21) + x(21,19) <= 1
- SEC_on_node_pair_(19,22)#769:   x(19,22) + x(22,19) <= 1
- SEC_on_node_pair_(19,23)#770:   x(19,23) + x(23,19) <= 1
- SEC_on_node_pair_(19,24)#771:   x(19,24) + x(24,19) <= 1
- SEC_on_node_pair_(20,21)#772:   x(20,21) + x(21,20) <= 1
- SEC_on_node_pair_(20,22)#773:   x(20,22) + x(22,20) <= 1
- SEC_on_node_pair_(20,23)#774:   x(20,23) + x(23,20) <= 1
- SEC_on_node_pair_(20,24)#775:   x(20,24) + x(24,20) <= 1
- SEC_on_node_pair_(21,22)#776:   x(21,22) + x(22,21) <= 1
- SEC_on_node_pair_(21,23)#777:   x(21,23) + x(23,21) <= 1
- SEC_on_node_pair_(21,24)#778:   x(21,24) + x(24,21) <= 1
- SEC_on_node_pair_(22,23)#779:   x(22,23) + x(23,22) <= 1
- SEC_on_node_pair_(22,24)#780:   x(22,24) + x(24,22) <= 1
- SEC_on_node_pair_(23,24)#781:   x(23,24) + x(24,23) <= 1
+ xy(1)(2):   - 23 x(1,2) + y(1)(2) <= 0
+ xy(1)(3):   - 23 x(1,3) + y(1)(3) <= 0
+ xy(1)(4):   - 23 x(1,4) + y(1)(4) <= 0
+ xy(1)(5):   - 23 x(1,5) + y(1)(5) <= 0
+ xy(1)(6):   - 23 x(1,6) + y(1)(6) <= 0
+ xy(1)(7):   - 23 x(1,7) + y(1)(7) <= 0
+ xy(1)(8):   - 23 x(1,8) + y(1)(8) <= 0
+ xy(1)(9):   - 23 x(1,9) + y(1)(9) <= 0
+ xy(1)(10):  - 23 x(1,10) + y(1)(10) <= 0
+ xy(1)(11):  - 23 x(1,11) + y(1)(11) <= 0
+ xy(1)(12):  - 23 x(1,12) + y(1)(12) <= 0
+ xy(1)(13):  - 23 x(1,13) + y(1)(13) <= 0
+ xy(1)(14):  - 23 x(1,14) + y(1)(14) <= 0
+ xy(1)(15):  - 23 x(1,15) + y(1)(15) <= 0
+ xy(1)(16):  - 23 x(1,16) + y(1)(16) <= 0
+ xy(1)(17):  - 23 x(1,17) + y(1)(17) <= 0
+ xy(1)(18):  - 23 x(1,18) + y(1)(18) <= 0
+ xy(1)(19):  - 23 x(1,19) + y(1)(19) <= 0
+ xy(1)(20):  - 23 x(1,20) + y(1)(20) <= 0
+ xy(1)(21):  - 23 x(1,21) + y(1)(21) <= 0
+ xy(1)(22):  - 23 x(1,22) + y(1)(22) <= 0
+ xy(1)(23):  - 23 x(1,23) + y(1)(23) <= 0
+ xy(1)(24):  - 23 x(1,24) + y(1)(24) <= 0
+ xy(2)(1):   - 23 x(2,1) + y(2)(1) <= 0
+ xy(2)(3):   - 23 x(2,3) + y(2)(3) <= 0
+ xy(2)(4):   - 23 x(2,4) + y(2)(4) <= 0
+ xy(2)(5):   - 23 x(2,5) + y(2)(5) <= 0
+ xy(2)(6):   - 23 x(2,6) + y(2)(6) <= 0
+ xy(2)(7):   - 23 x(2,7) + y(2)(7) <= 0
+ xy(2)(8):   - 23 x(2,8) + y(2)(8) <= 0
+ xy(2)(9):   - 23 x(2,9) + y(2)(9) <= 0
+ xy(2)(10):  - 23 x(2,10) + y(2)(10) <= 0
+ xy(2)(11):  - 23 x(2,11) + y(2)(11) <= 0
+ xy(2)(12):  - 23 x(2,12) + y(2)(12) <= 0
+ xy(2)(13):  - 23 x(2,13) + y(2)(13) <= 0
+ xy(2)(14):  - 23 x(2,14) + y(2)(14) <= 0
+ xy(2)(15):  - 23 x(2,15) + y(2)(15) <= 0
+ xy(2)(16):  - 23 x(2,16) + y(2)(16) <= 0
+ xy(2)(17):  - 23 x(2,17) + y(2)(17) <= 0
+ xy(2)(18):  - 23 x(2,18) + y(2)(18) <= 0
+ xy(2)(19):  - 23 x(2,19) + y(2)(19) <= 0
+ xy(2)(20):  - 23 x(2,20) + y(2)(20) <= 0
+ xy(2)(21):  - 23 x(2,21) + y(2)(21) <= 0
+ xy(2)(22):  - 23 x(2,22) + y(2)(22) <= 0
+ xy(2)(23):  - 23 x(2,23) + y(2)(23) <= 0
+ xy(2)(24):  - 23 x(2,24) + y(2)(24) <= 0
+ xy(3)(1):   - 23 x(3,1) + y(3)(1) <= 0
+ xy(3)(2):   - 23 x(3,2) + y(3)(2) <= 0
+ xy(3)(4):   - 23 x(3,4) + y(3)(4) <= 0
+ xy(3)(5):   - 23 x(3,5) + y(3)(5) <= 0
+ xy(3)(6):   - 23 x(3,6) + y(3)(6) <= 0
+ xy(3)(7):   - 23 x(3,7) + y(3)(7) <= 0
+ xy(3)(8):   - 23 x(3,8) + y(3)(8) <= 0
+ xy(3)(9):   - 23 x(3,9) + y(3)(9) <= 0
+ xy(3)(10):  - 23 x(3,10) + y(3)(10) <= 0
+ xy(3)(11):  - 23 x(3,11) + y(3)(11) <= 0
+ xy(3)(12):  - 23 x(3,12) + y(3)(12) <= 0
+ xy(3)(13):  - 23 x(3,13) + y(3)(13) <= 0
+ xy(3)(14):  - 23 x(3,14) + y(3)(14) <= 0
+ xy(3)(15):  - 23 x(3,15) + y(3)(15) <= 0
+ xy(3)(16):  - 23 x(3,16) + y(3)(16) <= 0
+ xy(3)(17):  - 23 x(3,17) + y(3)(17) <= 0
+ xy(3)(18):  - 23 x(3,18) + y(3)(18) <= 0
+ xy(3)(19):  - 23 x(3,19) + y(3)(19) <= 0
+ xy(3)(20):  - 23 x(3,20) + y(3)(20) <= 0
+ xy(3)(21):  - 23 x(3,21) + y(3)(21) <= 0
+ xy(3)(22):  - 23 x(3,22) + y(3)(22) <= 0
+ xy(3)(23):  - 23 x(3,23) + y(3)(23) <= 0
+ xy(3)(24):  - 23 x(3,24) + y(3)(24) <= 0
+ xy(4)(1):   - 23 x(4,1) + y(4)(1) <= 0
+ xy(4)(2):   - 23 x(4,2) + y(4)(2) <= 0
+ xy(4)(3):   - 23 x(4,3) + y(4)(3) <= 0
+ xy(4)(5):   - 23 x(4,5) + y(4)(5) <= 0
+ xy(4)(6):   - 23 x(4,6) + y(4)(6) <= 0
+ xy(4)(7):   - 23 x(4,7) + y(4)(7) <= 0
+ xy(4)(8):   - 23 x(4,8) + y(4)(8) <= 0
+ xy(4)(9):   - 23 x(4,9) + y(4)(9) <= 0
+ xy(4)(10):  - 23 x(4,10) + y(4)(10) <= 0
+ xy(4)(11):  - 23 x(4,11) + y(4)(11) <= 0
+ xy(4)(12):  - 23 x(4,12) + y(4)(12) <= 0
+ xy(4)(13):  - 23 x(4,13) + y(4)(13) <= 0
+ xy(4)(14):  - 23 x(4,14) + y(4)(14) <= 0
+ xy(4)(15):  - 23 x(4,15) + y(4)(15) <= 0
+ xy(4)(16):  - 23 x(4,16) + y(4)(16) <= 0
+ xy(4)(17):  - 23 x(4,17) + y(4)(17) <= 0
+ xy(4)(18):  - 23 x(4,18) + y(4)(18) <= 0
+ xy(4)(19):  - 23 x(4,19) + y(4)(19) <= 0
+ xy(4)(20):  - 23 x(4,20) + y(4)(20) <= 0
+ xy(4)(21):  - 23 x(4,21) + y(4)(21) <= 0
+ xy(4)(22):  - 23 x(4,22) + y(4)(22) <= 0
+ xy(4)(23):  - 23 x(4,23) + y(4)(23) <= 0
+ xy(4)(24):  - 23 x(4,24) + y(4)(24) <= 0
+ xy(5)(1):   - 23 x(5,1) + y(5)(1) <= 0
+ xy(5)(2):   - 23 x(5,2) + y(5)(2) <= 0
+ xy(5)(3):   - 23 x(5,3) + y(5)(3) <= 0
+ xy(5)(4):   - 23 x(5,4) + y(5)(4) <= 0
+ xy(5)(6):   - 23 x(5,6) + y(5)(6) <= 0
+ xy(5)(7):   - 23 x(5,7) + y(5)(7) <= 0
+ xy(5)(8):   - 23 x(5,8) + y(5)(8) <= 0
+ xy(5)(9):   - 23 x(5,9) + y(5)(9) <= 0
+ xy(5)(10):  - 23 x(5,10) + y(5)(10) <= 0
+ xy(5)(11):  - 23 x(5,11) + y(5)(11) <= 0
+ xy(5)(12):  - 23 x(5,12) + y(5)(12) <= 0
+ xy(5)(13):  - 23 x(5,13) + y(5)(13) <= 0
+ xy(5)(14):  - 23 x(5,14) + y(5)(14) <= 0
+ xy(5)(15):  - 23 x(5,15) + y(5)(15) <= 0
+ xy(5)(16):  - 23 x(5,16) + y(5)(16) <= 0
+ xy(5)(17):  - 23 x(5,17) + y(5)(17) <= 0
+ xy(5)(18):  - 23 x(5,18) + y(5)(18) <= 0
+ xy(5)(19):  - 23 x(5,19) + y(5)(19) <= 0
+ xy(5)(20):  - 23 x(5,20) + y(5)(20) <= 0
+ xy(5)(21):  - 23 x(5,21) + y(5)(21) <= 0
+ xy(5)(22):  - 23 x(5,22) + y(5)(22) <= 0
+ xy(5)(23):  - 23 x(5,23) + y(5)(23) <= 0
+ xy(5)(24):  - 23 x(5,24) + y(5)(24) <= 0
+ xy(6)(1):   - 23 x(6,1) + y(6)(1) <= 0
+ xy(6)(2):   - 23 x(6,2) + y(6)(2) <= 0
+ xy(6)(3):   - 23 x(6,3) + y(6)(3) <= 0
+ xy(6)(4):   - 23 x(6,4) + y(6)(4) <= 0
+ xy(6)(5):   - 23 x(6,5) + y(6)(5) <= 0
+ xy(6)(7):   - 23 x(6,7) + y(6)(7) <= 0
+ xy(6)(8):   - 23 x(6,8) + y(6)(8) <= 0
+ xy(6)(9):   - 23 x(6,9) + y(6)(9) <= 0
+ xy(6)(10):  - 23 x(6,10) + y(6)(10) <= 0
+ xy(6)(11):  - 23 x(6,11) + y(6)(11) <= 0
+ xy(6)(12):  - 23 x(6,12) + y(6)(12) <= 0
+ xy(6)(13):  - 23 x(6,13) + y(6)(13) <= 0
+ xy(6)(14):  - 23 x(6,14) + y(6)(14) <= 0
+ xy(6)(15):  - 23 x(6,15) + y(6)(15) <= 0
+ xy(6)(16):  - 23 x(6,16) + y(6)(16) <= 0
+ xy(6)(17):  - 23 x(6,17) + y(6)(17) <= 0
+ xy(6)(18):  - 23 x(6,18) + y(6)(18) <= 0
+ xy(6)(19):  - 23 x(6,19) + y(6)(19) <= 0
+ xy(6)(20):  - 23 x(6,20) + y(6)(20) <= 0
+ xy(6)(21):  - 23 x(6,21) + y(6)(21) <= 0
+ xy(6)(22):  - 23 x(6,22) + y(6)(22) <= 0
+ xy(6)(23):  - 23 x(6,23) + y(6)(23) <= 0
+ xy(6)(24):  - 23 x(6,24) + y(6)(24) <= 0
+ xy(7)(1):   - 23 x(7,1) + y(7)(1) <= 0
+ xy(7)(2):   - 23 x(7,2) + y(7)(2) <= 0
+ xy(7)(3):   - 23 x(7,3) + y(7)(3) <= 0
+ xy(7)(4):   - 23 x(7,4) + y(7)(4) <= 0
+ xy(7)(5):   - 23 x(7,5) + y(7)(5) <= 0
+ xy(7)(6):   - 23 x(7,6) + y(7)(6) <= 0
+ xy(7)(8):   - 23 x(7,8) + y(7)(8) <= 0
+ xy(7)(9):   - 23 x(7,9) + y(7)(9) <= 0
+ xy(7)(10):  - 23 x(7,10) + y(7)(10) <= 0
+ xy(7)(11):  - 23 x(7,11) + y(7)(11) <= 0
+ xy(7)(12):  - 23 x(7,12) + y(7)(12) <= 0
+ xy(7)(13):  - 23 x(7,13) + y(7)(13) <= 0
+ xy(7)(14):  - 23 x(7,14) + y(7)(14) <= 0
+ xy(7)(15):  - 23 x(7,15) + y(7)(15) <= 0
+ xy(7)(16):  - 23 x(7,16) + y(7)(16) <= 0
+ xy(7)(17):  - 23 x(7,17) + y(7)(17) <= 0
+ xy(7)(18):  - 23 x(7,18) + y(7)(18) <= 0
+ xy(7)(19):  - 23 x(7,19) + y(7)(19) <= 0
+ xy(7)(20):  - 23 x(7,20) + y(7)(20) <= 0
+ xy(7)(21):  - 23 x(7,21) + y(7)(21) <= 0
+ xy(7)(22):  - 23 x(7,22) + y(7)(22) <= 0
+ xy(7)(23):  - 23 x(7,23) + y(7)(23) <= 0
+ xy(7)(24):  - 23 x(7,24) + y(7)(24) <= 0
+ xy(8)(1):   - 23 x(8,1) + y(8)(1) <= 0
+ xy(8)(2):   - 23 x(8,2) + y(8)(2) <= 0
+ xy(8)(3):   - 23 x(8,3) + y(8)(3) <= 0
+ xy(8)(4):   - 23 x(8,4) + y(8)(4) <= 0
+ xy(8)(5):   - 23 x(8,5) + y(8)(5) <= 0
+ xy(8)(6):   - 23 x(8,6) + y(8)(6) <= 0
+ xy(8)(7):   - 23 x(8,7) + y(8)(7) <= 0
+ xy(8)(9):   - 23 x(8,9) + y(8)(9) <= 0
+ xy(8)(10):  - 23 x(8,10) + y(8)(10) <= 0
+ xy(8)(11):  - 23 x(8,11) + y(8)(11) <= 0
+ xy(8)(12):  - 23 x(8,12) + y(8)(12) <= 0
+ xy(8)(13):  - 23 x(8,13) + y(8)(13) <= 0
+ xy(8)(14):  - 23 x(8,14) + y(8)(14) <= 0
+ xy(8)(15):  - 23 x(8,15) + y(8)(15) <= 0
+ xy(8)(16):  - 23 x(8,16) + y(8)(16) <= 0
+ xy(8)(17):  - 23 x(8,17) + y(8)(17) <= 0
+ xy(8)(18):  - 23 x(8,18) + y(8)(18) <= 0
+ xy(8)(19):  - 23 x(8,19) + y(8)(19) <= 0
+ xy(8)(20):  - 23 x(8,20) + y(8)(20) <= 0
+ xy(8)(21):  - 23 x(8,21) + y(8)(21) <= 0
+ xy(8)(22):  - 23 x(8,22) + y(8)(22) <= 0
+ xy(8)(23):  - 23 x(8,23) + y(8)(23) <= 0
+ xy(8)(24):  - 23 x(8,24) + y(8)(24) <= 0
+ xy(9)(1):   - 23 x(9,1) + y(9)(1) <= 0
+ xy(9)(2):   - 23 x(9,2) + y(9)(2) <= 0
+ xy(9)(3):   - 23 x(9,3) + y(9)(3) <= 0
+ xy(9)(4):   - 23 x(9,4) + y(9)(4) <= 0
+ xy(9)(5):   - 23 x(9,5) + y(9)(5) <= 0
+ xy(9)(6):   - 23 x(9,6) + y(9)(6) <= 0
+ xy(9)(7):   - 23 x(9,7) + y(9)(7) <= 0
+ xy(9)(8):   - 23 x(9,8) + y(9)(8) <= 0
+ xy(9)(10):  - 23 x(9,10) + y(9)(10) <= 0
+ xy(9)(11):  - 23 x(9,11) + y(9)(11) <= 0
+ xy(9)(12):  - 23 x(9,12) + y(9)(12) <= 0
+ xy(9)(13):  - 23 x(9,13) + y(9)(13) <= 0
+ xy(9)(14):  - 23 x(9,14) + y(9)(14) <= 0
+ xy(9)(15):  - 23 x(9,15) + y(9)(15) <= 0
+ xy(9)(16):  - 23 x(9,16) + y(9)(16) <= 0
+ xy(9)(17):  - 23 x(9,17) + y(9)(17) <= 0
+ xy(9)(18):  - 23 x(9,18) + y(9)(18) <= 0
+ xy(9)(19):  - 23 x(9,19) + y(9)(19) <= 0
+ xy(9)(20):  - 23 x(9,20) + y(9)(20) <= 0
+ xy(9)(21):  - 23 x(9,21) + y(9)(21) <= 0
+ xy(9)(22):  - 23 x(9,22) + y(9)(22) <= 0
+ xy(9)(23):  - 23 x(9,23) + y(9)(23) <= 0
+ xy(9)(24):  - 23 x(9,24) + y(9)(24) <= 0
+ xy(10)(1):  - 23 x(10,1) + y(10)(1) <= 0
+ xy(10)(2):  - 23 x(10,2) + y(10)(2) <= 0
+ xy(10)(3):  - 23 x(10,3) + y(10)(3) <= 0
+ xy(10)(4):  - 23 x(10,4) + y(10)(4) <= 0
+ xy(10)(5):  - 23 x(10,5) + y(10)(5) <= 0
+ xy(10)(6):  - 23 x(10,6) + y(10)(6) <= 0
+ xy(10)(7):  - 23 x(10,7) + y(10)(7) <= 0
+ xy(10)(8):  - 23 x(10,8) + y(10)(8) <= 0
+ xy(10)(9):  - 23 x(10,9) + y(10)(9) <= 0
+ xy(10)(11): - 23 x(10,11) + y(10)(11) <= 0
+ xy(10)(12): - 23 x(10,12) + y(10)(12) <= 0
+ xy(10)(13): - 23 x(10,13) + y(10)(13) <= 0
+ xy(10)(14): - 23 x(10,14) + y(10)(14) <= 0
+ xy(10)(15): - 23 x(10,15) + y(10)(15) <= 0
+ xy(10)(16): - 23 x(10,16) + y(10)(16) <= 0
+ xy(10)(17): - 23 x(10,17) + y(10)(17) <= 0
+ xy(10)(18): - 23 x(10,18) + y(10)(18) <= 0
+ xy(10)(19): - 23 x(10,19) + y(10)(19) <= 0
+ xy(10)(20): - 23 x(10,20) + y(10)(20) <= 0
+ xy(10)(21): - 23 x(10,21) + y(10)(21) <= 0
+ xy(10)(22): - 23 x(10,22) + y(10)(22) <= 0
+ xy(10)(23): - 23 x(10,23) + y(10)(23) <= 0
+ xy(10)(24): - 23 x(10,24) + y(10)(24) <= 0
+ xy(11)(1):  - 23 x(11,1) + y(11)(1) <= 0
+ xy(11)(2):  - 23 x(11,2) + y(11)(2) <= 0
+ xy(11)(3):  - 23 x(11,3) + y(11)(3) <= 0
+ xy(11)(4):  - 23 x(11,4) + y(11)(4) <= 0
+ xy(11)(5):  - 23 x(11,5) + y(11)(5) <= 0
+ xy(11)(6):  - 23 x(11,6) + y(11)(6) <= 0
+ xy(11)(7):  - 23 x(11,7) + y(11)(7) <= 0
+ xy(11)(8):  - 23 x(11,8) + y(11)(8) <= 0
+ xy(11)(9):  - 23 x(11,9) + y(11)(9) <= 0
+ xy(11)(10): - 23 x(11,10) + y(11)(10) <= 0
+ xy(11)(12): - 23 x(11,12) + y(11)(12) <= 0
+ xy(11)(13): - 23 x(11,13) + y(11)(13) <= 0
+ xy(11)(14): - 23 x(11,14) + y(11)(14) <= 0
+ xy(11)(15): - 23 x(11,15) + y(11)(15) <= 0
+ xy(11)(16): - 23 x(11,16) + y(11)(16) <= 0
+ xy(11)(17): - 23 x(11,17) + y(11)(17) <= 0
+ xy(11)(18): - 23 x(11,18) + y(11)(18) <= 0
+ xy(11)(19): - 23 x(11,19) + y(11)(19) <= 0
+ xy(11)(20): - 23 x(11,20) + y(11)(20) <= 0
+ xy(11)(21): - 23 x(11,21) + y(11)(21) <= 0
+ xy(11)(22): - 23 x(11,22) + y(11)(22) <= 0
+ xy(11)(23): - 23 x(11,23) + y(11)(23) <= 0
+ xy(11)(24): - 23 x(11,24) + y(11)(24) <= 0
+ xy(12)(1):  - 23 x(12,1) + y(12)(1) <= 0
+ xy(12)(2):  - 23 x(12,2) + y(12)(2) <= 0
+ xy(12)(3):  - 23 x(12,3) + y(12)(3) <= 0
+ xy(12)(4):  - 23 x(12,4) + y(12)(4) <= 0
+ xy(12)(5):  - 23 x(12,5) + y(12)(5) <= 0
+ xy(12)(6):  - 23 x(12,6) + y(12)(6) <= 0
+ xy(12)(7):  - 23 x(12,7) + y(12)(7) <= 0
+ xy(12)(8):  - 23 x(12,8) + y(12)(8) <= 0
+ xy(12)(9):  - 23 x(12,9) + y(12)(9) <= 0
+ xy(12)(10): - 23 x(12,10) + y(12)(10) <= 0
+ xy(12)(11): - 23 x(12,11) + y(12)(11) <= 0
+ xy(12)(13): - 23 x(12,13) + y(12)(13) <= 0
+ xy(12)(14): - 23 x(12,14) + y(12)(14) <= 0
+ xy(12)(15): - 23 x(12,15) + y(12)(15) <= 0
+ xy(12)(16): - 23 x(12,16) + y(12)(16) <= 0
+ xy(12)(17): - 23 x(12,17) + y(12)(17) <= 0
+ xy(12)(18): - 23 x(12,18) + y(12)(18) <= 0
+ xy(12)(19): - 23 x(12,19) + y(12)(19) <= 0
+ xy(12)(20): - 23 x(12,20) + y(12)(20) <= 0
+ xy(12)(21): - 23 x(12,21) + y(12)(21) <= 0
+ xy(12)(22): - 23 x(12,22) + y(12)(22) <= 0
+ xy(12)(23): - 23 x(12,23) + y(12)(23) <= 0
+ xy(12)(24): - 23 x(12,24) + y(12)(24) <= 0
+ xy(13)(1):  - 23 x(13,1) + y(13)(1) <= 0
+ xy(13)(2):  - 23 x(13,2) + y(13)(2) <= 0
+ xy(13)(3):  - 23 x(13,3) + y(13)(3) <= 0
+ xy(13)(4):  - 23 x(13,4) + y(13)(4) <= 0
+ xy(13)(5):  - 23 x(13,5) + y(13)(5) <= 0
+ xy(13)(6):  - 23 x(13,6) + y(13)(6) <= 0
+ xy(13)(7):  - 23 x(13,7) + y(13)(7) <= 0
+ xy(13)(8):  - 23 x(13,8) + y(13)(8) <= 0
+ xy(13)(9):  - 23 x(13,9) + y(13)(9) <= 0
+ xy(13)(10): - 23 x(13,10) + y(13)(10) <= 0
+ xy(13)(11): - 23 x(13,11) + y(13)(11) <= 0
+ xy(13)(12): - 23 x(13,12) + y(13)(12) <= 0
+ xy(13)(14): - 23 x(13,14) + y(13)(14) <= 0
+ xy(13)(15): - 23 x(13,15) + y(13)(15) <= 0
+ xy(13)(16): - 23 x(13,16) + y(13)(16) <= 0
+ xy(13)(17): - 23 x(13,17) + y(13)(17) <= 0
+ xy(13)(18): - 23 x(13,18) + y(13)(18) <= 0
+ xy(13)(19): - 23 x(13,19) + y(13)(19) <= 0
+ xy(13)(20): - 23 x(13,20) + y(13)(20) <= 0
+ xy(13)(21): - 23 x(13,21) + y(13)(21) <= 0
+ xy(13)(22): - 23 x(13,22) + y(13)(22) <= 0
+ xy(13)(23): - 23 x(13,23) + y(13)(23) <= 0
+ xy(13)(24): - 23 x(13,24) + y(13)(24) <= 0
+ xy(14)(1):  - 23 x(14,1) + y(14)(1) <= 0
+ xy(14)(2):  - 23 x(14,2) + y(14)(2) <= 0
+ xy(14)(3):  - 23 x(14,3) + y(14)(3) <= 0
+ xy(14)(4):  - 23 x(14,4) + y(14)(4) <= 0
+ xy(14)(5):  - 23 x(14,5) + y(14)(5) <= 0
+ xy(14)(6):  - 23 x(14,6) + y(14)(6) <= 0
+ xy(14)(7):  - 23 x(14,7) + y(14)(7) <= 0
+ xy(14)(8):  - 23 x(14,8) + y(14)(8) <= 0
+ xy(14)(9):  - 23 x(14,9) + y(14)(9) <= 0
+ xy(14)(10): - 23 x(14,10) + y(14)(10) <= 0
+ xy(14)(11): - 23 x(14,11) + y(14)(11) <= 0
+ xy(14)(12): - 23 x(14,12) + y(14)(12) <= 0
+ xy(14)(13): - 23 x(14,13) + y(14)(13) <= 0
+ xy(14)(15): - 23 x(14,15) + y(14)(15) <= 0
+ xy(14)(16): - 23 x(14,16) + y(14)(16) <= 0
+ xy(14)(17): - 23 x(14,17) + y(14)(17) <= 0
+ xy(14)(18): - 23 x(14,18) + y(14)(18) <= 0
+ xy(14)(19): - 23 x(14,19) + y(14)(19) <= 0
+ xy(14)(20): - 23 x(14,20) + y(14)(20) <= 0
+ xy(14)(21): - 23 x(14,21) + y(14)(21) <= 0
+ xy(14)(22): - 23 x(14,22) + y(14)(22) <= 0
+ xy(14)(23): - 23 x(14,23) + y(14)(23) <= 0
+ xy(14)(24): - 23 x(14,24) + y(14)(24) <= 0
+ xy(15)(1):  - 23 x(15,1) + y(15)(1) <= 0
+ xy(15)(2):  - 23 x(15,2) + y(15)(2) <= 0
+ xy(15)(3):  - 23 x(15,3) + y(15)(3) <= 0
+ xy(15)(4):  - 23 x(15,4) + y(15)(4) <= 0
+ xy(15)(5):  - 23 x(15,5) + y(15)(5) <= 0
+ xy(15)(6):  - 23 x(15,6) + y(15)(6) <= 0
+ xy(15)(7):  - 23 x(15,7) + y(15)(7) <= 0
+ xy(15)(8):  - 23 x(15,8) + y(15)(8) <= 0
+ xy(15)(9):  - 23 x(15,9) + y(15)(9) <= 0
+ xy(15)(10): - 23 x(15,10) + y(15)(10) <= 0
+ xy(15)(11): - 23 x(15,11) + y(15)(11) <= 0
+ xy(15)(12): - 23 x(15,12) + y(15)(12) <= 0
+ xy(15)(13): - 23 x(15,13) + y(15)(13) <= 0
+ xy(15)(14): - 23 x(15,14) + y(15)(14) <= 0
+ xy(15)(16): - 23 x(15,16) + y(15)(16) <= 0
+ xy(15)(17): - 23 x(15,17) + y(15)(17) <= 0
+ xy(15)(18): - 23 x(15,18) + y(15)(18) <= 0
+ xy(15)(19): - 23 x(15,19) + y(15)(19) <= 0
+ xy(15)(20): - 23 x(15,20) + y(15)(20) <= 0
+ xy(15)(21): - 23 x(15,21) + y(15)(21) <= 0
+ xy(15)(22): - 23 x(15,22) + y(15)(22) <= 0
+ xy(15)(23): - 23 x(15,23) + y(15)(23) <= 0
+ xy(15)(24): - 23 x(15,24) + y(15)(24) <= 0
+ xy(16)(1):  - 23 x(16,1) + y(16)(1) <= 0
+ xy(16)(2):  - 23 x(16,2) + y(16)(2) <= 0
+ xy(16)(3):  - 23 x(16,3) + y(16)(3) <= 0
+ xy(16)(4):  - 23 x(16,4) + y(16)(4) <= 0
+ xy(16)(5):  - 23 x(16,5) + y(16)(5) <= 0
+ xy(16)(6):  - 23 x(16,6) + y(16)(6) <= 0
+ xy(16)(7):  - 23 x(16,7) + y(16)(7) <= 0
+ xy(16)(8):  - 23 x(16,8) + y(16)(8) <= 0
+ xy(16)(9):  - 23 x(16,9) + y(16)(9) <= 0
+ xy(16)(10): - 23 x(16,10) + y(16)(10) <= 0
+ xy(16)(11): - 23 x(16,11) + y(16)(11) <= 0
+ xy(16)(12): - 23 x(16,12) + y(16)(12) <= 0
+ xy(16)(13): - 23 x(16,13) + y(16)(13) <= 0
+ xy(16)(14): - 23 x(16,14) + y(16)(14) <= 0
+ xy(16)(15): - 23 x(16,15) + y(16)(15) <= 0
+ xy(16)(17): - 23 x(16,17) + y(16)(17) <= 0
+ xy(16)(18): - 23 x(16,18) + y(16)(18) <= 0
+ xy(16)(19): - 23 x(16,19) + y(16)(19) <= 0
+ xy(16)(20): - 23 x(16,20) + y(16)(20) <= 0
+ xy(16)(21): - 23 x(16,21) + y(16)(21) <= 0
+ xy(16)(22): - 23 x(16,22) + y(16)(22) <= 0
+ xy(16)(23): - 23 x(16,23) + y(16)(23) <= 0
+ xy(16)(24): - 23 x(16,24) + y(16)(24) <= 0
+ xy(17)(1):  - 23 x(17,1) + y(17)(1) <= 0
+ xy(17)(2):  - 23 x(17,2) + y(17)(2) <= 0
+ xy(17)(3):  - 23 x(17,3) + y(17)(3) <= 0
+ xy(17)(4):  - 23 x(17,4) + y(17)(4) <= 0
+ xy(17)(5):  - 23 x(17,5) + y(17)(5) <= 0
+ xy(17)(6):  - 23 x(17,6) + y(17)(6) <= 0
+ xy(17)(7):  - 23 x(17,7) + y(17)(7) <= 0
+ xy(17)(8):  - 23 x(17,8) + y(17)(8) <= 0
+ xy(17)(9):  - 23 x(17,9) + y(17)(9) <= 0
+ xy(17)(10): - 23 x(17,10) + y(17)(10) <= 0
+ xy(17)(11): - 23 x(17,11) + y(17)(11) <= 0
+ xy(17)(12): - 23 x(17,12) + y(17)(12) <= 0
+ xy(17)(13): - 23 x(17,13) + y(17)(13) <= 0
+ xy(17)(14): - 23 x(17,14) + y(17)(14) <= 0
+ xy(17)(15): - 23 x(17,15) + y(17)(15) <= 0
+ xy(17)(16): - 23 x(17,16) + y(17)(16) <= 0
+ xy(17)(18): - 23 x(17,18) + y(17)(18) <= 0
+ xy(17)(19): - 23 x(17,19) + y(17)(19) <= 0
+ xy(17)(20): - 23 x(17,20) + y(17)(20) <= 0
+ xy(17)(21): - 23 x(17,21) + y(17)(21) <= 0
+ xy(17)(22): - 23 x(17,22) + y(17)(22) <= 0
+ xy(17)(23): - 23 x(17,23) + y(17)(23) <= 0
+ xy(17)(24): - 23 x(17,24) + y(17)(24) <= 0
+ xy(18)(1):  - 23 x(18,1) + y(18)(1) <= 0
+ xy(18)(2):  - 23 x(18,2) + y(18)(2) <= 0
+ xy(18)(3):  - 23 x(18,3) + y(18)(3) <= 0
+ xy(18)(4):  - 23 x(18,4) + y(18)(4) <= 0
+ xy(18)(5):  - 23 x(18,5) + y(18)(5) <= 0
+ xy(18)(6):  - 23 x(18,6) + y(18)(6) <= 0
+ xy(18)(7):  - 23 x(18,7) + y(18)(7) <= 0
+ xy(18)(8):  - 23 x(18,8) + y(18)(8) <= 0
+ xy(18)(9):  - 23 x(18,9) + y(18)(9) <= 0
+ xy(18)(10): - 23 x(18,10) + y(18)(10) <= 0
+ xy(18)(11): - 23 x(18,11) + y(18)(11) <= 0
+ xy(18)(12): - 23 x(18,12) + y(18)(12) <= 0
+ xy(18)(13): - 23 x(18,13) + y(18)(13) <= 0
+ xy(18)(14): - 23 x(18,14) + y(18)(14) <= 0
+ xy(18)(15): - 23 x(18,15) + y(18)(15) <= 0
+ xy(18)(16): - 23 x(18,16) + y(18)(16) <= 0
+ xy(18)(17): - 23 x(18,17) + y(18)(17) <= 0
+ xy(18)(19): - 23 x(18,19) + y(18)(19) <= 0
+ xy(18)(20): - 23 x(18,20) + y(18)(20) <= 0
+ xy(18)(21): - 23 x(18,21) + y(18)(21) <= 0
+ xy(18)(22): - 23 x(18,22) + y(18)(22) <= 0
+ xy(18)(23): - 23 x(18,23) + y(18)(23) <= 0
+ xy(18)(24): - 23 x(18,24) + y(18)(24) <= 0
+ xy(19)(1):  - 23 x(19,1) + y(19)(1) <= 0
+ xy(19)(2):  - 23 x(19,2) + y(19)(2) <= 0
+ xy(19)(3):  - 23 x(19,3) + y(19)(3) <= 0
+ xy(19)(4):  - 23 x(19,4) + y(19)(4) <= 0
+ xy(19)(5):  - 23 x(19,5) + y(19)(5) <= 0
+ xy(19)(6):  - 23 x(19,6) + y(19)(6) <= 0
+ xy(19)(7):  - 23 x(19,7) + y(19)(7) <= 0
+ xy(19)(8):  - 23 x(19,8) + y(19)(8) <= 0
+ xy(19)(9):  - 23 x(19,9) + y(19)(9) <= 0
+ xy(19)(10): - 23 x(19,10) + y(19)(10) <= 0
+ xy(19)(11): - 23 x(19,11) + y(19)(11) <= 0
+ xy(19)(12): - 23 x(19,12) + y(19)(12) <= 0
+ xy(19)(13): - 23 x(19,13) + y(19)(13) <= 0
+ xy(19)(14): - 23 x(19,14) + y(19)(14) <= 0
+ xy(19)(15): - 23 x(19,15) + y(19)(15) <= 0
+ xy(19)(16): - 23 x(19,16) + y(19)(16) <= 0
+ xy(19)(17): - 23 x(19,17) + y(19)(17) <= 0
+ xy(19)(18): - 23 x(19,18) + y(19)(18) <= 0
+ xy(19)(20): - 23 x(19,20) + y(19)(20) <= 0
+ xy(19)(21): - 23 x(19,21) + y(19)(21) <= 0
+ xy(19)(22): - 23 x(19,22) + y(19)(22) <= 0
+ xy(19)(23): - 23 x(19,23) + y(19)(23) <= 0
+ xy(19)(24): - 23 x(19,24) + y(19)(24) <= 0
+ xy(20)(1):  - 23 x(20,1) + y(20)(1) <= 0
+ xy(20)(2):  - 23 x(20,2) + y(20)(2) <= 0
+ xy(20)(3):  - 23 x(20,3) + y(20)(3) <= 0
+ xy(20)(4):  - 23 x(20,4) + y(20)(4) <= 0
+ xy(20)(5):  - 23 x(20,5) + y(20)(5) <= 0
+ xy(20)(6):  - 23 x(20,6) + y(20)(6) <= 0
+ xy(20)(7):  - 23 x(20,7) + y(20)(7) <= 0
+ xy(20)(8):  - 23 x(20,8) + y(20)(8) <= 0
+ xy(20)(9):  - 23 x(20,9) + y(20)(9) <= 0
+ xy(20)(10): - 23 x(20,10) + y(20)(10) <= 0
+ xy(20)(11): - 23 x(20,11) + y(20)(11) <= 0
+ xy(20)(12): - 23 x(20,12) + y(20)(12) <= 0
+ xy(20)(13): - 23 x(20,13) + y(20)(13) <= 0
+ xy(20)(14): - 23 x(20,14) + y(20)(14) <= 0
+ xy(20)(15): - 23 x(20,15) + y(20)(15) <= 0
+ xy(20)(16): - 23 x(20,16) + y(20)(16) <= 0
+ xy(20)(17): - 23 x(20,17) + y(20)(17) <= 0
+ xy(20)(18): - 23 x(20,18) + y(20)(18) <= 0
+ xy(20)(19): - 23 x(20,19) + y(20)(19) <= 0
+ xy(20)(21): - 23 x(20,21) + y(20)(21) <= 0
+ xy(20)(22): - 23 x(20,22) + y(20)(22) <= 0
+ xy(20)(23): - 23 x(20,23) + y(20)(23) <= 0
+ xy(20)(24): - 23 x(20,24) + y(20)(24) <= 0
+ xy(21)(1):  - 23 x(21,1) + y(21)(1) <= 0
+ xy(21)(2):  - 23 x(21,2) + y(21)(2) <= 0
+ xy(21)(3):  - 23 x(21,3) + y(21)(3) <= 0
+ xy(21)(4):  - 23 x(21,4) + y(21)(4) <= 0
+ xy(21)(5):  - 23 x(21,5) + y(21)(5) <= 0
+ xy(21)(6):  - 23 x(21,6) + y(21)(6) <= 0
+ xy(21)(7):  - 23 x(21,7) + y(21)(7) <= 0
+ xy(21)(8):  - 23 x(21,8) + y(21)(8) <= 0
+ xy(21)(9):  - 23 x(21,9) + y(21)(9) <= 0
+ xy(21)(10): - 23 x(21,10) + y(21)(10) <= 0
+ xy(21)(11): - 23 x(21,11) + y(21)(11) <= 0
+ xy(21)(12): - 23 x(21,12) + y(21)(12) <= 0
+ xy(21)(13): - 23 x(21,13) + y(21)(13) <= 0
+ xy(21)(14): - 23 x(21,14) + y(21)(14) <= 0
+ xy(21)(15): - 23 x(21,15) + y(21)(15) <= 0
+ xy(21)(16): - 23 x(21,16) + y(21)(16) <= 0
+ xy(21)(17): - 23 x(21,17) + y(21)(17) <= 0
+ xy(21)(18): - 23 x(21,18) + y(21)(18) <= 0
+ xy(21)(19): - 23 x(21,19) + y(21)(19) <= 0
+ xy(21)(20): - 23 x(21,20) + y(21)(20) <= 0
+ xy(21)(22): - 23 x(21,22) + y(21)(22) <= 0
+ xy(21)(23): - 23 x(21,23) + y(21)(23) <= 0
+ xy(21)(24): - 23 x(21,24) + y(21)(24) <= 0
+ xy(22)(1):  - 23 x(22,1) + y(22)(1) <= 0
+ xy(22)(2):  - 23 x(22,2) + y(22)(2) <= 0
+ xy(22)(3):  - 23 x(22,3) + y(22)(3) <= 0
+ xy(22)(4):  - 23 x(22,4) + y(22)(4) <= 0
+ xy(22)(5):  - 23 x(22,5) + y(22)(5) <= 0
+ xy(22)(6):  - 23 x(22,6) + y(22)(6) <= 0
+ xy(22)(7):  - 23 x(22,7) + y(22)(7) <= 0
+ xy(22)(8):  - 23 x(22,8) + y(22)(8) <= 0
+ xy(22)(9):  - 23 x(22,9) + y(22)(9) <= 0
+ xy(22)(10): - 23 x(22,10) + y(22)(10) <= 0
+ xy(22)(11): - 23 x(22,11) + y(22)(11) <= 0
+ xy(22)(12): - 23 x(22,12) + y(22)(12) <= 0
+ xy(22)(13): - 23 x(22,13) + y(22)(13) <= 0
+ xy(22)(14): - 23 x(22,14) + y(22)(14) <= 0
+ xy(22)(15): - 23 x(22,15) + y(22)(15) <= 0
+ xy(22)(16): - 23 x(22,16) + y(22)(16) <= 0
+ xy(22)(17): - 23 x(22,17) + y(22)(17) <= 0
+ xy(22)(18): - 23 x(22,18) + y(22)(18) <= 0
+ xy(22)(19): - 23 x(22,19) + y(22)(19) <= 0
+ xy(22)(20): - 23 x(22,20) + y(22)(20) <= 0
+ xy(22)(21): - 23 x(22,21) + y(22)(21) <= 0
+ xy(22)(23): - 23 x(22,23) + y(22)(23) <= 0
+ xy(22)(24): - 23 x(22,24) + y(22)(24) <= 0
+ xy(23)(1):  - 23 x(23,1) + y(23)(1) <= 0
+ xy(23)(2):  - 23 x(23,2) + y(23)(2) <= 0
+ xy(23)(3):  - 23 x(23,3) + y(23)(3) <= 0
+ xy(23)(4):  - 23 x(23,4) + y(23)(4) <= 0
+ xy(23)(5):  - 23 x(23,5) + y(23)(5) <= 0
+ xy(23)(6):  - 23 x(23,6) + y(23)(6) <= 0
+ xy(23)(7):  - 23 x(23,7) + y(23)(7) <= 0
+ xy(23)(8):  - 23 x(23,8) + y(23)(8) <= 0
+ xy(23)(9):  - 23 x(23,9) + y(23)(9) <= 0
+ xy(23)(10): - 23 x(23,10) + y(23)(10) <= 0
+ xy(23)(11): - 23 x(23,11) + y(23)(11) <= 0
+ xy(23)(12): - 23 x(23,12) + y(23)(12) <= 0
+ xy(23)(13): - 23 x(23,13) + y(23)(13) <= 0
+ xy(23)(14): - 23 x(23,14) + y(23)(14) <= 0
+ xy(23)(15): - 23 x(23,15) + y(23)(15) <= 0
+ xy(23)(16): - 23 x(23,16) + y(23)(16) <= 0
+ xy(23)(17): - 23 x(23,17) + y(23)(17) <= 0
+ xy(23)(18): - 23 x(23,18) + y(23)(18) <= 0
+ xy(23)(19): - 23 x(23,19) + y(23)(19) <= 0
+ xy(23)(20): - 23 x(23,20) + y(23)(20) <= 0
+ xy(23)(21): - 23 x(23,21) + y(23)(21) <= 0
+ xy(23)(22): - 23 x(23,22) + y(23)(22) <= 0
+ xy(23)(24): - 23 x(23,24) + y(23)(24) <= 0
+ xy(24)(1):  - 23 x(24,1) + y(24)(1) <= 0
+ xy(24)(2):  - 23 x(24,2) + y(24)(2) <= 0
+ xy(24)(3):  - 23 x(24,3) + y(24)(3) <= 0
+ xy(24)(4):  - 23 x(24,4) + y(24)(4) <= 0
+ xy(24)(5):  - 23 x(24,5) + y(24)(5) <= 0
+ xy(24)(6):  - 23 x(24,6) + y(24)(6) <= 0
+ xy(24)(7):  - 23 x(24,7) + y(24)(7) <= 0
+ xy(24)(8):  - 23 x(24,8) + y(24)(8) <= 0
+ xy(24)(9):  - 23 x(24,9) + y(24)(9) <= 0
+ xy(24)(10): - 23 x(24,10) + y(24)(10) <= 0
+ xy(24)(11): - 23 x(24,11) + y(24)(11) <= 0
+ xy(24)(12): - 23 x(24,12) + y(24)(12) <= 0
+ xy(24)(13): - 23 x(24,13) + y(24)(13) <= 0
+ xy(24)(14): - 23 x(24,14) + y(24)(14) <= 0
+ xy(24)(15): - 23 x(24,15) + y(24)(15) <= 0
+ xy(24)(16): - 23 x(24,16) + y(24)(16) <= 0
+ xy(24)(17): - 23 x(24,17) + y(24)(17) <= 0
+ xy(24)(18): - 23 x(24,18) + y(24)(18) <= 0
+ xy(24)(19): - 23 x(24,19) + y(24)(19) <= 0
+ xy(24)(20): - 23 x(24,20) + y(24)(20) <= 0
+ xy(24)(21): - 23 x(24,21) + y(24)(21) <= 0
+ xy(24)(22): - 23 x(24,22) + y(24)(22) <= 0
+ xy(24)(23): - 23 x(24,23) + y(24)(23) <= 0
+ y1j:        y(1)(2) + y(1)(3) + y(1)(4) + y(1)(5) + y(1)(6) + y(1)(7)
+             + y(1)(8) + y(1)(9) + y(1)(10) + y(1)(11) + y(1)(12) + y(1)(13)
+             + y(1)(14) + y(1)(15) + y(1)(16) + y(1)(17) + y(1)(18) + y(1)(19)
+             + y(1)(20) + y(1)(21) + y(1)(22) + y(1)(23) + y(1)(24)  = 23
+ y(2):       y(1)(2) - y(2)(1) - y(2)(3) - y(2)(4) - y(2)(5) - y(2)(6)
+             - y(2)(7) - y(2)(8) - y(2)(9) - y(2)(10) - y(2)(11) - y(2)(12)
+             - y(2)(13) - y(2)(14) - y(2)(15) - y(2)(16) - y(2)(17) - y(2)(18)
+             - y(2)(19) - y(2)(20) - y(2)(21) - y(2)(22) - y(2)(23) - y(2)(24)
+             + y(3)(2) + y(4)(2) + y(5)(2) + y(6)(2) + y(7)(2) + y(8)(2)
+             + y(9)(2) + y(10)(2) + y(11)(2) + y(12)(2) + y(13)(2) + y(14)(2)
+             + y(15)(2) + y(16)(2) + y(17)(2) + y(18)(2) + y(19)(2) + y(20)(2)
+             + y(21)(2) + y(22)(2) + y(23)(2) + y(24)(2)  = 1
+ y(3):       y(1)(3) + y(2)(3) - y(3)(1) - y(3)(2) - y(3)(4) - y(3)(5)
+             - y(3)(6) - y(3)(7) - y(3)(8) - y(3)(9) - y(3)(10) - y(3)(11)
+             - y(3)(12) - y(3)(13) - y(3)(14) - y(3)(15) - y(3)(16) - y(3)(17)
+             - y(3)(18) - y(3)(19) - y(3)(20) - y(3)(21) - y(3)(22) - y(3)(23)
+             - y(3)(24) + y(4)(3) + y(5)(3) + y(6)(3) + y(7)(3) + y(8)(3)
+             + y(9)(3) + y(10)(3) + y(11)(3) + y(12)(3) + y(13)(3) + y(14)(3)
+             + y(15)(3) + y(16)(3) + y(17)(3) + y(18)(3) + y(19)(3) + y(20)(3)
+             + y(21)(3) + y(22)(3) + y(23)(3) + y(24)(3)  = 1
+ y(4):       y(1)(4) + y(2)(4) + y(3)(4) - y(4)(1) - y(4)(2) - y(4)(3)
+             - y(4)(5) - y(4)(6) - y(4)(7) - y(4)(8) - y(4)(9) - y(4)(10)
+             - y(4)(11) - y(4)(12) - y(4)(13) - y(4)(14) - y(4)(15) - y(4)(16)
+             - y(4)(17) - y(4)(18) - y(4)(19) - y(4)(20) - y(4)(21) - y(4)(22)
+             - y(4)(23) - y(4)(24) + y(5)(4) + y(6)(4) + y(7)(4) + y(8)(4)
+             + y(9)(4) + y(10)(4) + y(11)(4) + y(12)(4) + y(13)(4) + y(14)(4)
+             + y(15)(4) + y(16)(4) + y(17)(4) + y(18)(4) + y(19)(4) + y(20)(4)
+             + y(21)(4) + y(22)(4) + y(23)(4) + y(24)(4)  = 1
+ y(5):       y(1)(5) + y(2)(5) + y(3)(5) + y(4)(5) - y(5)(1) - y(5)(2)
+             - y(5)(3) - y(5)(4) - y(5)(6) - y(5)(7) - y(5)(8) - y(5)(9)
+             - y(5)(10) - y(5)(11) - y(5)(12) - y(5)(13) - y(5)(14) - y(5)(15)
+             - y(5)(16) - y(5)(17) - y(5)(18) - y(5)(19) - y(5)(20) - y(5)(21)
+             - y(5)(22) - y(5)(23) - y(5)(24) + y(6)(5) + y(7)(5) + y(8)(5)
+             + y(9)(5) + y(10)(5) + y(11)(5) + y(12)(5) + y(13)(5) + y(14)(5)
+             + y(15)(5) + y(16)(5) + y(17)(5) + y(18)(5) + y(19)(5) + y(20)(5)
+             + y(21)(5) + y(22)(5) + y(23)(5) + y(24)(5)  = 1
+ y(6):       y(1)(6) + y(2)(6) + y(3)(6) + y(4)(6) + y(5)(6) - y(6)(1)
+             - y(6)(2) - y(6)(3) - y(6)(4) - y(6)(5) - y(6)(7) - y(6)(8)
+             - y(6)(9) - y(6)(10) - y(6)(11) - y(6)(12) - y(6)(13) - y(6)(14)
+             - y(6)(15) - y(6)(16) - y(6)(17) - y(6)(18) - y(6)(19) - y(6)(20)
+             - y(6)(21) - y(6)(22) - y(6)(23) - y(6)(24) + y(7)(6) + y(8)(6)
+             + y(9)(6) + y(10)(6) + y(11)(6) + y(12)(6) + y(13)(6) + y(14)(6)
+             + y(15)(6) + y(16)(6) + y(17)(6) + y(18)(6) + y(19)(6) + y(20)(6)
+             + y(21)(6) + y(22)(6) + y(23)(6) + y(24)(6)  = 1
+ y(7):       y(1)(7) + y(2)(7) + y(3)(7) + y(4)(7) + y(5)(7) + y(6)(7)
+             - y(7)(1) - y(7)(2) - y(7)(3) - y(7)(4) - y(7)(5) - y(7)(6)
+             - y(7)(8) - y(7)(9) - y(7)(10) - y(7)(11) - y(7)(12) - y(7)(13)
+             - y(7)(14) - y(7)(15) - y(7)(16) - y(7)(17) - y(7)(18) - y(7)(19)
+             - y(7)(20) - y(7)(21) - y(7)(22) - y(7)(23) - y(7)(24) + y(8)(7)
+             + y(9)(7) + y(10)(7) + y(11)(7) + y(12)(7) + y(13)(7) + y(14)(7)
+             + y(15)(7) + y(16)(7) + y(17)(7) + y(18)(7) + y(19)(7) + y(20)(7)
+             + y(21)(7) + y(22)(7) + y(23)(7) + y(24)(7)  = 1
+ y(8):       y(1)(8) + y(2)(8) + y(3)(8) + y(4)(8) + y(5)(8) + y(6)(8)
+             + y(7)(8) - y(8)(1) - y(8)(2) - y(8)(3) - y(8)(4) - y(8)(5)
+             - y(8)(6) - y(8)(7) - y(8)(9) - y(8)(10) - y(8)(11) - y(8)(12)
+             - y(8)(13) - y(8)(14) - y(8)(15) - y(8)(16) - y(8)(17) - y(8)(18)
+             - y(8)(19) - y(8)(20) - y(8)(21) - y(8)(22) - y(8)(23) - y(8)(24)
+             + y(9)(8) + y(10)(8) + y(11)(8) + y(12)(8) + y(13)(8) + y(14)(8)
+             + y(15)(8) + y(16)(8) + y(17)(8) + y(18)(8) + y(19)(8) + y(20)(8)
+             + y(21)(8) + y(22)(8) + y(23)(8) + y(24)(8)  = 1
+ y(9):       y(1)(9) + y(2)(9) + y(3)(9) + y(4)(9) + y(5)(9) + y(6)(9)
+             + y(7)(9) + y(8)(9) - y(9)(1) - y(9)(2) - y(9)(3) - y(9)(4)
+             - y(9)(5) - y(9)(6) - y(9)(7) - y(9)(8) - y(9)(10) - y(9)(11)
+             - y(9)(12) - y(9)(13) - y(9)(14) - y(9)(15) - y(9)(16) - y(9)(17)
+             - y(9)(18) - y(9)(19) - y(9)(20) - y(9)(21) - y(9)(22) - y(9)(23)
+             - y(9)(24) + y(10)(9) + y(11)(9) + y(12)(9) + y(13)(9) + y(14)(9)
+             + y(15)(9) + y(16)(9) + y(17)(9) + y(18)(9) + y(19)(9) + y(20)(9)
+             + y(21)(9) + y(22)(9) + y(23)(9) + y(24)(9)  = 1
+ y(10):      y(1)(10) + y(2)(10) + y(3)(10) + y(4)(10) + y(5)(10) + y(6)(10)
+             + y(7)(10) + y(8)(10) + y(9)(10) - y(10)(1) - y(10)(2) - y(10)(3)
+             - y(10)(4) - y(10)(5) - y(10)(6) - y(10)(7) - y(10)(8) - y(10)(9)
+             - y(10)(11) - y(10)(12) - y(10)(13) - y(10)(14) - y(10)(15)
+             - y(10)(16) - y(10)(17) - y(10)(18) - y(10)(19) - y(10)(20)
+             - y(10)(21) - y(10)(22) - y(10)(23) - y(10)(24) + y(11)(10)
+             + y(12)(10) + y(13)(10) + y(14)(10) + y(15)(10) + y(16)(10)
+             + y(17)(10) + y(18)(10) + y(19)(10) + y(20)(10) + y(21)(10)
+             + y(22)(10) + y(23)(10) + y(24)(10)  = 1
+ y(11):      y(1)(11) + y(2)(11) + y(3)(11) + y(4)(11) + y(5)(11) + y(6)(11)
+             + y(7)(11) + y(8)(11) + y(9)(11) + y(10)(11) - y(11)(1) - y(11)(2)
+             - y(11)(3) - y(11)(4) - y(11)(5) - y(11)(6) - y(11)(7) - y(11)(8)
+             - y(11)(9) - y(11)(10) - y(11)(12) - y(11)(13) - y(11)(14)
+             - y(11)(15) - y(11)(16) - y(11)(17) - y(11)(18) - y(11)(19)
+             - y(11)(20) - y(11)(21) - y(11)(22) - y(11)(23) - y(11)(24)
+             + y(12)(11) + y(13)(11) + y(14)(11) + y(15)(11) + y(16)(11)
+             + y(17)(11) + y(18)(11) + y(19)(11) + y(20)(11) + y(21)(11)
+             + y(22)(11) + y(23)(11) + y(24)(11)  = 1
+ y(12):      y(1)(12) + y(2)(12) + y(3)(12) + y(4)(12) + y(5)(12) + y(6)(12)
+             + y(7)(12) + y(8)(12) + y(9)(12) + y(10)(12) + y(11)(12)
+             - y(12)(1) - y(12)(2) - y(12)(3) - y(12)(4) - y(12)(5) - y(12)(6)
+             - y(12)(7) - y(12)(8) - y(12)(9) - y(12)(10) - y(12)(11)
+             - y(12)(13) - y(12)(14) - y(12)(15) - y(12)(16) - y(12)(17)
+             - y(12)(18) - y(12)(19) - y(12)(20) - y(12)(21) - y(12)(22)
+             - y(12)(23) - y(12)(24) + y(13)(12) + y(14)(12) + y(15)(12)
+             + y(16)(12) + y(17)(12) + y(18)(12) + y(19)(12) + y(20)(12)
+             + y(21)(12) + y(22)(12) + y(23)(12) + y(24)(12)  = 1
+ y(13):      y(1)(13) + y(2)(13) + y(3)(13) + y(4)(13) + y(5)(13) + y(6)(13)
+             + y(7)(13) + y(8)(13) + y(9)(13) + y(10)(13) + y(11)(13)
+             + y(12)(13) - y(13)(1) - y(13)(2) - y(13)(3) - y(13)(4) - y(13)(5)
+             - y(13)(6) - y(13)(7) - y(13)(8) - y(13)(9) - y(13)(10)
+             - y(13)(11) - y(13)(12) - y(13)(14) - y(13)(15) - y(13)(16)
+             - y(13)(17) - y(13)(18) - y(13)(19) - y(13)(20) - y(13)(21)
+             - y(13)(22) - y(13)(23) - y(13)(24) + y(14)(13) + y(15)(13)
+             + y(16)(13) + y(17)(13) + y(18)(13) + y(19)(13) + y(20)(13)
+             + y(21)(13) + y(22)(13) + y(23)(13) + y(24)(13)  = 1
+ y(14):      y(1)(14) + y(2)(14) + y(3)(14) + y(4)(14) + y(5)(14) + y(6)(14)
+             + y(7)(14) + y(8)(14) + y(9)(14) + y(10)(14) + y(11)(14)
+             + y(12)(14) + y(13)(14) - y(14)(1) - y(14)(2) - y(14)(3)
+             - y(14)(4) - y(14)(5) - y(14)(6) - y(14)(7) - y(14)(8) - y(14)(9)
+             - y(14)(10) - y(14)(11) - y(14)(12) - y(14)(13) - y(14)(15)
+             - y(14)(16) - y(14)(17) - y(14)(18) - y(14)(19) - y(14)(20)
+             - y(14)(21) - y(14)(22) - y(14)(23) - y(14)(24) + y(15)(14)
+             + y(16)(14) + y(17)(14) + y(18)(14) + y(19)(14) + y(20)(14)
+             + y(21)(14) + y(22)(14) + y(23)(14) + y(24)(14)  = 1
+ y(15):      y(1)(15) + y(2)(15) + y(3)(15) + y(4)(15) + y(5)(15) + y(6)(15)
+             + y(7)(15) + y(8)(15) + y(9)(15) + y(10)(15) + y(11)(15)
+             + y(12)(15) + y(13)(15) + y(14)(15) - y(15)(1) - y(15)(2)
+             - y(15)(3) - y(15)(4) - y(15)(5) - y(15)(6) - y(15)(7) - y(15)(8)
+             - y(15)(9) - y(15)(10) - y(15)(11) - y(15)(12) - y(15)(13)
+             - y(15)(14) - y(15)(16) - y(15)(17) - y(15)(18) - y(15)(19)
+             - y(15)(20) - y(15)(21) - y(15)(22) - y(15)(23) - y(15)(24)
+             + y(16)(15) + y(17)(15) + y(18)(15) + y(19)(15) + y(20)(15)
+             + y(21)(15) + y(22)(15) + y(23)(15) + y(24)(15)  = 1
+ y(16):      y(1)(16) + y(2)(16) + y(3)(16) + y(4)(16) + y(5)(16) + y(6)(16)
+             + y(7)(16) + y(8)(16) + y(9)(16) + y(10)(16) + y(11)(16)
+             + y(12)(16) + y(13)(16) + y(14)(16) + y(15)(16) - y(16)(1)
+             - y(16)(2) - y(16)(3) - y(16)(4) - y(16)(5) - y(16)(6) - y(16)(7)
+             - y(16)(8) - y(16)(9) - y(16)(10) - y(16)(11) - y(16)(12)
+             - y(16)(13) - y(16)(14) - y(16)(15) - y(16)(17) - y(16)(18)
+             - y(16)(19) - y(16)(20) - y(16)(21) - y(16)(22) - y(16)(23)
+             - y(16)(24) + y(17)(16) + y(18)(16) + y(19)(16) + y(20)(16)
+             + y(21)(16) + y(22)(16) + y(23)(16) + y(24)(16)  = 1
+ y(17):      y(1)(17) + y(2)(17) + y(3)(17) + y(4)(17) + y(5)(17) + y(6)(17)
+             + y(7)(17) + y(8)(17) + y(9)(17) + y(10)(17) + y(11)(17)
+             + y(12)(17) + y(13)(17) + y(14)(17) + y(15)(17) + y(16)(17)
+             - y(17)(1) - y(17)(2) - y(17)(3) - y(17)(4) - y(17)(5) - y(17)(6)
+             - y(17)(7) - y(17)(8) - y(17)(9) - y(17)(10) - y(17)(11)
+             - y(17)(12) - y(17)(13) - y(17)(14) - y(17)(15) - y(17)(16)
+             - y(17)(18) - y(17)(19) - y(17)(20) - y(17)(21) - y(17)(22)
+             - y(17)(23) - y(17)(24) + y(18)(17) + y(19)(17) + y(20)(17)
+             + y(21)(17) + y(22)(17) + y(23)(17) + y(24)(17)  = 1
+ y(18):      y(1)(18) + y(2)(18) + y(3)(18) + y(4)(18) + y(5)(18) + y(6)(18)
+             + y(7)(18) + y(8)(18) + y(9)(18) + y(10)(18) + y(11)(18)
+             + y(12)(18) + y(13)(18) + y(14)(18) + y(15)(18) + y(16)(18)
+             + y(17)(18) - y(18)(1) - y(18)(2) - y(18)(3) - y(18)(4) - y(18)(5)
+             - y(18)(6) - y(18)(7) - y(18)(8) - y(18)(9) - y(18)(10)
+             - y(18)(11) - y(18)(12) - y(18)(13) - y(18)(14) - y(18)(15)
+             - y(18)(16) - y(18)(17) - y(18)(19) - y(18)(20) - y(18)(21)
+             - y(18)(22) - y(18)(23) - y(18)(24) + y(19)(18) + y(20)(18)
+             + y(21)(18) + y(22)(18) + y(23)(18) + y(24)(18)  = 1
+ y(19):      y(1)(19) + y(2)(19) + y(3)(19) + y(4)(19) + y(5)(19) + y(6)(19)
+             + y(7)(19) + y(8)(19) + y(9)(19) + y(10)(19) + y(11)(19)
+             + y(12)(19) + y(13)(19) + y(14)(19) + y(15)(19) + y(16)(19)
+             + y(17)(19) + y(18)(19) - y(19)(1) - y(19)(2) - y(19)(3)
+             - y(19)(4) - y(19)(5) - y(19)(6) - y(19)(7) - y(19)(8) - y(19)(9)
+             - y(19)(10) - y(19)(11) - y(19)(12) - y(19)(13) - y(19)(14)
+             - y(19)(15) - y(19)(16) - y(19)(17) - y(19)(18) - y(19)(20)
+             - y(19)(21) - y(19)(22) - y(19)(23) - y(19)(24) + y(20)(19)
+             + y(21)(19) + y(22)(19) + y(23)(19) + y(24)(19)  = 1
+ y(20):      y(1)(20) + y(2)(20) + y(3)(20) + y(4)(20) + y(5)(20) + y(6)(20)
+             + y(7)(20) + y(8)(20) + y(9)(20) + y(10)(20) + y(11)(20)
+             + y(12)(20) + y(13)(20) + y(14)(20) + y(15)(20) + y(16)(20)
+             + y(17)(20) + y(18)(20) + y(19)(20) - y(20)(1) - y(20)(2)
+             - y(20)(3) - y(20)(4) - y(20)(5) - y(20)(6) - y(20)(7) - y(20)(8)
+             - y(20)(9) - y(20)(10) - y(20)(11) - y(20)(12) - y(20)(13)
+             - y(20)(14) - y(20)(15) - y(20)(16) - y(20)(17) - y(20)(18)
+             - y(20)(19) - y(20)(21) - y(20)(22) - y(20)(23) - y(20)(24)
+             + y(21)(20) + y(22)(20) + y(23)(20) + y(24)(20)  = 1
+ y(21):      y(1)(21) + y(2)(21) + y(3)(21) + y(4)(21) + y(5)(21) + y(6)(21)
+             + y(7)(21) + y(8)(21) + y(9)(21) + y(10)(21) + y(11)(21)
+             + y(12)(21) + y(13)(21) + y(14)(21) + y(15)(21) + y(16)(21)
+             + y(17)(21) + y(18)(21) + y(19)(21) + y(20)(21) - y(21)(1)
+             - y(21)(2) - y(21)(3) - y(21)(4) - y(21)(5) - y(21)(6) - y(21)(7)
+             - y(21)(8) - y(21)(9) - y(21)(10) - y(21)(11) - y(21)(12)
+             - y(21)(13) - y(21)(14) - y(21)(15) - y(21)(16) - y(21)(17)
+             - y(21)(18) - y(21)(19) - y(21)(20) - y(21)(22) - y(21)(23)
+             - y(21)(24) + y(22)(21) + y(23)(21) + y(24)(21)  = 1
+ y(22):      y(1)(22) + y(2)(22) + y(3)(22) + y(4)(22) + y(5)(22) + y(6)(22)
+             + y(7)(22) + y(8)(22) + y(9)(22) + y(10)(22) + y(11)(22)
+             + y(12)(22) + y(13)(22) + y(14)(22) + y(15)(22) + y(16)(22)
+             + y(17)(22) + y(18)(22) + y(19)(22) + y(20)(22) + y(21)(22)
+             - y(22)(1) - y(22)(2) - y(22)(3) - y(22)(4) - y(22)(5) - y(22)(6)
+             - y(22)(7) - y(22)(8) - y(22)(9) - y(22)(10) - y(22)(11)
+             - y(22)(12) - y(22)(13) - y(22)(14) - y(22)(15) - y(22)(16)
+             - y(22)(17) - y(22)(18) - y(22)(19) - y(22)(20) - y(22)(21)
+             - y(22)(23) - y(22)(24) + y(23)(22) + y(24)(22)  = 1
+ y(23):      y(1)(23) + y(2)(23) + y(3)(23) + y(4)(23) + y(5)(23) + y(6)(23)
+             + y(7)(23) + y(8)(23) + y(9)(23) + y(10)(23) + y(11)(23)
+             + y(12)(23) + y(13)(23) + y(14)(23) + y(15)(23) + y(16)(23)
+             + y(17)(23) + y(18)(23) + y(19)(23) + y(20)(23) + y(21)(23)
+             + y(22)(23) - y(23)(1) - y(23)(2) - y(23)(3) - y(23)(4) - y(23)(5)
+             - y(23)(6) - y(23)(7) - y(23)(8) - y(23)(9) - y(23)(10)
+             - y(23)(11) - y(23)(12) - y(23)(13) - y(23)(14) - y(23)(15)
+             - y(23)(16) - y(23)(17) - y(23)(18) - y(23)(19) - y(23)(20)
+             - y(23)(21) - y(23)(22) - y(23)(24) + y(24)(23)  = 1
+ y(24):      y(1)(24) + y(2)(24) + y(3)(24) + y(4)(24) + y(5)(24) + y(6)(24)
+             + y(7)(24) + y(8)(24) + y(9)(24) + y(10)(24) + y(11)(24)
+             + y(12)(24) + y(13)(24) + y(14)(24) + y(15)(24) + y(16)(24)
+             + y(17)(24) + y(18)(24) + y(19)(24) + y(20)(24) + y(21)(24)
+             + y(22)(24) + y(23)(24) - y(24)(1) - y(24)(2) - y(24)(3)
+             - y(24)(4) - y(24)(5) - y(24)(6) - y(24)(7) - y(24)(8) - y(24)(9)
+             - y(24)(10) - y(24)(11) - y(24)(12) - y(24)(13) - y(24)(14)
+             - y(24)(15) - y(24)(16) - y(24)(17) - y(24)(18) - y(24)(19)
+             - y(24)(20) - y(24)(21) - y(24)(22) - y(24)(23)  = 1
 Bounds
       x(1,1) = 0
  0 <= x(1,2) <= 1
@@ -1676,29 +1644,558 @@ Bounds
  0 <= x(24,22) <= 1
  0 <= x(24,23) <= 1
       x(24,24) = 0
- 1 <= u(2) <= 23
- 1 <= u(3) <= 23
- 1 <= u(4) <= 23
- 1 <= u(5) <= 23
- 1 <= u(6) <= 23
- 1 <= u(7) <= 23
- 1 <= u(8) <= 23
- 1 <= u(9) <= 23
- 1 <= u(10) <= 23
- 1 <= u(11) <= 23
- 1 <= u(12) <= 23
- 1 <= u(13) <= 23
- 1 <= u(14) <= 23
- 1 <= u(15) <= 23
- 1 <= u(16) <= 23
- 1 <= u(17) <= 23
- 1 <= u(18) <= 23
- 1 <= u(19) <= 23
- 1 <= u(20) <= 23
- 1 <= u(21) <= 23
- 1 <= u(22) <= 23
- 1 <= u(23) <= 23
- 1 <= u(24) <= 23
+ 0 <= y(1)(2) <= 23
+ 0 <= y(1)(3) <= 23
+ 0 <= y(1)(4) <= 23
+ 0 <= y(1)(5) <= 23
+ 0 <= y(1)(6) <= 23
+ 0 <= y(1)(7) <= 23
+ 0 <= y(1)(8) <= 23
+ 0 <= y(1)(9) <= 23
+ 0 <= y(1)(10) <= 23
+ 0 <= y(1)(11) <= 23
+ 0 <= y(1)(12) <= 23
+ 0 <= y(1)(13) <= 23
+ 0 <= y(1)(14) <= 23
+ 0 <= y(1)(15) <= 23
+ 0 <= y(1)(16) <= 23
+ 0 <= y(1)(17) <= 23
+ 0 <= y(1)(18) <= 23
+ 0 <= y(1)(19) <= 23
+ 0 <= y(1)(20) <= 23
+ 0 <= y(1)(21) <= 23
+ 0 <= y(1)(22) <= 23
+ 0 <= y(1)(23) <= 23
+ 0 <= y(1)(24) <= 23
+ 0 <= y(2)(1) <= 23
+ 0 <= y(2)(3) <= 23
+ 0 <= y(2)(4) <= 23
+ 0 <= y(2)(5) <= 23
+ 0 <= y(2)(6) <= 23
+ 0 <= y(2)(7) <= 23
+ 0 <= y(2)(8) <= 23
+ 0 <= y(2)(9) <= 23
+ 0 <= y(2)(10) <= 23
+ 0 <= y(2)(11) <= 23
+ 0 <= y(2)(12) <= 23
+ 0 <= y(2)(13) <= 23
+ 0 <= y(2)(14) <= 23
+ 0 <= y(2)(15) <= 23
+ 0 <= y(2)(16) <= 23
+ 0 <= y(2)(17) <= 23
+ 0 <= y(2)(18) <= 23
+ 0 <= y(2)(19) <= 23
+ 0 <= y(2)(20) <= 23
+ 0 <= y(2)(21) <= 23
+ 0 <= y(2)(22) <= 23
+ 0 <= y(2)(23) <= 23
+ 0 <= y(2)(24) <= 23
+ 0 <= y(3)(1) <= 23
+ 0 <= y(3)(2) <= 23
+ 0 <= y(3)(4) <= 23
+ 0 <= y(3)(5) <= 23
+ 0 <= y(3)(6) <= 23
+ 0 <= y(3)(7) <= 23
+ 0 <= y(3)(8) <= 23
+ 0 <= y(3)(9) <= 23
+ 0 <= y(3)(10) <= 23
+ 0 <= y(3)(11) <= 23
+ 0 <= y(3)(12) <= 23
+ 0 <= y(3)(13) <= 23
+ 0 <= y(3)(14) <= 23
+ 0 <= y(3)(15) <= 23
+ 0 <= y(3)(16) <= 23
+ 0 <= y(3)(17) <= 23
+ 0 <= y(3)(18) <= 23
+ 0 <= y(3)(19) <= 23
+ 0 <= y(3)(20) <= 23
+ 0 <= y(3)(21) <= 23
+ 0 <= y(3)(22) <= 23
+ 0 <= y(3)(23) <= 23
+ 0 <= y(3)(24) <= 23
+ 0 <= y(4)(1) <= 23
+ 0 <= y(4)(2) <= 23
+ 0 <= y(4)(3) <= 23
+ 0 <= y(4)(5) <= 23
+ 0 <= y(4)(6) <= 23
+ 0 <= y(4)(7) <= 23
+ 0 <= y(4)(8) <= 23
+ 0 <= y(4)(9) <= 23
+ 0 <= y(4)(10) <= 23
+ 0 <= y(4)(11) <= 23
+ 0 <= y(4)(12) <= 23
+ 0 <= y(4)(13) <= 23
+ 0 <= y(4)(14) <= 23
+ 0 <= y(4)(15) <= 23
+ 0 <= y(4)(16) <= 23
+ 0 <= y(4)(17) <= 23
+ 0 <= y(4)(18) <= 23
+ 0 <= y(4)(19) <= 23
+ 0 <= y(4)(20) <= 23
+ 0 <= y(4)(21) <= 23
+ 0 <= y(4)(22) <= 23
+ 0 <= y(4)(23) <= 23
+ 0 <= y(4)(24) <= 23
+ 0 <= y(5)(1) <= 23
+ 0 <= y(5)(2) <= 23
+ 0 <= y(5)(3) <= 23
+ 0 <= y(5)(4) <= 23
+ 0 <= y(5)(6) <= 23
+ 0 <= y(5)(7) <= 23
+ 0 <= y(5)(8) <= 23
+ 0 <= y(5)(9) <= 23
+ 0 <= y(5)(10) <= 23
+ 0 <= y(5)(11) <= 23
+ 0 <= y(5)(12) <= 23
+ 0 <= y(5)(13) <= 23
+ 0 <= y(5)(14) <= 23
+ 0 <= y(5)(15) <= 23
+ 0 <= y(5)(16) <= 23
+ 0 <= y(5)(17) <= 23
+ 0 <= y(5)(18) <= 23
+ 0 <= y(5)(19) <= 23
+ 0 <= y(5)(20) <= 23
+ 0 <= y(5)(21) <= 23
+ 0 <= y(5)(22) <= 23
+ 0 <= y(5)(23) <= 23
+ 0 <= y(5)(24) <= 23
+ 0 <= y(6)(1) <= 23
+ 0 <= y(6)(2) <= 23
+ 0 <= y(6)(3) <= 23
+ 0 <= y(6)(4) <= 23
+ 0 <= y(6)(5) <= 23
+ 0 <= y(6)(7) <= 23
+ 0 <= y(6)(8) <= 23
+ 0 <= y(6)(9) <= 23
+ 0 <= y(6)(10) <= 23
+ 0 <= y(6)(11) <= 23
+ 0 <= y(6)(12) <= 23
+ 0 <= y(6)(13) <= 23
+ 0 <= y(6)(14) <= 23
+ 0 <= y(6)(15) <= 23
+ 0 <= y(6)(16) <= 23
+ 0 <= y(6)(17) <= 23
+ 0 <= y(6)(18) <= 23
+ 0 <= y(6)(19) <= 23
+ 0 <= y(6)(20) <= 23
+ 0 <= y(6)(21) <= 23
+ 0 <= y(6)(22) <= 23
+ 0 <= y(6)(23) <= 23
+ 0 <= y(6)(24) <= 23
+ 0 <= y(7)(1) <= 23
+ 0 <= y(7)(2) <= 23
+ 0 <= y(7)(3) <= 23
+ 0 <= y(7)(4) <= 23
+ 0 <= y(7)(5) <= 23
+ 0 <= y(7)(6) <= 23
+ 0 <= y(7)(8) <= 23
+ 0 <= y(7)(9) <= 23
+ 0 <= y(7)(10) <= 23
+ 0 <= y(7)(11) <= 23
+ 0 <= y(7)(12) <= 23
+ 0 <= y(7)(13) <= 23
+ 0 <= y(7)(14) <= 23
+ 0 <= y(7)(15) <= 23
+ 0 <= y(7)(16) <= 23
+ 0 <= y(7)(17) <= 23
+ 0 <= y(7)(18) <= 23
+ 0 <= y(7)(19) <= 23
+ 0 <= y(7)(20) <= 23
+ 0 <= y(7)(21) <= 23
+ 0 <= y(7)(22) <= 23
+ 0 <= y(7)(23) <= 23
+ 0 <= y(7)(24) <= 23
+ 0 <= y(8)(1) <= 23
+ 0 <= y(8)(2) <= 23
+ 0 <= y(8)(3) <= 23
+ 0 <= y(8)(4) <= 23
+ 0 <= y(8)(5) <= 23
+ 0 <= y(8)(6) <= 23
+ 0 <= y(8)(7) <= 23
+ 0 <= y(8)(9) <= 23
+ 0 <= y(8)(10) <= 23
+ 0 <= y(8)(11) <= 23
+ 0 <= y(8)(12) <= 23
+ 0 <= y(8)(13) <= 23
+ 0 <= y(8)(14) <= 23
+ 0 <= y(8)(15) <= 23
+ 0 <= y(8)(16) <= 23
+ 0 <= y(8)(17) <= 23
+ 0 <= y(8)(18) <= 23
+ 0 <= y(8)(19) <= 23
+ 0 <= y(8)(20) <= 23
+ 0 <= y(8)(21) <= 23
+ 0 <= y(8)(22) <= 23
+ 0 <= y(8)(23) <= 23
+ 0 <= y(8)(24) <= 23
+ 0 <= y(9)(1) <= 23
+ 0 <= y(9)(2) <= 23
+ 0 <= y(9)(3) <= 23
+ 0 <= y(9)(4) <= 23
+ 0 <= y(9)(5) <= 23
+ 0 <= y(9)(6) <= 23
+ 0 <= y(9)(7) <= 23
+ 0 <= y(9)(8) <= 23
+ 0 <= y(9)(10) <= 23
+ 0 <= y(9)(11) <= 23
+ 0 <= y(9)(12) <= 23
+ 0 <= y(9)(13) <= 23
+ 0 <= y(9)(14) <= 23
+ 0 <= y(9)(15) <= 23
+ 0 <= y(9)(16) <= 23
+ 0 <= y(9)(17) <= 23
+ 0 <= y(9)(18) <= 23
+ 0 <= y(9)(19) <= 23
+ 0 <= y(9)(20) <= 23
+ 0 <= y(9)(21) <= 23
+ 0 <= y(9)(22) <= 23
+ 0 <= y(9)(23) <= 23
+ 0 <= y(9)(24) <= 23
+ 0 <= y(10)(1) <= 23
+ 0 <= y(10)(2) <= 23
+ 0 <= y(10)(3) <= 23
+ 0 <= y(10)(4) <= 23
+ 0 <= y(10)(5) <= 23
+ 0 <= y(10)(6) <= 23
+ 0 <= y(10)(7) <= 23
+ 0 <= y(10)(8) <= 23
+ 0 <= y(10)(9) <= 23
+ 0 <= y(10)(11) <= 23
+ 0 <= y(10)(12) <= 23
+ 0 <= y(10)(13) <= 23
+ 0 <= y(10)(14) <= 23
+ 0 <= y(10)(15) <= 23
+ 0 <= y(10)(16) <= 23
+ 0 <= y(10)(17) <= 23
+ 0 <= y(10)(18) <= 23
+ 0 <= y(10)(19) <= 23
+ 0 <= y(10)(20) <= 23
+ 0 <= y(10)(21) <= 23
+ 0 <= y(10)(22) <= 23
+ 0 <= y(10)(23) <= 23
+ 0 <= y(10)(24) <= 23
+ 0 <= y(11)(1) <= 23
+ 0 <= y(11)(2) <= 23
+ 0 <= y(11)(3) <= 23
+ 0 <= y(11)(4) <= 23
+ 0 <= y(11)(5) <= 23
+ 0 <= y(11)(6) <= 23
+ 0 <= y(11)(7) <= 23
+ 0 <= y(11)(8) <= 23
+ 0 <= y(11)(9) <= 23
+ 0 <= y(11)(10) <= 23
+ 0 <= y(11)(12) <= 23
+ 0 <= y(11)(13) <= 23
+ 0 <= y(11)(14) <= 23
+ 0 <= y(11)(15) <= 23
+ 0 <= y(11)(16) <= 23
+ 0 <= y(11)(17) <= 23
+ 0 <= y(11)(18) <= 23
+ 0 <= y(11)(19) <= 23
+ 0 <= y(11)(20) <= 23
+ 0 <= y(11)(21) <= 23
+ 0 <= y(11)(22) <= 23
+ 0 <= y(11)(23) <= 23
+ 0 <= y(11)(24) <= 23
+ 0 <= y(12)(1) <= 23
+ 0 <= y(12)(2) <= 23
+ 0 <= y(12)(3) <= 23
+ 0 <= y(12)(4) <= 23
+ 0 <= y(12)(5) <= 23
+ 0 <= y(12)(6) <= 23
+ 0 <= y(12)(7) <= 23
+ 0 <= y(12)(8) <= 23
+ 0 <= y(12)(9) <= 23
+ 0 <= y(12)(10) <= 23
+ 0 <= y(12)(11) <= 23
+ 0 <= y(12)(13) <= 23
+ 0 <= y(12)(14) <= 23
+ 0 <= y(12)(15) <= 23
+ 0 <= y(12)(16) <= 23
+ 0 <= y(12)(17) <= 23
+ 0 <= y(12)(18) <= 23
+ 0 <= y(12)(19) <= 23
+ 0 <= y(12)(20) <= 23
+ 0 <= y(12)(21) <= 23
+ 0 <= y(12)(22) <= 23
+ 0 <= y(12)(23) <= 23
+ 0 <= y(12)(24) <= 23
+ 0 <= y(13)(1) <= 23
+ 0 <= y(13)(2) <= 23
+ 0 <= y(13)(3) <= 23
+ 0 <= y(13)(4) <= 23
+ 0 <= y(13)(5) <= 23
+ 0 <= y(13)(6) <= 23
+ 0 <= y(13)(7) <= 23
+ 0 <= y(13)(8) <= 23
+ 0 <= y(13)(9) <= 23
+ 0 <= y(13)(10) <= 23
+ 0 <= y(13)(11) <= 23
+ 0 <= y(13)(12) <= 23
+ 0 <= y(13)(14) <= 23
+ 0 <= y(13)(15) <= 23
+ 0 <= y(13)(16) <= 23
+ 0 <= y(13)(17) <= 23
+ 0 <= y(13)(18) <= 23
+ 0 <= y(13)(19) <= 23
+ 0 <= y(13)(20) <= 23
+ 0 <= y(13)(21) <= 23
+ 0 <= y(13)(22) <= 23
+ 0 <= y(13)(23) <= 23
+ 0 <= y(13)(24) <= 23
+ 0 <= y(14)(1) <= 23
+ 0 <= y(14)(2) <= 23
+ 0 <= y(14)(3) <= 23
+ 0 <= y(14)(4) <= 23
+ 0 <= y(14)(5) <= 23
+ 0 <= y(14)(6) <= 23
+ 0 <= y(14)(7) <= 23
+ 0 <= y(14)(8) <= 23
+ 0 <= y(14)(9) <= 23
+ 0 <= y(14)(10) <= 23
+ 0 <= y(14)(11) <= 23
+ 0 <= y(14)(12) <= 23
+ 0 <= y(14)(13) <= 23
+ 0 <= y(14)(15) <= 23
+ 0 <= y(14)(16) <= 23
+ 0 <= y(14)(17) <= 23
+ 0 <= y(14)(18) <= 23
+ 0 <= y(14)(19) <= 23
+ 0 <= y(14)(20) <= 23
+ 0 <= y(14)(21) <= 23
+ 0 <= y(14)(22) <= 23
+ 0 <= y(14)(23) <= 23
+ 0 <= y(14)(24) <= 23
+ 0 <= y(15)(1) <= 23
+ 0 <= y(15)(2) <= 23
+ 0 <= y(15)(3) <= 23
+ 0 <= y(15)(4) <= 23
+ 0 <= y(15)(5) <= 23
+ 0 <= y(15)(6) <= 23
+ 0 <= y(15)(7) <= 23
+ 0 <= y(15)(8) <= 23
+ 0 <= y(15)(9) <= 23
+ 0 <= y(15)(10) <= 23
+ 0 <= y(15)(11) <= 23
+ 0 <= y(15)(12) <= 23
+ 0 <= y(15)(13) <= 23
+ 0 <= y(15)(14) <= 23
+ 0 <= y(15)(16) <= 23
+ 0 <= y(15)(17) <= 23
+ 0 <= y(15)(18) <= 23
+ 0 <= y(15)(19) <= 23
+ 0 <= y(15)(20) <= 23
+ 0 <= y(15)(21) <= 23
+ 0 <= y(15)(22) <= 23
+ 0 <= y(15)(23) <= 23
+ 0 <= y(15)(24) <= 23
+ 0 <= y(16)(1) <= 23
+ 0 <= y(16)(2) <= 23
+ 0 <= y(16)(3) <= 23
+ 0 <= y(16)(4) <= 23
+ 0 <= y(16)(5) <= 23
+ 0 <= y(16)(6) <= 23
+ 0 <= y(16)(7) <= 23
+ 0 <= y(16)(8) <= 23
+ 0 <= y(16)(9) <= 23
+ 0 <= y(16)(10) <= 23
+ 0 <= y(16)(11) <= 23
+ 0 <= y(16)(12) <= 23
+ 0 <= y(16)(13) <= 23
+ 0 <= y(16)(14) <= 23
+ 0 <= y(16)(15) <= 23
+ 0 <= y(16)(17) <= 23
+ 0 <= y(16)(18) <= 23
+ 0 <= y(16)(19) <= 23
+ 0 <= y(16)(20) <= 23
+ 0 <= y(16)(21) <= 23
+ 0 <= y(16)(22) <= 23
+ 0 <= y(16)(23) <= 23
+ 0 <= y(16)(24) <= 23
+ 0 <= y(17)(1) <= 23
+ 0 <= y(17)(2) <= 23
+ 0 <= y(17)(3) <= 23
+ 0 <= y(17)(4) <= 23
+ 0 <= y(17)(5) <= 23
+ 0 <= y(17)(6) <= 23
+ 0 <= y(17)(7) <= 23
+ 0 <= y(17)(8) <= 23
+ 0 <= y(17)(9) <= 23
+ 0 <= y(17)(10) <= 23
+ 0 <= y(17)(11) <= 23
+ 0 <= y(17)(12) <= 23
+ 0 <= y(17)(13) <= 23
+ 0 <= y(17)(14) <= 23
+ 0 <= y(17)(15) <= 23
+ 0 <= y(17)(16) <= 23
+ 0 <= y(17)(18) <= 23
+ 0 <= y(17)(19) <= 23
+ 0 <= y(17)(20) <= 23
+ 0 <= y(17)(21) <= 23
+ 0 <= y(17)(22) <= 23
+ 0 <= y(17)(23) <= 23
+ 0 <= y(17)(24) <= 23
+ 0 <= y(18)(1) <= 23
+ 0 <= y(18)(2) <= 23
+ 0 <= y(18)(3) <= 23
+ 0 <= y(18)(4) <= 23
+ 0 <= y(18)(5) <= 23
+ 0 <= y(18)(6) <= 23
+ 0 <= y(18)(7) <= 23
+ 0 <= y(18)(8) <= 23
+ 0 <= y(18)(9) <= 23
+ 0 <= y(18)(10) <= 23
+ 0 <= y(18)(11) <= 23
+ 0 <= y(18)(12) <= 23
+ 0 <= y(18)(13) <= 23
+ 0 <= y(18)(14) <= 23
+ 0 <= y(18)(15) <= 23
+ 0 <= y(18)(16) <= 23
+ 0 <= y(18)(17) <= 23
+ 0 <= y(18)(19) <= 23
+ 0 <= y(18)(20) <= 23
+ 0 <= y(18)(21) <= 23
+ 0 <= y(18)(22) <= 23
+ 0 <= y(18)(23) <= 23
+ 0 <= y(18)(24) <= 23
+ 0 <= y(19)(1) <= 23
+ 0 <= y(19)(2) <= 23
+ 0 <= y(19)(3) <= 23
+ 0 <= y(19)(4) <= 23
+ 0 <= y(19)(5) <= 23
+ 0 <= y(19)(6) <= 23
+ 0 <= y(19)(7) <= 23
+ 0 <= y(19)(8) <= 23
+ 0 <= y(19)(9) <= 23
+ 0 <= y(19)(10) <= 23
+ 0 <= y(19)(11) <= 23
+ 0 <= y(19)(12) <= 23
+ 0 <= y(19)(13) <= 23
+ 0 <= y(19)(14) <= 23
+ 0 <= y(19)(15) <= 23
+ 0 <= y(19)(16) <= 23
+ 0 <= y(19)(17) <= 23
+ 0 <= y(19)(18) <= 23
+ 0 <= y(19)(20) <= 23
+ 0 <= y(19)(21) <= 23
+ 0 <= y(19)(22) <= 23
+ 0 <= y(19)(23) <= 23
+ 0 <= y(19)(24) <= 23
+ 0 <= y(20)(1) <= 23
+ 0 <= y(20)(2) <= 23
+ 0 <= y(20)(3) <= 23
+ 0 <= y(20)(4) <= 23
+ 0 <= y(20)(5) <= 23
+ 0 <= y(20)(6) <= 23
+ 0 <= y(20)(7) <= 23
+ 0 <= y(20)(8) <= 23
+ 0 <= y(20)(9) <= 23
+ 0 <= y(20)(10) <= 23
+ 0 <= y(20)(11) <= 23
+ 0 <= y(20)(12) <= 23
+ 0 <= y(20)(13) <= 23
+ 0 <= y(20)(14) <= 23
+ 0 <= y(20)(15) <= 23
+ 0 <= y(20)(16) <= 23
+ 0 <= y(20)(17) <= 23
+ 0 <= y(20)(18) <= 23
+ 0 <= y(20)(19) <= 23
+ 0 <= y(20)(21) <= 23
+ 0 <= y(20)(22) <= 23
+ 0 <= y(20)(23) <= 23
+ 0 <= y(20)(24) <= 23
+ 0 <= y(21)(1) <= 23
+ 0 <= y(21)(2) <= 23
+ 0 <= y(21)(3) <= 23
+ 0 <= y(21)(4) <= 23
+ 0 <= y(21)(5) <= 23
+ 0 <= y(21)(6) <= 23
+ 0 <= y(21)(7) <= 23
+ 0 <= y(21)(8) <= 23
+ 0 <= y(21)(9) <= 23
+ 0 <= y(21)(10) <= 23
+ 0 <= y(21)(11) <= 23
+ 0 <= y(21)(12) <= 23
+ 0 <= y(21)(13) <= 23
+ 0 <= y(21)(14) <= 23
+ 0 <= y(21)(15) <= 23
+ 0 <= y(21)(16) <= 23
+ 0 <= y(21)(17) <= 23
+ 0 <= y(21)(18) <= 23
+ 0 <= y(21)(19) <= 23
+ 0 <= y(21)(20) <= 23
+ 0 <= y(21)(22) <= 23
+ 0 <= y(21)(23) <= 23
+ 0 <= y(21)(24) <= 23
+ 0 <= y(22)(1) <= 23
+ 0 <= y(22)(2) <= 23
+ 0 <= y(22)(3) <= 23
+ 0 <= y(22)(4) <= 23
+ 0 <= y(22)(5) <= 23
+ 0 <= y(22)(6) <= 23
+ 0 <= y(22)(7) <= 23
+ 0 <= y(22)(8) <= 23
+ 0 <= y(22)(9) <= 23
+ 0 <= y(22)(10) <= 23
+ 0 <= y(22)(11) <= 23
+ 0 <= y(22)(12) <= 23
+ 0 <= y(22)(13) <= 23
+ 0 <= y(22)(14) <= 23
+ 0 <= y(22)(15) <= 23
+ 0 <= y(22)(16) <= 23
+ 0 <= y(22)(17) <= 23
+ 0 <= y(22)(18) <= 23
+ 0 <= y(22)(19) <= 23
+ 0 <= y(22)(20) <= 23
+ 0 <= y(22)(21) <= 23
+ 0 <= y(22)(23) <= 23
+ 0 <= y(22)(24) <= 23
+ 0 <= y(23)(1) <= 23
+ 0 <= y(23)(2) <= 23
+ 0 <= y(23)(3) <= 23
+ 0 <= y(23)(4) <= 23
+ 0 <= y(23)(5) <= 23
+ 0 <= y(23)(6) <= 23
+ 0 <= y(23)(7) <= 23
+ 0 <= y(23)(8) <= 23
+ 0 <= y(23)(9) <= 23
+ 0 <= y(23)(10) <= 23
+ 0 <= y(23)(11) <= 23
+ 0 <= y(23)(12) <= 23
+ 0 <= y(23)(13) <= 23
+ 0 <= y(23)(14) <= 23
+ 0 <= y(23)(15) <= 23
+ 0 <= y(23)(16) <= 23
+ 0 <= y(23)(17) <= 23
+ 0 <= y(23)(18) <= 23
+ 0 <= y(23)(19) <= 23
+ 0 <= y(23)(20) <= 23
+ 0 <= y(23)(21) <= 23
+ 0 <= y(23)(22) <= 23
+ 0 <= y(23)(24) <= 23
+ 0 <= y(24)(1) <= 23
+ 0 <= y(24)(2) <= 23
+ 0 <= y(24)(3) <= 23
+ 0 <= y(24)(4) <= 23
+ 0 <= y(24)(5) <= 23
+ 0 <= y(24)(6) <= 23
+ 0 <= y(24)(7) <= 23
+ 0 <= y(24)(8) <= 23
+ 0 <= y(24)(9) <= 23
+ 0 <= y(24)(10) <= 23
+ 0 <= y(24)(11) <= 23
+ 0 <= y(24)(12) <= 23
+ 0 <= y(24)(13) <= 23
+ 0 <= y(24)(14) <= 23
+ 0 <= y(24)(15) <= 23
+ 0 <= y(24)(16) <= 23
+ 0 <= y(24)(17) <= 23
+ 0 <= y(24)(18) <= 23
+ 0 <= y(24)(19) <= 23
+ 0 <= y(24)(20) <= 23
+ 0 <= y(24)(21) <= 23
+ 0 <= y(24)(22) <= 23
+ 0 <= y(24)(23) <= 23
 Binaries
  x(1,1)  x(1,2)  x(1,3)  x(1,4)  x(1,5)  x(1,6)  x(1,7)  x(1,8)  x(1,9) 
  x(1,10)  x(1,11)  x(1,12)  x(1,13)  x(1,14)  x(1,15)  x(1,16)  x(1,17) 
@@ -1774,6 +2271,81 @@ Binaries
  x(24,16)  x(24,17)  x(24,18)  x(24,19)  x(24,20)  x(24,21)  x(24,22) 
  x(24,23)  x(24,24) 
 Generals
- u(2)  u(3)  u(4)  u(5)  u(6)  u(7)  u(8)  u(9)  u(10)  u(11)  u(12)  u(13) 
- u(14)  u(15)  u(16)  u(17)  u(18)  u(19)  u(20)  u(21)  u(22)  u(23)  u(24) 
+ y(1)(2)  y(1)(3)  y(1)(4)  y(1)(5)  y(1)(6)  y(1)(7)  y(1)(8)  y(1)(9) 
+ y(1)(10)  y(1)(11)  y(1)(12)  y(1)(13)  y(1)(14)  y(1)(15)  y(1)(16) 
+ y(1)(17)  y(1)(18)  y(1)(19)  y(1)(20)  y(1)(21)  y(1)(22)  y(1)(23) 
+ y(1)(24)  y(2)(1)  y(2)(3)  y(2)(4)  y(2)(5)  y(2)(6)  y(2)(7)  y(2)(8) 
+ y(2)(9)  y(2)(10)  y(2)(11)  y(2)(12)  y(2)(13)  y(2)(14)  y(2)(15)  y(2)(16) 
+ y(2)(17)  y(2)(18)  y(2)(19)  y(2)(20)  y(2)(21)  y(2)(22)  y(2)(23) 
+ y(2)(24)  y(3)(1)  y(3)(2)  y(3)(4)  y(3)(5)  y(3)(6)  y(3)(7)  y(3)(8) 
+ y(3)(9)  y(3)(10)  y(3)(11)  y(3)(12)  y(3)(13)  y(3)(14)  y(3)(15)  y(3)(16) 
+ y(3)(17)  y(3)(18)  y(3)(19)  y(3)(20)  y(3)(21)  y(3)(22)  y(3)(23) 
+ y(3)(24)  y(4)(1)  y(4)(2)  y(4)(3)  y(4)(5)  y(4)(6)  y(4)(7)  y(4)(8) 
+ y(4)(9)  y(4)(10)  y(4)(11)  y(4)(12)  y(4)(13)  y(4)(14)  y(4)(15)  y(4)(16) 
+ y(4)(17)  y(4)(18)  y(4)(19)  y(4)(20)  y(4)(21)  y(4)(22)  y(4)(23) 
+ y(4)(24)  y(5)(1)  y(5)(2)  y(5)(3)  y(5)(4)  y(5)(6)  y(5)(7)  y(5)(8) 
+ y(5)(9)  y(5)(10)  y(5)(11)  y(5)(12)  y(5)(13)  y(5)(14)  y(5)(15)  y(5)(16) 
+ y(5)(17)  y(5)(18)  y(5)(19)  y(5)(20)  y(5)(21)  y(5)(22)  y(5)(23) 
+ y(5)(24)  y(6)(1)  y(6)(2)  y(6)(3)  y(6)(4)  y(6)(5)  y(6)(7)  y(6)(8) 
+ y(6)(9)  y(6)(10)  y(6)(11)  y(6)(12)  y(6)(13)  y(6)(14)  y(6)(15)  y(6)(16) 
+ y(6)(17)  y(6)(18)  y(6)(19)  y(6)(20)  y(6)(21)  y(6)(22)  y(6)(23) 
+ y(6)(24)  y(7)(1)  y(7)(2)  y(7)(3)  y(7)(4)  y(7)(5)  y(7)(6)  y(7)(8) 
+ y(7)(9)  y(7)(10)  y(7)(11)  y(7)(12)  y(7)(13)  y(7)(14)  y(7)(15)  y(7)(16) 
+ y(7)(17)  y(7)(18)  y(7)(19)  y(7)(20)  y(7)(21)  y(7)(22)  y(7)(23) 
+ y(7)(24)  y(8)(1)  y(8)(2)  y(8)(3)  y(8)(4)  y(8)(5)  y(8)(6)  y(8)(7) 
+ y(8)(9)  y(8)(10)  y(8)(11)  y(8)(12)  y(8)(13)  y(8)(14)  y(8)(15)  y(8)(16) 
+ y(8)(17)  y(8)(18)  y(8)(19)  y(8)(20)  y(8)(21)  y(8)(22)  y(8)(23) 
+ y(8)(24)  y(9)(1)  y(9)(2)  y(9)(3)  y(9)(4)  y(9)(5)  y(9)(6)  y(9)(7) 
+ y(9)(8)  y(9)(10)  y(9)(11)  y(9)(12)  y(9)(13)  y(9)(14)  y(9)(15)  y(9)(16) 
+ y(9)(17)  y(9)(18)  y(9)(19)  y(9)(20)  y(9)(21)  y(9)(22)  y(9)(23) 
+ y(9)(24)  y(10)(1)  y(10)(2)  y(10)(3)  y(10)(4)  y(10)(5)  y(10)(6) 
+ y(10)(7)  y(10)(8)  y(10)(9)  y(10)(11)  y(10)(12)  y(10)(13)  y(10)(14) 
+ y(10)(15)  y(10)(16)  y(10)(17)  y(10)(18)  y(10)(19)  y(10)(20)  y(10)(21) 
+ y(10)(22)  y(10)(23)  y(10)(24)  y(11)(1)  y(11)(2)  y(11)(3)  y(11)(4) 
+ y(11)(5)  y(11)(6)  y(11)(7)  y(11)(8)  y(11)(9)  y(11)(10)  y(11)(12) 
+ y(11)(13)  y(11)(14)  y(11)(15)  y(11)(16)  y(11)(17)  y(11)(18)  y(11)(19) 
+ y(11)(20)  y(11)(21)  y(11)(22)  y(11)(23)  y(11)(24)  y(12)(1)  y(12)(2) 
+ y(12)(3)  y(12)(4)  y(12)(5)  y(12)(6)  y(12)(7)  y(12)(8)  y(12)(9) 
+ y(12)(10)  y(12)(11)  y(12)(13)  y(12)(14)  y(12)(15)  y(12)(16)  y(12)(17) 
+ y(12)(18)  y(12)(19)  y(12)(20)  y(12)(21)  y(12)(22)  y(12)(23)  y(12)(24) 
+ y(13)(1)  y(13)(2)  y(13)(3)  y(13)(4)  y(13)(5)  y(13)(6)  y(13)(7) 
+ y(13)(8)  y(13)(9)  y(13)(10)  y(13)(11)  y(13)(12)  y(13)(14)  y(13)(15) 
+ y(13)(16)  y(13)(17)  y(13)(18)  y(13)(19)  y(13)(20)  y(13)(21)  y(13)(22) 
+ y(13)(23)  y(13)(24)  y(14)(1)  y(14)(2)  y(14)(3)  y(14)(4)  y(14)(5) 
+ y(14)(6)  y(14)(7)  y(14)(8)  y(14)(9)  y(14)(10)  y(14)(11)  y(14)(12) 
+ y(14)(13)  y(14)(15)  y(14)(16)  y(14)(17)  y(14)(18)  y(14)(19)  y(14)(20) 
+ y(14)(21)  y(14)(22)  y(14)(23)  y(14)(24)  y(15)(1)  y(15)(2)  y(15)(3) 
+ y(15)(4)  y(15)(5)  y(15)(6)  y(15)(7)  y(15)(8)  y(15)(9)  y(15)(10) 
+ y(15)(11)  y(15)(12)  y(15)(13)  y(15)(14)  y(15)(16)  y(15)(17)  y(15)(18) 
+ y(15)(19)  y(15)(20)  y(15)(21)  y(15)(22)  y(15)(23)  y(15)(24)  y(16)(1) 
+ y(16)(2)  y(16)(3)  y(16)(4)  y(16)(5)  y(16)(6)  y(16)(7)  y(16)(8) 
+ y(16)(9)  y(16)(10)  y(16)(11)  y(16)(12)  y(16)(13)  y(16)(14)  y(16)(15) 
+ y(16)(17)  y(16)(18)  y(16)(19)  y(16)(20)  y(16)(21)  y(16)(22)  y(16)(23) 
+ y(16)(24)  y(17)(1)  y(17)(2)  y(17)(3)  y(17)(4)  y(17)(5)  y(17)(6) 
+ y(17)(7)  y(17)(8)  y(17)(9)  y(17)(10)  y(17)(11)  y(17)(12)  y(17)(13) 
+ y(17)(14)  y(17)(15)  y(17)(16)  y(17)(18)  y(17)(19)  y(17)(20)  y(17)(21) 
+ y(17)(22)  y(17)(23)  y(17)(24)  y(18)(1)  y(18)(2)  y(18)(3)  y(18)(4) 
+ y(18)(5)  y(18)(6)  y(18)(7)  y(18)(8)  y(18)(9)  y(18)(10)  y(18)(11) 
+ y(18)(12)  y(18)(13)  y(18)(14)  y(18)(15)  y(18)(16)  y(18)(17)  y(18)(19) 
+ y(18)(20)  y(18)(21)  y(18)(22)  y(18)(23)  y(18)(24)  y(19)(1)  y(19)(2) 
+ y(19)(3)  y(19)(4)  y(19)(5)  y(19)(6)  y(19)(7)  y(19)(8)  y(19)(9) 
+ y(19)(10)  y(19)(11)  y(19)(12)  y(19)(13)  y(19)(14)  y(19)(15)  y(19)(16) 
+ y(19)(17)  y(19)(18)  y(19)(20)  y(19)(21)  y(19)(22)  y(19)(23)  y(19)(24) 
+ y(20)(1)  y(20)(2)  y(20)(3)  y(20)(4)  y(20)(5)  y(20)(6)  y(20)(7) 
+ y(20)(8)  y(20)(9)  y(20)(10)  y(20)(11)  y(20)(12)  y(20)(13)  y(20)(14) 
+ y(20)(15)  y(20)(16)  y(20)(17)  y(20)(18)  y(20)(19)  y(20)(21)  y(20)(22) 
+ y(20)(23)  y(20)(24)  y(21)(1)  y(21)(2)  y(21)(3)  y(21)(4)  y(21)(5) 
+ y(21)(6)  y(21)(7)  y(21)(8)  y(21)(9)  y(21)(10)  y(21)(11)  y(21)(12) 
+ y(21)(13)  y(21)(14)  y(21)(15)  y(21)(16)  y(21)(17)  y(21)(18)  y(21)(19) 
+ y(21)(20)  y(21)(22)  y(21)(23)  y(21)(24)  y(22)(1)  y(22)(2)  y(22)(3) 
+ y(22)(4)  y(22)(5)  y(22)(6)  y(22)(7)  y(22)(8)  y(22)(9)  y(22)(10) 
+ y(22)(11)  y(22)(12)  y(22)(13)  y(22)(14)  y(22)(15)  y(22)(16)  y(22)(17) 
+ y(22)(18)  y(22)(19)  y(22)(20)  y(22)(21)  y(22)(23)  y(22)(24)  y(23)(1) 
+ y(23)(2)  y(23)(3)  y(23)(4)  y(23)(5)  y(23)(6)  y(23)(7)  y(23)(8) 
+ y(23)(9)  y(23)(10)  y(23)(11)  y(23)(12)  y(23)(13)  y(23)(14)  y(23)(15) 
+ y(23)(16)  y(23)(17)  y(23)(18)  y(23)(19)  y(23)(20)  y(23)(21)  y(23)(22) 
+ y(23)(24)  y(24)(1)  y(24)(2)  y(24)(3)  y(24)(4)  y(24)(5)  y(24)(6) 
+ y(24)(7)  y(24)(8)  y(24)(9)  y(24)(10)  y(24)(11)  y(24)(12)  y(24)(13) 
+ y(24)(14)  y(24)(15)  y(24)(16)  y(24)(17)  y(24)(18)  y(24)(19)  y(24)(20) 
+ y(24)(21)  y(24)(22)  y(24)(23) 
 End

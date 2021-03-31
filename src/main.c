@@ -13,17 +13,13 @@ int main(int argc, char** argv) {
 
     parse_command_line(argc, argv, inst);
     parse_input_file(inst, "tsp");
-
-    instance dummy = duplicate_instance_parameters(inst);
-    parse_input_file(dummy, "opt.tour");
+    print_instance(inst, 1);
 
     TSPopt(inst, ASYMMETRIC_MTZ);
-    TSPopt(inst, ASYMMETRIC_GG);
-    zstar(inst, dummy->sols[0]);
-    add_solution(inst, dummy->sols[0]);
 
     print_instance(inst, 0);
     plot_solutions_graphviz(inst->sols, inst->num_solutions);
+    /*plot_solution_graphviz(inst->sols[2]);*/
 
 
     return EXIT_SUCCESS;

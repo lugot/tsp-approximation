@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <float.h>
 
-
 enum sections {
     NAME,
     TYPE,
@@ -31,16 +30,22 @@ enum sections {
     EDGE_WEIGHT_SECTION,
     UNHANDLED_SECTION,
 };
-enum sections section_hasher(char* section_name);
-enum instance_types instance_type_hasher (char* section_param);
-enum weight_types weight_type_hasher(char* section_param);
+enum sections section_enumerator(char* section_name);
+enum instance_types instance_type_enumerator (char* section_param);
+enum weight_types weight_type_enumerator(char* section_param);
 
-// TODO: add this to a help
 void print_usage() {
-    printf("Usage: rectangle -file num -b num\n");
+    printf("Usage: ./<name_executable> [options]\n");
+    printf("Options:\n");
+    printf("  --verbose                 Display more informations\n");
+    printf("  --model_name <model_name> Model name present in data subfolder\n");
+    printf("  --time_limit <integer>    Max timelimit for CPLEX computation\n");
+    printf("  --seed <integer>          Randomness seed used in computation\n");
+    printf("  --threads <integer>       Max number of threads\n");
+    printf("  --memory <integer>        Max memory in MB used by CPLEX computation\n");
+    printf("  --integer_costs           Consider integer costs only\n");
 }
 
-// TODO: comment
 void parse_command_line(int argc, char** argv, instance inst) {
 
     static struct option long_options[] = {
@@ -120,7 +125,7 @@ void parse_input_file(instance inst, const char* file_extension) {
         }
 
         /* retrive section and inject parameter */
-        switch (section_hasher(section_name)) {
+        switch (section_enumerator(section_name)) {
 
             /* specification part */
             case NAME:
@@ -133,7 +138,7 @@ void parse_input_file(instance inst, const char* file_extension) {
                 break;
 
             case TYPE:
-                inst->instance_type = instance_type_hasher(section_param);
+                inst->instance_type = instance_type_enumerator(section_param);
                 if (inst->instance_type == UNHANDLED_INSTANCE_TYPE) {
                     print_error("type %s unmanaged", section_param);
                 }
@@ -149,7 +154,7 @@ void parse_input_file(instance inst, const char* file_extension) {
                 break;
 
             case EDGE_WEIGHT_TYPE:
-                inst->weight_type = weight_type_hasher(section_param);
+                inst->weight_type = weight_type_enumerator(section_param);
                 if (inst->weight_type == UNHANDLED_WEIGHT_TYPE) {
                     print_error("weight type %s unhandled", section_param);
                 }
@@ -212,7 +217,7 @@ void parse_input_file(instance inst, const char* file_extension) {
                 sol->parent[prev] = first;
                 sol->edges[i-1] = (edge) {prev, first};
 
-                if (i != inst->num_nodes) print_error("reached oef while reading tour\n");
+                if (i != inst->num_nodes) print_error("reached eof while reading tour\n");
 
                 add_solution(inst, sol);
 
@@ -247,7 +252,6 @@ void parse_input_file(instance inst, const char* file_extension) {
                 break;
             }
 
-
             default:
             case END_OF_FILE:
                 break;
@@ -261,7 +265,7 @@ void parse_input_file(instance inst, const char* file_extension) {
     free(filename);
 }
 
-enum sections section_hasher(char* section_name) {
+enum sections section_enumerator(char* section_name) {
     char* sections[] = {
         "NAME",
         "TYPE",
@@ -290,7 +294,7 @@ enum sections section_hasher(char* section_name) {
 
     return UNHANDLED_SECTION;
 }
-enum instance_types instance_type_hasher (char* section_param) {
+enum instance_types instance_type_enumerator (char* section_param) {
     char* instance_types[] = {
         "TSP",
         "TOUR",
@@ -301,7 +305,7 @@ enum instance_types instance_type_hasher (char* section_param) {
     }
     return UNHANDLED_INSTANCE_TYPE;
 }
-enum weight_types weight_type_hasher(char* section_param) {
+enum weight_types weight_type_enumerator(char* section_param) {
     char* weight_types[] = {
         "ATT",
         "EUC_2D",

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-// TODO:  retrive zstar from CPLEX
 solution TSPopt(instance inst, enum model_types model_type) {
 	if (inst->instance_type != TSP) print_error("need TSP instance");
 
@@ -18,56 +17,62 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 	sol->distance_time = compute_dist(inst);
 
-
 	/* open CPLEX model */
 	int error;
-	/* enviorment: allocate memory */
 	CPXENVptr env = CPXopenCPLEX(&error);
 	CPXLPptr lp = CPXcreateprob(env, &error, "TSP");
+
+	/* set params:
+	 * - timelimit
+	 * - EpInteger: CPLEX tollerance to declare a variable integer, important in bigM
+	 * - EpRightHandSide: the less or equal satisfied up to this tollerance, usually 1e-5, with bigM 1e-9 */
+	CPXsetdblparam(env, CPX_PARAM_TILIM, inst->timelimit);
+	CPXsetdblparam(env, CPX_PARAM_EPINT, 0.0);
+	CPXsetdblparam(env, CPX_PARAM_EPRHS, 1e-9);
 
 	/* populate enviorment with model data */
 	sol->build_time = build_tsp_model(inst, env, lp, model_type);
 
-	struct timeval start, end;
-    gettimeofday(&start, NULL);
+	do {
+		struct timeval start, end;
+		gettimeofday(&start, NULL);
 
-	if (CPXmipopt(env,lp)) print_error("CPXmipopt() error");
+		if (CPXmipopt(env,lp)) print_error("CPXmipopt() error");
 
-    gettimeofday(&end, NULL);
-    long seconds = (end.tv_sec - start.tv_sec);
-    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
-	sol->solve_time = micros / 1000.0;
+		gettimeofday(&end, NULL);
+		long seconds = (end.tv_sec - start.tv_sec);
+		long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
+		sol->solve_time = micros / 1000.0;
 
-	/* store the optimal solution found by CPLEX */
-	int ncols = CPXgetnumcols(env, lp);
-	double* xstar = (double*) calloc(ncols, sizeof(double));
-	if (CPXgetx(env, lp, xstar, 0, ncols-1)) print_error("CPXgetx() error");
+		/* store the optimal solution found by CPLEX */
+		int ncols = CPXgetnumcols(env, lp);
+		double* xstar = (double*) calloc(ncols, sizeof(double));
+		if (CPXgetx(env, lp, xstar, 0, ncols-1)) print_error("CPXgetx() error\n");
 
+		int (*cplex_pos)(int, int, instance) = model_type == SYMMETRIC ?
+			xpos : xxpos;
 
+		/* index over selected edges */
+		int k = 0;
+		/* check for all edges if is selected */
+		for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<inst->num_nodes; j++) {
+			if (model_type == SYMMETRIC && j <= i) continue;
 
-
-	int (*cplex_pos)(int, int, instance) = model_type == SYMMETRIC ?
-		xpos : xxpos;
-
-	/* index over selected edges */
-	int k = 0;
-	/* check for all edges if is selected */
-	for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<inst->num_nodes; j++) {
-		if (model_type == SYMMETRIC && j < i) continue;
-
-		if (xstar[cplex_pos(i, j, inst)] > 0.5) {
-			sol->parent[i] = j;
-			sol->edges[k++] = (edge) {i, j};
+			if (xstar[cplex_pos(i, j, inst)] > 0.5) {
+				sol->parent[i] = j;
+				sol->edges[k++] = (edge) {i, j};
+			}
 		}
-	}
 
-	if (k != sol->num_edges) print_error("invalid number of edges");
+		if (k != sol->num_edges) print_error("invalid number of edges\n");
+		free(xstar);
+
+	} while (model_type == SYMMETRIC_BENDERS);
 
 	add_solution(inst, sol);
 
 	sol->zstar = zstar(inst, sol);
 
-	free(xstar);
 	CPXfreeprob(env, &lp);
 	CPXcloseCPLEX(&env);
 
