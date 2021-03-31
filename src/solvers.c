@@ -1,8 +1,12 @@
 #include "tsp.h"
 #include "utils.h"
+#include "union_find.h"
 #include <cplex.h>
 #include <stdlib.h>
 #include <sys/time.h>
+
+int retrive_symmetric_solution(double* xstar, instance inst, solution sol, union_find uf);
+int retrive_asymmetric_solution(double* xstar, instance inst, solution sol, union_find uf);
 
 solution TSPopt(instance inst, enum model_types model_type) {
 	if (inst->instance_type != TSP) print_error("need TSP instance");
@@ -33,41 +37,46 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	/* populate enviorment with model data */
 	sol->build_time = build_tsp_model(inst, env, lp, model_type);
 
+
+	struct timeval start, end;
+	gettimeofday(&start, NULL);
+
+	union_find uf = uf_create(inst->num_nodes);
+
 	do {
-		struct timeval start, end;
-		gettimeofday(&start, NULL);
-
+		/* solve! */
 		if (CPXmipopt(env,lp)) print_error("CPXmipopt() error");
-
-		gettimeofday(&end, NULL);
-		long seconds = (end.tv_sec - start.tv_sec);
-		long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
-		sol->solve_time = micros / 1000.0;
 
 		/* store the optimal solution found by CPLEX */
 		int ncols = CPXgetnumcols(env, lp);
 		double* xstar = (double*) calloc(ncols, sizeof(double));
 		if (CPXgetx(env, lp, xstar, 0, ncols-1)) print_error("CPXgetx() error\n");
 
-		int (*cplex_pos)(int, int, instance) = model_type == SYMMETRIC ?
-			xpos : xxpos;
-
-		/* index over selected edges */
-		int k = 0;
-		/* check for all edges if is selected */
-		for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<inst->num_nodes; j++) {
-			if (model_type == SYMMETRIC && j <= i) continue;
-
-			if (xstar[cplex_pos(i, j, inst)] > 0.5) {
-				sol->parent[i] = j;
-				sol->edges[k++] = (edge) {i, j};
-			}
+		int k;
+		switch (model_type) {
+			case SYMMETRIC:
+			case SYMMETRIC_BENDERS:
+				k = retrive_symmetric_solution(xstar, inst, sol, uf);
+				break;
+			case ASYMMETRIC_MTZ:
+			case ASYMMETRIC_GG:
+				k = retrive_asymmetric_solution(xstar, inst, sol, uf);
+				break;
+			default:
+				k = 0;
+				break;
 		}
 
 		if (k != sol->num_edges) print_error("invalid number of edges\n");
 		free(xstar);
 
-	} while (model_type == SYMMETRIC_BENDERS);
+	} while (model_type == SYMMETRIC_BENDERS && uf->num_sets != 1);
+
+
+	gettimeofday(&end, NULL);
+	long seconds = (end.tv_sec - start.tv_sec);
+	long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
+	sol->solve_time = micros / 1000.0;
 
 	add_solution(inst, sol);
 
@@ -77,4 +86,36 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	CPXcloseCPLEX(&env);
 
 	return sol;
+}
+
+int retrive_symmetric_solution(double* xstar, instance inst, solution sol, union_find uf) {
+	/* index over selected edges */
+	int k = 0;
+	/* check for all edges if is selected */
+	for (int i=0; i<inst->num_nodes; i++) for (int j=i+1; j<inst->num_nodes; j++) {
+		if (xstar[xpos(i, j, inst)] > 0.5) {
+			sol->parent[i] = j;
+			sol->edges[k++] = (edge) {i, j};
+
+			uf_union_set(uf, i, j);
+		}
+	}
+
+	return k;
+}
+
+int retrive_asymmetric_solution(double* xstar, instance inst, solution sol, union_find uf) {
+	/* index over selected edges */
+	int k = 0;
+	/* check for all edges if is selected */
+	for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<inst->num_nodes; j++) {
+		if (xstar[xxpos(i, j, inst)] > 0.5) {
+			sol->parent[i] = j;
+			sol->edges[k++] = (edge) {i, j};
+
+			uf_union_set(uf, i, j);
+		}
+	}
+
+	return k;
 }
