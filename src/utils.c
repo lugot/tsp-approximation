@@ -407,3 +407,11 @@ int maxi(int a, int b) {
 int mini(int a, int b) {
 	return a < b ? a : b;
 }
+
+void swap(int* x, int* y) {
+   int temp;
+
+   temp = *y;
+   *y = *x;
+   *x = temp;
+}

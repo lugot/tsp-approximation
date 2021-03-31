@@ -24,4 +24,6 @@ double min(double a, double b);
 int maxi(int a, int b);
 int mini(int a, int b);
 
+void swap(int* x, int* y);
+
 #endif /* _UTILS_H_ */

@@ -1,4 +1,4 @@
-OBJS = main.o globals.o tsp.o parsers.o utils.o solvers.o
+OBJS = main.o globals.o tsp.o parsers.o utils.o solvers.o union_find.o
 HEADERS =
 EXE = tsp_approx
 all: $(EXE)
