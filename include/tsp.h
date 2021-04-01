@@ -1,6 +1,7 @@
 #ifndef _TSP_H_
 #define _TSP_H_
 
+#include "union_find.h"
 #include <cplex.h>
 
 struct solution_t;
@@ -70,7 +71,7 @@ typedef struct solution_t {
 	double zstar;
 	int num_edges;
 	edge* edges;
-	int* parent;
+	/*int* parent;*/
 
 	double distance_time;
 	double build_time;
@@ -85,5 +86,7 @@ void free_instance();
 void add_solution(instance inst, solution sol);
 
 double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_types type);
+
+void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp, union_find uf);
 
 #endif   /* _TSP_H_ */

@@ -13,14 +13,14 @@ int main(int argc, char** argv) {
 
     parse_command_line(argc, argv, inst);
     parse_input_file(inst, "tsp");
+    /*print_instance(inst, 1);*/
+
+    TSPopt(inst, SYMMETRIC_BENDERS);
+
     print_instance(inst, 1);
-
-    TSPopt(inst, ASYMMETRIC_MTZ);
-
-    print_instance(inst, 0);
-    plot_solutions_graphviz(inst->sols, inst->num_solutions);
-    /*plot_solution_graphviz(inst->sols[2]);*/
-
+    /*print_solution(inst->sols[0], 1);*/
+    /*plot_solutions_graphviz(inst->sols, inst->num_solutions);*/
+    plot_solution_graphviz(inst->sols[0]);
 
     return EXIT_SUCCESS;
 }

@@ -1,4 +1,5 @@
 #include "tsp.h"
+#include "globals.h"
 #include "utils.h"
 #include "union_find.h"
 #include <cplex.h>
@@ -17,7 +18,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 	sol->num_edges = inst->num_nodes;
 	sol->edges = (edge*) calloc(sol->num_edges, sizeof(struct edge_t));
-	sol->parent = (int*) calloc(sol->num_edges, sizeof(int));
+	/*sol->parent = (int*) calloc(sol->num_edges, sizeof(int));*/
 
 	sol->distance_time = compute_dist(inst);
 
@@ -41,7 +42,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	struct timeval start, end;
 	gettimeofday(&start, NULL);
 
-	union_find uf = uf_create(inst->num_nodes);
+	union_find uf;
 
 	do {
 		/* solve! */
@@ -52,16 +53,25 @@ solution TSPopt(instance inst, enum model_types model_type) {
 		double* xstar = (double*) calloc(ncols, sizeof(double));
 		if (CPXgetx(env, lp, xstar, 0, ncols-1)) print_error("CPXgetx() error\n");
 
+		uf = uf_create(inst->num_nodes);
 		int k;
 		switch (model_type) {
 			case SYMMETRIC:
-			case SYMMETRIC_BENDERS:
 				k = retrive_symmetric_solution(xstar, inst, sol, uf);
 				break;
+
+			case SYMMETRIC_BENDERS:
+				k = retrive_symmetric_solution(xstar, inst, sol, uf);
+				add_cool_subtour_elimination(inst, env, lp, uf);
+				k = retrive_symmetric_solution(xstar, inst, sol, uf);
+				if (VERBOSE) printf("[VERBOSE] Benders num sets: %d\n", uf->num_sets);
+				break;
+
 			case ASYMMETRIC_MTZ:
 			case ASYMMETRIC_GG:
 				k = retrive_asymmetric_solution(xstar, inst, sol, uf);
 				break;
+
 			default:
 				k = 0;
 				break;
@@ -69,6 +79,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 		if (k != sol->num_edges) print_error("invalid number of edges\n");
 		free(xstar);
+
+		uf_free(uf);
 
 	} while (model_type == SYMMETRIC_BENDERS && uf->num_sets != 1);
 
@@ -94,7 +106,7 @@ int retrive_symmetric_solution(double* xstar, instance inst, solution sol, union
 	/* check for all edges if is selected */
 	for (int i=0; i<inst->num_nodes; i++) for (int j=i+1; j<inst->num_nodes; j++) {
 		if (xstar[xpos(i, j, inst)] > 0.5) {
-			sol->parent[i] = j;
+			/*sol->parent[i] = j;*/
 			sol->edges[k++] = (edge) {i, j};
 
 			uf_union_set(uf, i, j);
@@ -110,7 +122,7 @@ int retrive_asymmetric_solution(double* xstar, instance inst, solution sol, unio
 	/* check for all edges if is selected */
 	for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<inst->num_nodes; j++) {
 		if (xstar[xxpos(i, j, inst)] > 0.5) {
-			sol->parent[i] = j;
+			/*sol->parent[i] = j;*/
 			sol->edges[k++] = (edge) {i, j};
 
 			uf_union_set(uf, i, j);
