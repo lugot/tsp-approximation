@@ -16,6 +16,7 @@ int main(int argc, char** argv) {
     print_instance(inst, 1);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     double runtime = 0.0;
 
     for (int i=0; i<5; i++) {
@@ -28,6 +29,14 @@ int main(int argc, char** argv) {
     /*print_solution(inst->sols[0], 1);*/
     /*plot_solutions_graphviz(inst->sols, inst->num_solutions);*/
     /*plot_solution_graphviz(inst->sols[0]);*/
+=======
+    TSPopt(inst, ASYMMETRIC_MTZ);
+
+    print_instance(inst, 0);
+    plot_solutions_graphviz(inst->sols, inst->num_solutions);
+    /*plot_solution_graphviz(inst->sols[2]);*/
+
+>>>>>>> parent of f2d3960 (added benders)
 =======
     TSPopt(inst, ASYMMETRIC_MTZ);
 

@@ -56,6 +56,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 		switch (model_type) {
 			case SYMMETRIC:
 <<<<<<< HEAD
+<<<<<<< HEAD
 				k = retrive_symmetric_solution(xstar, inst, sol);
 				break;
 
@@ -64,6 +65,10 @@ solution TSPopt(instance inst, enum model_types model_type) {
 				add_cool_subtour_elimination(inst, env, lp);
 				k = retrive_symmetric_solution(xstar, inst, sol);
 				if (VERBOSE) printf("[VERBOSE] Benders num sets: %d\n", uf->num_sets);
+=======
+			case SYMMETRIC_BENDERS:
+				k = retrive_symmetric_solution(xstar, inst, sol, uf);
+>>>>>>> parent of f2d3960 (added benders)
 =======
 			case SYMMETRIC_BENDERS:
 				k = retrive_symmetric_solution(xstar, inst, sol, uf);

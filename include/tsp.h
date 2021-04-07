@@ -87,8 +87,11 @@ void add_solution(instance inst, solution sol);
 double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_types type);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp);
 
+=======
+>>>>>>> parent of f2d3960 (added benders)
 =======
 >>>>>>> parent of f2d3960 (added benders)
 #endif   /* _TSP_H_ */

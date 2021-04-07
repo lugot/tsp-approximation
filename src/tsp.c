@@ -458,6 +458,7 @@ void add_GG_subtour(instance inst, CPXENVptr env, CPXLPptr lp) {
     free(cname);
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
     int visited[inst->num_nodes];
@@ -524,5 +525,7 @@ void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
     free(cname[0]);
     free(cname);
 }
+=======
+>>>>>>> parent of f2d3960 (added benders)
 =======
 >>>>>>> parent of f2d3960 (added benders)
