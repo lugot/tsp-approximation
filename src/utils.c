@@ -325,22 +325,22 @@ void print_solution(solution sol, int print_data) {
 			}
 			free(buffer);
 		}
-		/*printf("- parent:\n");*/
-		/*if (sol->parent != NULL) {*/
-			/*int column_width = 1 + (int) log10(sol->num_edges);*/
-			/*char* buffer = (char*) calloc(column_width, sizeof(char));*/
+		printf("- parent:\n");
+		if (sol->parent != NULL) {
+			int column_width = 1 + (int) log10(sol->num_edges);
+			char* buffer = (char*) calloc(column_width, sizeof(char));
 
-			/*for (int i=0; i<sol->num_edges; i++) {*/
-				/*sprintf(buffer, "%d", i+1);*/
-				/*printf("%*s", column_width+1, buffer);*/
-			/*}*/
-			/*for (int i=0; i<sol->num_edges; i++) {*/
-				/*sprintf(buffer, "%d", sol->parent[i]+1);*/
-				/*printf("%*s", column_width+1, buffer);*/
-			/*}*/
-			/*printf("\n");*/
-			/*free(buffer);*/
-		/*}*/
+			for (int i=0; i<sol->num_edges; i++) {
+				sprintf(buffer, "%d", i+1);
+				printf("%*s", column_width+1, buffer);
+			}
+			for (int i=0; i<sol->num_edges; i++) {
+				sprintf(buffer, "%d", sol->parent[i]+1);
+				printf("%*s", column_width+1, buffer);
+			}
+			printf("\n");
+			free(buffer);
+		}
 	}
 	printf("- distance time: %lf ms\n", sol->distance_time);
 	printf("- build time: %lf ms\n", sol->build_time);

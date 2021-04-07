@@ -1,7 +1,6 @@
 #ifndef _TSP_H_
 #define _TSP_H_
 
-#include "union_find.h"
 #include <cplex.h>
 
 struct solution_t;
@@ -87,6 +86,9 @@ void add_solution(instance inst, solution sol);
 
 double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_types type);
 
+<<<<<<< HEAD
 void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp);
 
+=======
+>>>>>>> parent of f2d3960 (added benders)
 #endif   /* _TSP_H_ */

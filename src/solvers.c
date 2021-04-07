@@ -1,5 +1,4 @@
 #include "tsp.h"
-#include "globals.h"
 #include "utils.h"
 #include "union_find.h"
 #include <cplex.h>
@@ -42,7 +41,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	struct timeval start, end;
 	gettimeofday(&start, NULL);
 
-	union_find uf;
+	union_find uf = uf_create(inst->num_nodes);
 
 	do {
 		/* solve! */
@@ -56,6 +55,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 		int k;
 		switch (model_type) {
 			case SYMMETRIC:
+<<<<<<< HEAD
 				k = retrive_symmetric_solution(xstar, inst, sol);
 				break;
 
@@ -64,13 +64,15 @@ solution TSPopt(instance inst, enum model_types model_type) {
 				add_cool_subtour_elimination(inst, env, lp);
 				k = retrive_symmetric_solution(xstar, inst, sol);
 				if (VERBOSE) printf("[VERBOSE] Benders num sets: %d\n", uf->num_sets);
+=======
+			case SYMMETRIC_BENDERS:
+				k = retrive_symmetric_solution(xstar, inst, sol, uf);
+>>>>>>> parent of f2d3960 (added benders)
 				break;
-
 			case ASYMMETRIC_MTZ:
 			case ASYMMETRIC_GG:
 				k = retrive_asymmetric_solution(xstar, inst, sol);
 				break;
-
 			default:
 				k = 0;
 				break;

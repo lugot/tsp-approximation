@@ -1,5 +1,4 @@
 #include "tsp.h"
-#include "union_find.h"
 #include "utils.h"
 #include "globals.h"
 #include "string.h"
@@ -14,8 +13,8 @@ void add_asymmetric_variables(instance inst, CPXENVptr env, CPXLPptr lp);
 void add_symmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp);
 void add_asymmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp);
 
-void add_MTZ_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp);
-void add_GG_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp);
+void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp);
+void add_GG_subtour(instance inst, CPXENVptr env, CPXLPptr lp);
 
 instance create_tsp_instance() {
     instance inst = (instance) calloc(1, sizeof(struct instance_t));
@@ -86,12 +85,12 @@ double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_typ
         case ASYMMETRIC_MTZ:
             add_asymmetric_variables(inst, env, lp);
             add_asymmetric_constraints(inst, env, lp);
-            add_MTZ_subtour_elimination(inst, env, lp);
+            add_MTZ_subtour(inst, env, lp);
             break;
         case ASYMMETRIC_GG:
             add_asymmetric_variables(inst, env, lp);
             add_asymmetric_constraints(inst, env, lp);
-            add_GG_subtour_elimination(inst, env, lp);
+            add_GG_subtour(inst, env, lp);
             break;
 
         default:
@@ -250,11 +249,11 @@ void add_asymmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp) {
     }
 
     /* do the same but switch indexes (rhs = 1!) */
-    for (int i=0; i<inst->num_nodes; i++) {
+    for (size_t i=0; i<inst->num_nodes; i++) {
 		/* fetch last row position in current model (better: the new one)
 		 * write the constraint name inside CPLEX */
         int lastrow = CPXgetnumrows(env, lp);
-        sprintf(cname[0], "degree(%d)", inst->num_nodes + i+1);
+        sprintf(cname[0], "degree(%ld)", inst->num_nodes + i+1);
 
         /* add the new constraint (with coefficent zero, null lhs) */
         if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
@@ -276,7 +275,7 @@ void add_asymmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp) {
     free(cname);
 }
 
-void add_MTZ_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
+void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp) {
 	/* new continuous variables (integer does not matter here!)
 	 * upper bound equal to m-1 for big-M constraint */
 	char continuous = 'I';
@@ -288,10 +287,10 @@ void add_MTZ_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
 	cname[0] = (char*) calloc(100, sizeof(char));
 
     /* new variables associated with nodes, only n */
-	for (int i=1; i<inst->num_nodes; i++) {
+	for (size_t i=1; i<inst->num_nodes; i++) {
 
         /* cost is zero for new variables, they matter for new constraints only */
-		sprintf(cname[0], "u(%d)", i+1);
+		sprintf(cname[0], "u(%ld)", i+1);
 		double obj = 0;
 
 		/* inject variable and test it's position (upos) inside CPLEX */
@@ -353,7 +352,7 @@ void add_MTZ_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
     free(cname);
 }
 
-void add_GG_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
+void add_GG_subtour(instance inst, CPXENVptr env, CPXLPptr lp) {
 	/* new integer variables
 	 * upper bound equal to m-1 */
 	char integer = 'I';
@@ -365,11 +364,11 @@ void add_GG_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
 	cname[0] = (char*) calloc(100, sizeof(char));
 
 	/* add a single flux variable y(i,j) forall i,j */
-	for (int i=0; i<inst->num_nodes; i++) for(int j=0; j<inst->num_nodes; j++){
+	for (size_t i=0; i<inst->num_nodes; i++) for(size_t j=0; j<inst->num_nodes; j++){
 		if(i==j) continue;
 
         /* cost is zero for new variables, they matter for new constraints only */
-		sprintf(cname[0], "y(%d)(%d)", i+1,j+1);
+		sprintf(cname[0], "y(%ld)(%ld)", i+1,j+1);
 		double obj = 0;
 
 		/* inject variable and test it's position (upos) inside CPLEX */
@@ -381,16 +380,16 @@ void add_GG_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
 		}
 	}
 
-	double rhs = 0.0;
+	double rhs = 0;
 	char sense = 'L';
 
-	for (int i=0; i<inst->num_nodes; i++) for (int h=0; h<inst->num_nodes; h++) {
+	for (size_t i=0; i<inst->num_nodes; i++) for (size_t h=0; h<inst->num_nodes; h++) {
         if (i == h) continue;
 
         /* fetch last row position in current model (better: the new one)
          * in CPLEX row == constraint */
         int lastrow = CPXgetnumrows(env, lp);
-        sprintf(cname[0], "xy(%d)(%d)", i+1,h+1);
+        sprintf(cname[0], "xy(%ld)(%ld)", i+1,h+1);
 
         /* add the new constraint and change coeff from zero to 1 and 1-m */
         if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
@@ -414,7 +413,7 @@ void add_GG_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
         print_error("wrong CPXnewrows [degree]");
     }
 
-    for (int h=1; h<inst->num_nodes; h++) {
+    for (size_t h=1; h<inst->num_nodes; h++) {
         if (CPXchgcoef(env, lp, lastrow, ypos(0, h, inst), 1.0)) {
             print_error("wrong CPXchgcoef [degree]");
         }
@@ -422,10 +421,10 @@ void add_GG_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
 
     rhs = 1;
     sense = 'E';
-    for (int j=1; j<inst->num_nodes; j++) {
+    for (size_t j=1; j<inst->num_nodes; j++) {
 
         int lastrow = CPXgetnumrows(env, lp);
-        sprintf(cname[0], "y(%d)", j+1);
+        sprintf(cname[0], "y(%ld)", j+1);
 
         /* add the new constraint (with coefficent zero, null lhs) */
         if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
@@ -458,6 +457,7 @@ void add_GG_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
     free(cname[0]);
     free(cname);
 }
+<<<<<<< HEAD
 
 void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
     int visited[inst->num_nodes];
@@ -524,3 +524,5 @@ void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
     free(cname[0]);
     free(cname);
 }
+=======
+>>>>>>> parent of f2d3960 (added benders)
