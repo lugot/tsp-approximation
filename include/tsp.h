@@ -71,7 +71,7 @@ typedef struct solution_t {
 	double zstar;
 	int num_edges;
 	edge* edges;
-	/*int* parent;*/
+	int* parent;
 
 	double distance_time;
 	double build_time;
@@ -87,6 +87,6 @@ void add_solution(instance inst, solution sol);
 
 double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_types type);
 
-void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp, union_find uf);
+void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp);
 
 #endif   /* _TSP_H_ */

@@ -141,6 +141,9 @@ void add_symmetric_variables(instance inst, CPXENVptr env, CPXLPptr lp) {
             print_error("wrong position for x var.s");
         }
     }
+
+    free(cname[0]);
+    free(cname);
 }
 
 void add_asymmetric_variables(instance inst, CPXENVptr env, CPXLPptr lp) {
@@ -173,6 +176,9 @@ void add_asymmetric_variables(instance inst, CPXENVptr env, CPXLPptr lp) {
             print_error("wrong position for x var.s\n");
         }
     }
+
+    free(cname[0]);
+    free(cname);
 }
 
 void add_symmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp) {
@@ -206,6 +212,9 @@ void add_symmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp) {
             }
         }
     }
+
+    free(cname[0]);
+    free(cname);
 }
 
 void add_asymmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp) {
@@ -262,6 +271,9 @@ void add_asymmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp) {
             }
         }
     }
+
+    free(cname[0]);
+    free(cname);
 }
 
 void add_MTZ_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
@@ -336,6 +348,9 @@ void add_MTZ_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
             print_error("wrong CPXlazyconstraints on 2-node SECs");
         }
 	}
+
+    free(cname[0]);
+    free(cname);
 }
 
 void add_GG_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
@@ -439,11 +454,15 @@ void add_GG_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
             }
         }
     }
+
+    free(cname[0]);
+    free(cname);
 }
 
-void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp, union_find uf) {
+void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
     int visited[inst->num_nodes];
-    memset(visited, 0, inst->num_nodes*sizeof(int));
+    for (int i=0; i<inst->num_nodes; i++) visited[i]=0;
+    /*memset(visited, 0, inst->num_nodes*sizeof(int));*/
 
     /* ColumnNAME: array of array used to inject variables in CPLEX */
     char** cname = (char**) calloc(1, sizeof(char*));
@@ -501,4 +520,7 @@ void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp, uni
         CPXwriteprob(env, lp, filename, NULL);
         free(filename);
     }
+
+    free(cname[0]);
+    free(cname);
 }

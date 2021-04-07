@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-int retrive_symmetric_solution(double* xstar, instance inst, solution sol, union_find uf);
-int retrive_asymmetric_solution(double* xstar, instance inst, solution sol, union_find uf);
+int retrive_symmetric_solution(double* xstar, instance inst, solution sol);
+int retrive_asymmetric_solution(double* xstar, instance inst, solution sol);
 
 solution TSPopt(instance inst, enum model_types model_type) {
 	if (inst->instance_type != TSP) print_error("need TSP instance");
@@ -18,7 +18,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 	sol->num_edges = inst->num_nodes;
 	sol->edges = (edge*) calloc(sol->num_edges, sizeof(struct edge_t));
-	/*sol->parent = (int*) calloc(sol->num_edges, sizeof(int));*/
+	sol->parent = (int*) calloc(sol->num_edges, sizeof(int));
 
 	sol->distance_time = compute_dist(inst);
 
@@ -53,23 +53,22 @@ solution TSPopt(instance inst, enum model_types model_type) {
 		double* xstar = (double*) calloc(ncols, sizeof(double));
 		if (CPXgetx(env, lp, xstar, 0, ncols-1)) print_error("CPXgetx() error\n");
 
-		uf = uf_create(inst->num_nodes);
 		int k;
 		switch (model_type) {
 			case SYMMETRIC:
-				k = retrive_symmetric_solution(xstar, inst, sol, uf);
+				k = retrive_symmetric_solution(xstar, inst, sol);
 				break;
 
 			case SYMMETRIC_BENDERS:
-				k = retrive_symmetric_solution(xstar, inst, sol, uf);
-				add_cool_subtour_elimination(inst, env, lp, uf);
-				k = retrive_symmetric_solution(xstar, inst, sol, uf);
+				k = retrive_symmetric_solution(xstar, inst, sol);
+				add_cool_subtour_elimination(inst, env, lp);
+				k = retrive_symmetric_solution(xstar, inst, sol);
 				if (VERBOSE) printf("[VERBOSE] Benders num sets: %d\n", uf->num_sets);
 				break;
 
 			case ASYMMETRIC_MTZ:
 			case ASYMMETRIC_GG:
-				k = retrive_asymmetric_solution(xstar, inst, sol, uf);
+				k = retrive_asymmetric_solution(xstar, inst, sol);
 				break;
 
 			default:
@@ -79,8 +78,6 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 		if (k != sol->num_edges) print_error("invalid number of edges\n");
 		free(xstar);
-
-		uf_free(uf);
 
 	} while (model_type == SYMMETRIC_BENDERS && uf->num_sets != 1);
 
@@ -92,6 +89,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 	add_solution(inst, sol);
 
+	// TODO: get this from CPLEX
 	sol->zstar = zstar(inst, sol);
 
 	CPXfreeprob(env, &lp);
@@ -100,32 +98,28 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	return sol;
 }
 
-int retrive_symmetric_solution(double* xstar, instance inst, solution sol, union_find uf) {
+int retrive_symmetric_solution(double* xstar, instance inst, solution sol) {
 	/* index over selected edges */
 	int k = 0;
 	/* check for all edges if is selected */
 	for (int i=0; i<inst->num_nodes; i++) for (int j=i+1; j<inst->num_nodes; j++) {
 		if (xstar[xpos(i, j, inst)] > 0.5) {
-			/*sol->parent[i] = j;*/
+			sol->parent[i] = j;
 			sol->edges[k++] = (edge) {i, j};
-
-			uf_union_set(uf, i, j);
 		}
 	}
 
 	return k;
 }
 
-int retrive_asymmetric_solution(double* xstar, instance inst, solution sol, union_find uf) {
+int retrive_asymmetric_solution(double* xstar, instance inst, solution sol) {
 	/* index over selected edges */
 	int k = 0;
 	/* check for all edges if is selected */
 	for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<inst->num_nodes; j++) {
 		if (xstar[xxpos(i, j, inst)] > 0.5) {
-			/*sol->parent[i] = j;*/
+			sol->parent[i] = j;
 			sol->edges[k++] = (edge) {i, j};
-
-			uf_union_set(uf, i, j);
 		}
 	}
 

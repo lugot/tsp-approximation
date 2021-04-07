@@ -15,12 +15,18 @@ int main(int argc, char** argv) {
     parse_input_file(inst, "tsp");
     /*print_instance(inst, 1);*/
 
-    TSPopt(inst, SYMMETRIC_BENDERS);
+    double runtime = 0.0;
 
-    print_instance(inst, 1);
+    for (int i=0; i<5; i++) {
+        runtime += TSPopt(inst, SYMMETRIC_BENDERS)->solve_time;
+        /*print_instance(inst, 1);*/
+        printf("heo\n");
+    }
+
+    printf("time: %lf\n", runtime/1000.0);
     /*print_solution(inst->sols[0], 1);*/
     /*plot_solutions_graphviz(inst->sols, inst->num_solutions);*/
-    plot_solution_graphviz(inst->sols[0]);
+    /*plot_solution_graphviz(inst->sols[0]);*/
 
     return EXIT_SUCCESS;
 }
