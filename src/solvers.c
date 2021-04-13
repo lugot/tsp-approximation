@@ -1,3 +1,4 @@
+#include "solvers.h"
 #include "tsp.h"
 #include "model_builder.h"
 #include "globals.h"
@@ -8,16 +9,6 @@
 #include <assert.h>
 #include <sys/time.h>
 
-void retreive_symmetric_solution(double* xstar, solution sol);
-void retreive_asymmetric_solution(double* xstar, solution sol);
-/*int reachable(solution sol, int i, int j);*/
-/*int reachable2(int* parent, int i, int j);*/
-/*int fully_visit(solution sol);*/
-
-int reachable(solution sol, int i, int j);
-int visitable(solution sol);
-
-/*static int CPXPUBLIC callback(CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle);*/
 
 solution TSPopt(instance inst, enum model_types model_type) {
 	assert(inst->params != NULL && "no CPLEX params found");
@@ -49,6 +40,15 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	/* populate enviorment with model data */
 	sol->build_time = build_tsp_model(env, lp, inst, model_type);
 
+	/* add callback if required */
+	if(model_type == SYMMETRIC_BENDERS_CALLBACK) {
+		CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
+
+        if (CPXcallbacksetfunc(env, lp, contextid, add_BENDERS_sec_callback, inst)) {
+            print_error("CPXcallbacksetfunc() error");
+		}
+	}
+
 
 	struct timeval start, end;
 	gettimeofday(&start, NULL);
@@ -63,6 +63,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 	switch (model_type) {
 		case SYMMETRIC:
+		case SYMMETRIC_BENDERS_CALLBACK:
 			retreive_symmetric_solution(xstar, sol);
 			break;
 
@@ -77,9 +78,9 @@ solution TSPopt(instance inst, enum model_types model_type) {
 				if (CPXmipopt(env,lp)) print_error("CPXmipopt() error");
 
 				/* store the optimal solution found by CPLEX */
-				int ncols = CPXgetnumcols(env, lp);
-				double* xstar = (double*) calloc(ncols, sizeof(double));
-				if (CPXgetx(env, lp, xstar, 0, ncols-1)) print_error("CPXgetx() error\n");
+				int num_cols = CPXgetnumcols(env, lp);
+				double* xstar = (double*) calloc(num_cols, sizeof(double));
+				if (CPXgetx(env, lp, xstar, 0, num_cols-1)) print_error("CPXgetx() error\n");
 
 				/* retrive the solution */
 				retreive_symmetric_solution(xstar, sol);
@@ -141,7 +142,7 @@ void retreive_symmetric_solution(double* xstar, solution sol) {
 		}
 	}
 
-	assert(k == sol->num_edges && "not enought edges CPLEX solution");
+	/*assert(k == sol->num_edges && "not enought edges CPLEX solution");*/
 }
 
 void retreive_asymmetric_solution(double* xstar, solution sol) {
@@ -162,29 +163,6 @@ void retreive_asymmetric_solution(double* xstar, solution sol) {
 		}
 	}
 
-	assert(k == sol->num_edges && "not enought edges CPLEX solution");
+	/*assert(k == sol->num_edges && "not enought edges CPLEX solution");*/
 }
 
-/* check if node j is reachable in the list by node i */
-int reachable(solution sol, int i, int j) {
-	int next = i;
-	do {
-		next = sol->parent[next];
-		if (next == j) return 1;
-	} while (sol->parent[next] != i);
-
-	return 0;
-}
-
-/* check if all the nodes are visitated in a single tour*/
-int visitable(solution sol) {
-	int visits = 0;
-
-	int next = 0;
-	do {
-		next = sol->parent[next];
-		visits++;
-	} while (sol->parent[next] != 0);
-
-	return visits == sol->num_edges-1;
-}

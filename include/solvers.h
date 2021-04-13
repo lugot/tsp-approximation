@@ -5,4 +5,7 @@
 
 solution TSPopt(instance inst, enum model_types model_type);
 
+void retreive_symmetric_solution(double* xstar, solution sol);
+void retreive_asymmetric_solution(double* xstar, solution sol);
+
 #endif /* _SOLVERS_H_ */

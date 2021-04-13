@@ -1,8 +1,10 @@
+#include "solvers.h"
 #include "tsp.h"
 #include "union_find.h"
 #include "utils.h"
 #include "globals.h"
-#include "string.h"
+#include "solvers.h"
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cplex.h>
@@ -33,6 +35,10 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst, enum model_typ
             add_symmetric_variables(env, lp, inst);
             add_symmetric_constraints(env, lp, inst);
             break;
+         case SYMMETRIC_BENDERS_CALLBACK:
+            add_symmetric_variables(env, lp, inst);
+            add_symmetric_constraints(env, lp, inst);
+            break;
 
         case ASYMMETRIC_MTZ:
             add_asymmetric_variables(env, lp, inst);
@@ -59,18 +65,17 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst, enum model_typ
         case SYMMETRIC:
             strcat(filename, "symmetric.lp");
             break;
-
         case SYMMETRIC_BENDERS:
             strcat(filename, "benders.lp");
             break;
-
         case ASYMMETRIC_MTZ:
             strcat(filename, "mtz.lp");
             break;
-
         case ASYMMETRIC_GG:
-        default:
             strcat(filename, "gg.lp");
+
+            break;
+        default:
             break;
     }
     CPXwriteprob(env, lp, filename, NULL);
@@ -421,15 +426,12 @@ void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, solution sol) {
         /* i could be part of a subtour already visited */
         if (visited[i]) continue;
 
-        double rhs = 0;
+        double rhs = 0.0;
         char sense = 'L';
 
         /* compute the rhs: number of nodes in a subtour, unknown a priori */
-        int j=i;
-        do {
-            j = sol->parent[j];
-            rhs += 1.0;
-        } while (sol->parent[j] != i);
+        int j = i;
+        while ((j = sol->parent[j]) != i) rhs += 1.0;
 
 
 		/* fetch last row position in current model (better: the new one)
@@ -447,7 +449,7 @@ void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, solution sol) {
          * k: iterate inside subtour, second index
          * -> we will add x_jk to the subtour
          */
-        j=i;
+        j = i;
         do {
             int k = sol->parent[j];
             do {
@@ -462,12 +464,81 @@ void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, solution sol) {
         } while (sol->parent[j] != i);
 
         /* visit all the nodes in the set */
-        j=i;
-        do {
-            visited[j] = 1;
-            j = sol->parent[j];
-        } while (sol->parent[j] != i);
+        j = i;
+        while ((j = sol->parent[j]) != i) visited[j] = 1;
     }
 
     free(visited);
+}
+
+int CPXPUBLIC add_BENDERS_sec_callback(CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle) {
+
+    solution sol = (solution) userhandle;
+
+    /* number of columns is n chooses 2 */
+    int num_cols = sol->num_edges * (sol->num_edges-1) /2;
+
+    double* xstar = (double*) calloc(num_cols, sizeof(double));
+    double objval = CPX_INFBOUND;
+
+    if (CPXcallbackgetcandidatepoint(context, xstar, 0, num_cols - 1, &objval)) {
+        print_error("CPXcallbackgetcandidatepoint error");
+    }
+
+    /* retreive sol and fill sol's internal parent vector */
+    int* visited = (int*) calloc(sol->num_edges, sizeof(int));
+    retreive_symmetric_solution(xstar, sol);
+
+
+    for (int i=0; i<sol->num_edges; i++) {
+        /* i could be part of a subtour already visited */
+        if (visited[i]) continue;
+
+        int nnz = 0;
+        int izero = 0;
+        double rhs = 0.0;
+        char sense = 'L';
+        int* index = (int*) calloc(num_cols, sizeof(int));
+        double* value = (double*) calloc(num_cols, sizeof(double));
+
+
+        /* compute the rhs: number of nodes in a subtour, unknown a priori */
+        int j = i;
+        while ((j = sol->parent[j]) != i) rhs += 1.0;
+
+        /* i: iterate over subtours, start element
+         * j: iterate inside subtour, first index
+         * k: iterate inside subtour, second index
+         * -> we will add x_jk to the subtour
+         */
+        j = i;
+        do {
+            int k = sol->parent[j];
+            do {
+                index[nnz] = xpos(j, k, sol->num_edges);
+                value[nnz++] = 1.0;
+                k = sol->parent[k];
+            } while (k != i);
+
+            j = sol->parent[j];
+        } while (sol->parent[j] != i);
+
+        /* visit all the nodes in the set */
+        j = i;
+        while ((j = sol->parent[j]) != i) visited[j] = 1;
+
+        /* finally set the callback for rejecte the incumbent */
+        if (rhs != sol->num_edges - 1) {
+        	if (CPXcallbackrejectcandidate(context, 1, nnz, &rhs, &sense, &izero, index, value)) {
+            	print_error("CPXcallbackrejectcandidate() error");
+            }
+        }
+
+        free(index);
+        free(value);
+    }
+
+    free(visited);
+
+    return 0;
 }

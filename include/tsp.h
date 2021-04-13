@@ -70,6 +70,7 @@ enum model_types {
 	ASYMMETRIC_MTZ,
 	ASYMMETRIC_GG,
 	SYMMETRIC_BENDERS,
+	SYMMETRIC_BENDERS_CALLBACK
 };
 typedef struct solution_t {
 	struct instance_t* inst;

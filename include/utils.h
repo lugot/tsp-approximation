@@ -13,6 +13,9 @@ double zstar(instance inst, solution sol);
 double dist(int i, int j, instance inst);
 double compute_dist(instance inst);
 
+int reachable(solution sol, int i, int j);
+int visitable(solution sol);
+
 void print_error(const char *err, ...);
 
 double max(double a, double b);

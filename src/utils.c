@@ -153,6 +153,30 @@ double dist(int i, int j, instance inst) {
 	return i > j ? inst->adjmatrix[i][j] : inst->adjmatrix[j][i];
 }
 
+/* check if node j is reachable in the list by node i */
+int reachable(solution sol, int i, int j) {
+	int next = i;
+	do {
+		next = sol->parent[next];
+		if (next == j) return 1;
+	} while (sol->parent[next] != i);
+
+	return 0;
+}
+
+/* check if all the nodes are visitated in a single tour*/
+int visitable(solution sol) {
+	int visits = 0;
+
+	int next = 0;
+	do {
+		next = sol->parent[next];
+		visits++;
+	} while (sol->parent[next] != 0);
+
+	return visits == sol->num_edges-1;
+}
+
 
 /* print helpers */
 void print_error(const char *err, ...) {
@@ -161,6 +185,7 @@ void print_error(const char *err, ...) {
 
 	printf("\n\n--- ERROR ---\n");
     vprintf(err, args);
+	printf("\n");
 
     va_end(args);
 	fflush(NULL);
