@@ -9,11 +9,14 @@ union_find uf_create(int N) {
     uf->p = (int*) calloc(N, sizeof(int));
     uf->rank = (int*) calloc(N, sizeof(int));
     uf->size_of_set = (int*) calloc(N, sizeof(int));
+    uf->next= (int*) calloc(N, sizeof(int));
 
     /* initialize data structure */
     for (int i=0; i<N; i++) uf->p[i] = i;
     /* rank already initialized by calloc */
-    memset(uf->size_of_set, 1, N*sizeof(int));
+    /*memset(uf->size_of_set, 1, N*sizeof(int));*/
+    for (int i=0; i<N; i++) uf->size_of_set[i] = 1;
+    for (int i=0; i<N; i++) uf->next[i] = i;
 
     uf->num_sets = N;
 
@@ -42,6 +45,8 @@ void uf_union_set(union_find uf, int i, int j) {
         if (uf->rank[x] == uf->rank[y]) uf->rank[y]++;
         uf->size_of_set[y] += uf->size_of_set[x];
         uf->num_sets--;
+
+        swap(&uf->next[x], &uf->next[y]);
     }
 }
 

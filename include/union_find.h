@@ -2,7 +2,7 @@
 #define _UNION_FIND_H_
 
 typedef struct union_find_t {
-	int *p, *rank, *size_of_set;
+	int *p, *rank, *size_of_set, *next;
     int num_sets;
 } *union_find;
 

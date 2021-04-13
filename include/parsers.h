@@ -3,7 +3,13 @@
 
 #include "tsp.h"
 
-void parse_command_line(int argc, char** argv, instance inst);
-void parse_input_file(instance inst, const char* file_extension);
+typedef struct run_options_t {
+	char* model_name;
+	int generate_instances;
+	int read_generated;
+} *run_options;
+
+void parse_command_line(int argc, char** argv, cplex_params params, run_options options);
+instance parse_input_file(char* model_name, char* file_extension, enum model_folders folder);
 
 #endif /* _PARSERS_H_*/

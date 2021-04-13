@@ -14,12 +14,19 @@ enum costs {
 	INTEGER,
 	REAL
 };
-enum model_types {
-	OPTIMAL_TOUR,
-	SYMMETRIC,
-	ASYMMETRIC_MTZ,
-	ASYMMETRIC_GG,
-	SYMMETRIC_BENDERS
+typedef struct cplex_params_t {
+	int randomseed;
+	int num_threads;
+	double timelimit;
+	int available_memory;
+    enum costs cost;
+
+} *cplex_params;
+
+
+enum model_folders {
+	TSPLIB,
+	GENERATED
 };
 enum weight_types {
 	ATT,
@@ -28,28 +35,21 @@ enum weight_types {
 	EXPLICIT,
 	UNHANDLED_WEIGHT_TYPE
 };
-
-
 typedef struct node_t {
 	double x, y;
 } node;
 typedef struct edge_t {
 	int i, j;
 } edge;
-
-
 typedef struct instance_t {
 	/* model infos */
     char* model_name;
     char* model_comment;
+	enum model_folders model_folder;
+	enum instance_types instance_type;
 
     /* parameters */
-    enum instance_types instance_type;
-	int randomseed;
-	int num_threads;
-	double timelimit;
-	int available_memory;
-    enum costs costs_type;
+	cplex_params params;
 
 	/* data */
 	enum weight_types weight_type;
@@ -60,9 +60,17 @@ typedef struct instance_t {
 	/* solutions */
 	int num_solutions;
 	struct solution_t** sols;
-} *instance;
+}
+*instance;
 
 
+enum model_types {
+	OPTIMAL_TOUR,
+	SYMMETRIC,
+	ASYMMETRIC_MTZ,
+	ASYMMETRIC_GG,
+	SYMMETRIC_BENDERS,
+};
 typedef struct solution_t {
 	struct instance_t* inst;
 	enum model_types model_type;
@@ -77,21 +85,21 @@ typedef struct solution_t {
 	double solve_time;
 } *solution;
 
-
-
-instance create_tsp_instance();
-instance duplicate_instance_parameters(instance inst);
+/* instance manipulators */
+instance create_empty_instance();
+instance create_instance(cplex_params params);
+void add_params(instance inst, cplex_params params);
+instance create_random_instance(int id, int num_nodes, int box_size, cplex_params params);
+instance* create_random_instances(int num_instances, int num_nodes, int box_size, cplex_params params);
+instance clone_instance(instance inst);
 void free_instance();
 void add_solution(instance inst, solution sol);
 
-double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_types type);
+/* printers */
+void print_instance(instance inst, int print_data);
+void print_cplex_params(cplex_params params);
+void print_solution(solution sol, int print_data);
+void plot_solution_graphviz(solution sol);
+void plot_solutions_graphviz(solution* sols, int num_sols);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp);
-
-=======
->>>>>>> parent of f2d3960 (added benders)
-=======
->>>>>>> parent of f2d3960 (added benders)
-#endif   /* _TSP_H_ */
+#endif /* _TSP_H_ */

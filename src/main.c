@@ -8,43 +8,39 @@
 
 int main(int argc, char** argv) {
 
-    instance inst = create_tsp_instance();
-    /*print_instance(inst);*/
 
-    parse_command_line(argc, argv, inst);
-    parse_input_file(inst, "tsp");
+    cplex_params params = (cplex_params) calloc(1, sizeof(struct cplex_params_t));
+    run_options options = (run_options) calloc(1, sizeof(struct run_options_t));
+    parse_command_line(argc, argv, params, options);
+
+    printf("main: input file %s\n", options->model_name);
+
+    instance inst = parse_input_file(options->model_name, "tsp", TSPLIB);
+    add_params(inst, params);
+
     print_instance(inst, 1);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    double runtime = 0.0;
+    solution sol = TSPopt(inst, ASYMMETRIC_GG);
 
-    for (int i=0; i<5; i++) {
-        runtime += TSPopt(inst, SYMMETRIC_BENDERS)->solve_time;
-        /*print_instance(inst, 1);*/
-        printf("heo\n");
-    }
+    print_solution(sol, 1);
+    plot_solution_graphviz(sol);
 
-    printf("time: %lf\n", runtime/1000.0);
-    /*print_solution(inst->sols[0], 1);*/
-    /*plot_solutions_graphviz(inst->sols, inst->num_solutions);*/
+    /*instance* a = create_random_instances(10, 20, 3);*/
+    /*for (int i=0; i<10; i++) print_instance(a[i], 1);*/
+
+    /*instance inst = create_tsp_instance();*/
+    /*[>print_instance(inst);<]*/
+
+    /*parse_command_line(argc, argv, inst);*/
+    /*parse_input_file(inst, "tsp");*/
+    /*[>print_instance(inst, 1);<]*/
+
+    /*TSPopt(inst, SYMMETRIC_BENDERS);*/
+
+    /*print_instance(inst, 1);*/
+    /*[>print_solution(inst->sols[0], 1);<]*/
+    /*[>plot_solutions_graphviz(inst->sols, inst->num_solutions);<]*/
     /*plot_solution_graphviz(inst->sols[0]);*/
-=======
-    TSPopt(inst, ASYMMETRIC_MTZ);
-
-    print_instance(inst, 0);
-    plot_solutions_graphviz(inst->sols, inst->num_solutions);
-    /*plot_solution_graphviz(inst->sols[2]);*/
-
->>>>>>> parent of f2d3960 (added benders)
-=======
-    TSPopt(inst, ASYMMETRIC_MTZ);
-
-    print_instance(inst, 0);
-    plot_solutions_graphviz(inst->sols, inst->num_solutions);
-    /*plot_solution_graphviz(inst->sols[2]);*/
-
->>>>>>> parent of f2d3960 (added benders)
 
     return EXIT_SUCCESS;
 }

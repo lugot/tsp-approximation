@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <float.h>
+#include <assert.h>
 
 enum sections {
     NAME,
@@ -46,7 +47,16 @@ void print_usage() {
     printf("  --integer_costs           Consider integer costs only\n");
 }
 
-void parse_command_line(int argc, char** argv, instance inst) {
+void parse_command_line(int argc, char** argv, cplex_params params, run_options options) {
+
+    assert(params != NULL);
+    assert(options != NULL);
+
+    /* set defaults for params */
+    params->num_threads = -1;
+    params->timelimit = CPX_INFBOUND;
+    params->available_memory = 4096;
+    params->cost = REAL;
 
     static struct option long_options[] = {
         {"verbose",       no_argument,       NULL, 'v'},
@@ -69,44 +79,54 @@ void parse_command_line(int argc, char** argv, instance inst) {
                 break;
 
             case 'm':
-                inst->model_name = (char*) malloc(strlen(optarg)*sizeof(char));
-                strcpy(inst->model_name, optarg);
+                options->model_name = (char*) calloc(strlen(optarg), sizeof(char));
+                strcpy(options->model_name, optarg);
                 break;
 
-            case 'l': inst->timelimit = atof(optarg);
+            case 'l': params->timelimit = atof(optarg);
                 break;
 
-            case 's': inst->randomseed = abs(atoi(optarg));
+            case 's': params->randomseed = abs(atoi(optarg));
                 break;
 
-            case 'T': inst->num_threads = atoi(optarg);
+            case 'T': params->num_threads = atoi(optarg);
                 break;
 
-            case 'M': inst->available_memory = atoi(optarg);
+            case 'M': params->available_memory = atoi(optarg);
                 break;
 
-            case 'c': inst->costs_type = INTEGER;
+            case 'c': params->cost = INTEGER;
                 break;
 
             case '?':
                 print_usage();
-                print_error("Unknown option `-%c'.\n", optopt);
+                assert(opt != '?' && "unknown option");
         }
     }
 }
 
-void parse_input_file(instance inst, const char* file_extension) {
+instance parse_input_file(char* model_name, char* file_extension, enum model_folders folder) {
+    /* create instance from params */
+    instance inst = create_empty_instance();
+
+    assert(model_name != NULL && "dont know what to parse, wrong execution mode");
+
+    inst->model_name = (char*) calloc(strlen(model_name), sizeof(char));
+    strcpy(inst->model_name, model_name);
+    inst->model_folder = folder;
 
 	if (VERBOSE) printf("[VERBOSE] reading input file %s\n", inst->model_name);
 
+    /* build filename depending on folder, model name and extention (tour or tsp) */
     char* filename;
     filename = (char*) calloc(100, sizeof(char));
-    sprintf(filename, "../data/%s/%s.", inst->model_name, inst->model_name);
+    if (folder == TSPLIB)    sprintf(filename, "../data_tsplib/%s/%s.", inst->model_name, inst->model_name);
+    if (folder == GENERATED) sprintf(filename, "../data_generated/%s/%s.", inst->model_name, inst->model_name);
     strcat(filename, file_extension);
 
 	FILE *fp;
     fp = fopen(filename, "r");
-	if (fp == NULL) print_error("File %s not found", filename);
+	assert(fp != NULL && "file not found while parsing");
 
 
 	char* line;
@@ -120,9 +140,7 @@ void parse_input_file(instance inst, const char* file_extension) {
         section_name = strtok(line, " :");
         section_param = strtok(NULL, " :");
 
-        if (VERBOSE) {
-            printf("[VERBOSE] parsing |%s| on |%s|\n", section_name, section_param);
-        }
+        if (VERBOSE) printf("[Verbose] parsing |%s| on |%s|\n", section_name, section_param);
 
         /* retrive section and inject parameter */
         switch (section_enumerator(section_name)) {
@@ -139,9 +157,7 @@ void parse_input_file(instance inst, const char* file_extension) {
 
             case TYPE:
                 inst->instance_type = instance_type_enumerator(section_param);
-                if (inst->instance_type == UNHANDLED_INSTANCE_TYPE) {
-                    print_error("type %s unmanaged", section_param);
-                }
+                assert(inst->instance_type != UNHANDLED_INSTANCE_TYPE && "able to handly TPS or TOUR");
                 break;
 
             case COMMENT:
@@ -155,15 +171,11 @@ void parse_input_file(instance inst, const char* file_extension) {
 
             case EDGE_WEIGHT_TYPE:
                 inst->weight_type = weight_type_enumerator(section_param);
-                if (inst->weight_type == UNHANDLED_WEIGHT_TYPE) {
-                    print_error("weight type %s unhandled", section_param);
-                }
+                assert(inst->weight_type != UNHANDLED_WEIGHT_TYPE && "weight type unhandled");
                 break;
 
             case EDGE_WEIGHT_FORMAT:
-                if (strcmp(section_param, "LOWER_DIAG_ROW")) {
-                    print_error("weight format %s unhandled", section_param);
-                };
+                assert(strcmp(section_param, "LOWER_DIAG_ROW") == 0 && "edge weight format unhandled");
                 break;
 
 
@@ -171,7 +183,7 @@ void parse_input_file(instance inst, const char* file_extension) {
             case NODE_COORD_SECTION:
             case DISPLAY_DATA_SECTION: {
 
-                inst->nodes = (node*) calloc(inst->num_nodes, sizeof(node));
+                inst->nodes = (node*) calloc(inst->num_nodes, sizeof(struct node_t));
 
                 int i;
                 for (i=1; i<=inst->num_nodes && getline(&line, &len, fp) != -1; i++) {
@@ -184,26 +196,26 @@ void parse_input_file(instance inst, const char* file_extension) {
                     x = atof(strtok(NULL, " "));
                     y = atof(strtok(NULL, " "));
 
-                    if(node_idx != i) print_error("incoherent node indexing\n");
+                    assert(node_idx == i && "incoherent node indexing in NODE_COORD or DISPLAY_DATA sections");
 
                     inst->nodes[i-1] = (node) {x, y};
                 }
-                if (i-1 != inst->num_nodes) print_error("reached eof while reading nodes\n");
+                assert(i-1 == inst->num_nodes && "reached EOF while reading nodes");
 
                 break;
             }
             case TOUR_SECTION: {
-
+                /* a tour is managed by creating an empty instance with a single solution (the tour) */
                 solution sol = (solution) calloc(1, sizeof(struct solution_t));
                 sol->model_type = OPTIMAL_TOUR;
-                sol->zstar = DBL_MAX;
+                sol->zstar = DBL_MAX; /* the tour does not provide the min cost */
 
                 sol->num_edges = inst->num_nodes;
                 sol->edges = (edge*) calloc(sol->num_edges, sizeof(struct edge_t));
                 sol->parent = (int*) calloc(sol->num_edges, sizeof(int));
 
                 int prev, first, act;
-                if (getline(&line, &len, fp) == -1) print_error("reached eof while reading tour \n");
+                assert(getline(&line, &len, fp) != -1 && "reached EOF of while reading tour");
                 prev = first = atoi(line)-1;
 
                 int i;
@@ -217,7 +229,7 @@ void parse_input_file(instance inst, const char* file_extension) {
                 sol->parent[prev] = first;
                 sol->edges[i-1] = (edge) {prev, first};
 
-                if (i != inst->num_nodes) print_error("reached eof while reading tour\n");
+                assert(i == inst->num_nodes && "reached EOF while reading tour");
 
                 add_solution(inst, sol);
 
@@ -256,13 +268,15 @@ void parse_input_file(instance inst, const char* file_extension) {
             case END_OF_FILE:
                 break;
             case UNHANDLED_SECTION:
-                printf("Warning: section %s unmanaged\n", section_name);
+                if (VERBOSE) printf("[Warning] section %s unmanaged\n", section_name);
                 break;
         }
 	}
     free(line);
     fclose(fp);
     free(filename);
+
+    return inst;
 }
 
 enum sections section_enumerator(char* section_name) {

@@ -1,35 +1,87 @@
 #include "tsp.h"
-#include "utils.h"
-#include "globals.h"
 #include "string.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <cplex.h>
-#include <sys/time.h>
+#include "utils.h"
+#include <time.h>
+#include <assert.h>
 
-void add_symmetric_variables(instance inst, CPXENVptr env, CPXLPptr lp);
-void add_asymmetric_variables(instance inst, CPXENVptr env, CPXLPptr lp);
-
-void add_symmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp);
-void add_asymmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp);
-
-void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp);
-void add_GG_subtour(instance inst, CPXENVptr env, CPXLPptr lp);
-
-instance create_tsp_instance() {
+instance create_empty_instance() {
     instance inst = (instance) calloc(1, sizeof(struct instance_t));
+    inst->params = (cplex_params) calloc(1, sizeof(struct cplex_params_t));
 
     /* initializing only the non-zero default parameters */
-    inst->instance_type = TSP;
-    inst->num_threads = -1;
-    inst->timelimit = CPX_INFBOUND;
-    inst->available_memory = 4096;
-    inst->costs_type = REAL;
+    inst->params->num_threads = -1;
+    inst->params->timelimit = CPX_INFBOUND;
+    inst->params->available_memory = 4096;
+    inst->params->cost = REAL;
 
     return inst;
 }
 
-instance duplicate_instance_parameters(instance inst) {
+instance create_instance(cplex_params params) {
+    instance inst = (instance) calloc(1, sizeof(struct instance_t));
+
+    /* initializing with passed parameters */
+    inst->params = params;
+
+    return inst;
+}
+
+void add_params(instance inst, cplex_params params) {
+    /* should be non NULL by default constructor */
+    memcpy(inst->params, params, sizeof(struct cplex_params_t));
+}
+
+instance create_random_instance(int id, int num_nodes, int box_size, cplex_params params) {
+    instance inst = create_instance(params);
+    srand(id);
+
+    char* buf;
+    buf = (char*) calloc(100, sizeof(char));
+
+    sprintf(buf, "random%d", id);
+    inst->model_name = (char*) calloc(strlen(buf), sizeof(char));
+    strcpy(inst->model_name, buf);
+
+    sprintf(buf, "random generated with id %d", id);
+    inst->model_comment = (char*) calloc(strlen(buf), sizeof(char));
+    strcpy(inst->model_comment, buf);
+
+    inst->weight_type = ATT;
+    inst->num_nodes = num_nodes;
+
+    inst->nodes = (node*) calloc(num_nodes, sizeof(struct node_t));
+    for (int i=0; i<inst->num_nodes; i++) {
+
+        inst->nodes[i].x = (double) rand() / ((double) RAND_MAX/box_size);
+        inst->nodes[i].y = (double) rand() / ((double) RAND_MAX/box_size);
+
+        /* TODO: investigate
+         *uint64_t r53 = ((uint64_t)(rand()) << 21) ^ (rand() >> 2);
+         *return (double)r53 / 9007199254740991.0; // 2^53 - 1
+         */
+    }
+
+    return inst;
+}
+
+instance* create_random_instances(int num_instances, int num_nodes, int box_size, cplex_params params) {
+    instance* insts = (instance*) calloc(num_instances, sizeof(struct instance_t));
+
+    //TODO: do it better
+    srand(time(NULL));
+
+    for (int i=0; i<num_instances; i++) {
+        int rand_id = rand(); /* between 0 and RAND_MAX (2^31 or smht here) */
+        printf("random id: %d", rand_id);
+
+        insts[i] = create_random_instance(rand_id, num_nodes, box_size, params);
+    }
+
+    return insts;
+}
+
+// TODO: test
+instance clone_instance(instance inst) {
     instance newone = (instance) calloc(1, sizeof(struct instance_t));
 
     newone->model_name = (char*) calloc(strlen(inst->model_name), sizeof(char));
@@ -37,16 +89,13 @@ instance duplicate_instance_parameters(instance inst) {
     newone->model_comment = (char*) calloc(strlen(inst->model_comment), sizeof(char));
     strcpy(newone->model_comment, inst->model_comment);
 
-    newone->instance_type = inst->instance_type;
-    newone->randomseed = inst->randomseed;
-    newone->num_threads = inst->num_threads;
-    newone->timelimit = inst->timelimit;
-    newone->available_memory = inst->available_memory;
-    newone->costs_type = inst->costs_type;
+    newone->params = (cplex_params) calloc(1, sizeof(struct cplex_params_t));
+    memcpy(newone->params, inst->params, sizeof(struct cplex_params_t));
 
     return newone;
 }
-void free_intance(instance inst) {
+
+void free_instance(instance inst) {
     free(inst->model_name);
     free(inst->model_comment);
 
@@ -59,473 +108,243 @@ void free_intance(instance inst) {
     free(inst->sols);
 }
 
+void save_instance(instance inst) {
+	char* filename;
+	filename = (char*) calloc(100, sizeof(char));
+	sprintf(filename, "../data_generated/%s/%s.tsp", inst->model_name, inst->model_name);
+}
+
+
 void add_solution(instance inst, solution sol) {
     inst->sols = (solution*) realloc(inst->sols, inst->num_solutions+1);
     inst->sols[inst->num_solutions++] = sol;
     sol->inst = inst;
 }
 
+/* printers */
+void print_instance(instance inst, int print_data) {
+	printf("\ninfos:\nmodel: %s\n", inst->model_name);
+	printf("comment: %s\n", inst->model_comment);
+	printf("- model type: ");
+	switch (inst->instance_type) {
+		case TSP:
+			printf("TSP\n");
+			break;
+		case TOUR:
+			printf("(solution only)\n");
+			break;
+		default:
+			printf("\n");
+			break;
+	}
 
+    print_cplex_params(inst->params);
 
-double build_tsp_model(instance inst, CPXENVptr env, CPXLPptr lp, enum model_types model_type) {
+	printf("input data:\n");
+	printf("- weight type: ");
+	switch (inst->weight_type) {
+		case ATT:
+			printf("ATT\n");
+			break;
+		case EUC_2D:
+			printf("EUC_2D\n");
+			break;
+		case GEO:
+			printf("GEO\n");
+			break;
+		case EXPLICIT:
+			printf("(matrix explicit)\n");
+			break;
+		default:
+			break;
+	}
+	printf("- number of nodes: %d\n", inst->num_nodes);
+	if (print_data) {
+		printf("- weights:\n");
+		if (inst->adjmatrix != NULL) {
+			/* compute numof figures for spacing */
+			int column_width = 0;
+			for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<=i; j++) {
+				column_width = max(column_width, 1 + (int) log10(inst->adjmatrix[i][j]));
+			}
+			column_width = 2 + max(column_width, 1 + (int) log10(inst->num_nodes));
 
-	struct timeval start, end;
-    gettimeofday(&start, NULL);
+			/* figures.ab so max 1 decimal figures */
+			char* buffer = (char*) calloc(column_width, sizeof(char));
 
-    switch (model_type) {
-        case SYMMETRIC:
-            add_symmetric_variables(inst, env, lp);
-            add_symmetric_constraints(inst, env, lp);
-            break;
-        case SYMMETRIC_BENDERS:
-            add_symmetric_variables(inst, env, lp);
-            add_symmetric_constraints(inst, env, lp);
-            break;
+			for (int i=0; i<inst->num_nodes; i++) {
+				sprintf(buffer, "%d | ", i+1);
+				printf("%*s", column_width+1, buffer);
 
-        case ASYMMETRIC_MTZ:
-            add_asymmetric_variables(inst, env, lp);
-            add_asymmetric_constraints(inst, env, lp);
-            add_MTZ_subtour(inst, env, lp);
-            break;
-        case ASYMMETRIC_GG:
-            add_asymmetric_variables(inst, env, lp);
-            add_asymmetric_constraints(inst, env, lp);
-            add_GG_subtour(inst, env, lp);
-            break;
-
-        default:
-            print_error("unhandeled model type in variables");
-    }
-
-    if (VERBOSE) {
-        // TODO: add modle type to filename
-        char* filename;
-        filename = (char*) calloc(100, sizeof(char));
-        sprintf(filename, "../data/%s/%s.model.lp", inst->model_name, inst->model_name);
-
-        CPXwriteprob(env, lp, filename, NULL);
-        free(filename);
-    }
-
-    gettimeofday(&end, NULL);
-    long seconds = (end.tv_sec - start.tv_sec);
-    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
-	return micros / 1000.0;
-}
-
-void add_symmetric_variables(instance inst, CPXENVptr env, CPXLPptr lp) {
-    /* varname ('C': continuous or 'B': binary)
-     * lower and upper bound: lb <= x <= ub */
-    char binary = 'B';
-    double lb = 0.0;
-    double ub = 1.0;
-
-	/* ColumnNAME: array of array used to inject variables in CPLEX */
-    char** cname = (char**) calloc(1, sizeof(char*));
-    cname[0] = (char*) calloc(100, sizeof(char));
-
-	/* add a single binary variables x(i,j) for i < j at the time */
-    for (int i=0; i<inst->num_nodes; i++) for (int j=i+1; j<inst->num_nodes; j++) {
-
-        /* write name of 1-indexed variable insede CPLEX
-         * compute cost of var as distance x(i,j) */
-        sprintf(cname[0], "x(%d,%d)", i+1, j+1);
-        double obj = dist(i, j, inst);
-
-		/* inject variable and test it's position (xpos) inside CPLEX */
-        if (CPXnewcols(env, lp, 1, &obj, &lb, &ub, &binary, cname)) {
-            print_error("wrong CPXnewcols on x var.s");
-        }
-        if (CPXgetnumcols(env, lp)-1 != xpos(i, j, inst)) {
-            print_error("wrong position for x var.s");
-        }
-    }
-
-    free(cname[0]);
-    free(cname);
-}
-
-void add_asymmetric_variables(instance inst, CPXENVptr env, CPXLPptr lp) {
-    /* varname ('C': continuous or 'B': binary)
-     * upper bound 1.0: symmetric variable */
-    char binary = 'B';
-    double lb = 0.0;
-    double ub = 1.0;
-
-	/* ColumnNAME: array of array used to inject variables in CPLEX */
-    char** cname = (char**) calloc(1, sizeof(char*));
-    cname[0] = (char*) calloc(100, sizeof(char));
-
-	/* add a single binary variables x(i,j) forall couples i,j at the time */
-    for (int i=0; i<inst->num_nodes; i++) for (int j=0; j<inst->num_nodes; j++) {
-        /* no self loops pls */
-        if (i == j) ub = 0.0;
-        else        ub = 1.0;
-
-        /* write name of 1-indexed variable insede CPLEX
-         * compute cost of var as distance x(i,j) */
-        sprintf(cname[0], "x(%d,%d)", i+1, j+1);
-        double obj = dist(i, j, inst);
-
-		/* inject variable and test it's position (xxpos) inside CPLEX */
-        if (CPXnewcols(env, lp, 1, &obj, &lb, &ub, &binary, cname)) {
-            print_error("wrong CPXnewcols on x var.s\n");
-        }
-        if (CPXgetnumcols(env, lp)-1 != xxpos(i, j, inst)) {
-            print_error("wrong position for x var.s\n");
-        }
-    }
-
-    free(cname[0]);
-    free(cname);
-}
-
-void add_symmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp) {
-	/* right hand site scalar
-	 * sense of the constraint: (E: equality, G: greater or equal, L: less or equal*/
-    double rhs = 2.0;
-    char sense = 'E';
-
-	/* ColumnNAME: array of array used to inject variables in CPLEX */
-    char** cname = (char**) calloc(1, sizeof(char*));
-    cname[0] = (char*) calloc(100, sizeof(char));
-
-	/* add one constraint at the time */
-    for (int h=0; h<inst->num_nodes; h++) {
-		/* fetch last row position in current model (better: the new one)
-		 * write the constraint name inside CPLEX */
-        int lastrow = CPXgetnumrows(env, lp);
-        sprintf(cname[0], "degree(%d)", h+1);
-
-		/* add the new constraint (with coefficent zero, null lhs) */
-        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-            print_error("wrong CPXnewrows [degree]");
-        }
-		/* and change the coefficent if node i is adiacent to h */
-        for (int i=0; i<inst->num_nodes; i++) {
-            if (i == h) continue;
-
-            /* change the coefficent from 0 to 1.0 */
-            if (CPXchgcoef(env, lp, lastrow, xpos(i, h, inst), 1.0)) {
-                print_error("wrong CPXchgcoef [degree]");
-            }
-        }
-    }
-
-    free(cname[0]);
-    free(cname);
-}
-
-void add_asymmetric_constraints(instance inst, CPXENVptr env, CPXLPptr lp) {
-	/* right hand site scalar
-	 * sense of the constraint: (E: equality, G: greater or equal, L: less or equal*/
-    double rhs = 1.0;
-    char sense = 'E';
-
-	/* ColumnNAME: array of array used to inject variables in CPLEX */
-    char** cname = (char**) calloc(1, sizeof(char*));
-    cname[0] = (char*) calloc(100, sizeof(char));
-
-	/* add one constraint at the time */
-    for (int h=0; h<inst->num_nodes; h++) {
-		/* fetch last row position in current model (better: the new one)
-		 * write the constraint name inside CPLEX */
-        int lastrow = CPXgetnumrows(env, lp);
-        sprintf(cname[0], "degree(%d)", h+1);
-
-		/* add the new constraint (with coefficent zero, null lhs) */
-        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-            print_error("wrong CPXnewrows [degree]");
-        }
-		/* and change the coefficent if node i is adiacent to h */
-        for (int i = 0; i<inst->num_nodes; i++) {
-            if (i == h) continue;
-
-            /* change the coefficent from 0 to 1.0 */
-            if (CPXchgcoef(env, lp, lastrow, xxpos(i, h, inst), 1.0)) {
-                print_error("wrong CPXchgcoef [degree]");
-            }
-        }
-    }
-
-    /* do the same but switch indexes (rhs = 1!) */
-    for (size_t i=0; i<inst->num_nodes; i++) {
-		/* fetch last row position in current model (better: the new one)
-		 * write the constraint name inside CPLEX */
-        int lastrow = CPXgetnumrows(env, lp);
-        sprintf(cname[0], "degree(%ld)", inst->num_nodes + i+1);
-
-        /* add the new constraint (with coefficent zero, null lhs) */
-        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-            print_error("wrong CPXnewrows [degree]");
-        }
-        /* and change the coefficent if node i is adiacent to h */
-        for (int h = 0; h<inst->num_nodes; h++) {
-            /* the graph is complete so we only skip self loops */
-            if (i == h) continue;
-
-            /* change the coefficent from 0 to 1.0 */
-            if (CPXchgcoef(env, lp, lastrow, xxpos(i, h, inst), 1.0)) {
-                print_error("wrong CPXchgcoef [degree]");
-            }
-        }
-    }
-
-    free(cname[0]);
-    free(cname);
-}
-
-void add_MTZ_subtour(instance inst, CPXENVptr env, CPXLPptr lp) {
-	/* new continuous variables (integer does not matter here!)
-	 * upper bound equal to m-1 for big-M constraint */
-	char continuous = 'I';
-	double lb = 1.0;
-	double ub = inst->num_nodes-1;
-
-	/* ColumnNAME: array of array used to inject variables in CPLEX */
-	char** cname = (char**) calloc(1, sizeof(char*));
-	cname[0] = (char*) calloc(100, sizeof(char));
-
-    /* new variables associated with nodes, only n */
-	for (size_t i=1; i<inst->num_nodes; i++) {
-
-        /* cost is zero for new variables, they matter for new constraints only */
-		sprintf(cname[0], "u(%ld)", i+1);
-		double obj = 0;
-
-		/* inject variable and test it's position (upos) inside CPLEX */
-		if (CPXnewcols(env, lp, 1, &obj, &lb, &ub, &continuous, cname)) {
-			print_error("wrong CPXnewcols on x var.s");
+				for (int j=0; j<=i; j++) {
+					sprintf(buffer, "%.1lf ", inst->adjmatrix[i][j]);
+					printf("%*s", column_width+1, buffer);
+				}
+				printf("\n");
+			}
+			free(buffer);
 		}
-		if (CPXgetnumcols(env, lp)-1 != upos(i, inst)) {
-			print_error(" wrong position for x var.s");
+		printf("- nodes:\n");
+		if (inst->nodes != NULL) {
+			int column_width = 0;
+			for (int i=0; i<inst->num_nodes; i++) {
+				column_width = max(column_width, 1 + (int) log10(inst->nodes[i].x));
+				column_width = max(column_width, 1 + (int) log10(inst->nodes[i].y));
+			}
+			column_width = 2 + max(column_width, 1 + (int) log10(inst->num_nodes));
+
+			/* figures.ab so max 1 decimal figures */
+			char* buffer = (char*) calloc(column_width, sizeof(char));
+
+			for (int i=0; i<inst->num_nodes; i++) {
+				sprintf(buffer, "%d | ", i+1);
+				printf("%*s", column_width+1, buffer);
+
+				sprintf(buffer, "%.1lf ", inst->nodes[i].x);
+				printf("%*s", column_width+1, buffer);
+
+				sprintf(buffer, "%.1lf ", inst->nodes[i].y);
+				printf("%*s\n", column_width+1, buffer);
+			}
+			free(buffer);
 		}
 	}
 
-
-	int izero = 0;
-	int index[3];
-	double value[3];
-	double big_M = inst->num_nodes - 1.0;
-	double rhs = big_M -1.0;
-	char sense = 'L';
-	int nnz = 3;
-
-	/* add lazy constraints  1.0 * u_i - 1.0 * u_j + M * x_ij <= M - 1
-     * for each arc (i,j) not touching node 0 */
-	for (int i=1; i<inst->num_nodes; i++) for (int j=1; j<inst->num_nodes; j++) {
-        if (i == j) continue;
-
-        sprintf(cname[0], "u-consistency for arc (%d,%d)", i+1, j+1);
-
-        /* build constraint equation */
-        index[0] = upos(i,inst);
-        value[0] = 1.0;
-        index[1] = upos(j,inst);
-        value[1] = -1.0;
-        index[2] = xxpos(i,j,inst);
-        value[2] = big_M;
-
-        if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero, index, value, cname) ) {
-            print_error("wrong CPXlazyconstraints() for u-consistency");
-        }
+	printf("solutions:\n");
+	printf("- num of solutions: %d\n", inst->num_solutions);
+	for (int i=0; i<inst->num_solutions; i++) {
+		printf("solution %d:\n", i+1);
+		print_solution(inst->sols[i], print_data);
 	}
 
-	/* add lazy constraints 1.0 * x_ij + 1.0 * x_ji <= 1
-     * for each arc (i,j) with i < j */
-	rhs = 1.0;
-	nnz = 2;
-	for (int i=0; i<inst->num_nodes; i++) for (int j=i+1; j<inst->num_nodes; j++) {
-        sprintf(cname[0], "SEC on node pair (%d,%d)", i+1, j+1);
-
-        /* build constraint equation */
-        index[0] = xxpos(i,j,inst);
-        value[0] = 1.0;
-        index[1] = xxpos(j,i,inst);
-        value[1] = 1.0;
-        if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero, index, value, cname)) {
-            print_error("wrong CPXlazyconstraints on 2-node SECs");
-        }
-	}
-
-    free(cname[0]);
-    free(cname);
+	printf("--- ---\n\n");
 }
 
-void add_GG_subtour(instance inst, CPXENVptr env, CPXLPptr lp) {
-	/* new integer variables
-	 * upper bound equal to m-1 */
-	char integer = 'I';
-	double lb = 0.0;
-	double ub = inst->num_nodes-1;
+void print_cplex_params(cplex_params params) {
+	printf("cplex params:\n");
+    if (params == NULL) return;
+	printf("- random seed: %d\n", params->randomseed);
+	printf("- number of threads: %d\n", params->num_threads);
+	printf("- time limit: %lf\n", params->timelimit);
+	printf("- available memory: %d MB\n", params->available_memory);
+	printf("- costs type: ");
+	switch (params->cost) {
+		case REAL:
+			printf("real\n");
+			break;
+		case INTEGER:
+			printf("integer\n");
+			break;
+	}
+}
 
-	/* ColumnNAME: array of array used to inject variables in CPLEX */
-	char** cname = (char**) calloc(1, sizeof(char*));
-	cname[0] = (char*) calloc(100, sizeof(char));
+void print_solution(solution sol, int print_data) {
+	printf("- optimality: ");
+	switch (sol->model_type) {
+		case OPTIMAL_TOUR:
+			printf("optimal tour from file\n");
+			break;
+		case SYMMETRIC:
+			printf("symmetric, no subtour elimination\n");
+			break;
+		case ASYMMETRIC_MTZ:
+			printf("asymmetric, mtz subtour elimination\n");
+			break;
+		case ASYMMETRIC_GG:
+			printf("asymmetric, gg subtour elimination\n");
+			break;
+		default:
+			printf("\n");
+			break;
+	}
+	printf("- zstar: %lf\n", sol->zstar);
+	printf("- num edges: %d\n", sol->num_edges);
+	if (print_data) {
+		printf("- edges:\n");
+		if (sol->edges != NULL) {
+			int column_width = 2 + (int) log10(sol->num_edges);
+			char* buffer = (char*) calloc(column_width, sizeof(char));
 
-	/* add a single flux variable y(i,j) forall i,j */
-	for (size_t i=0; i<inst->num_nodes; i++) for(size_t j=0; j<inst->num_nodes; j++){
-		if(i==j) continue;
+			for (int i=0; i<sol->num_edges; i++) {
+				sprintf(buffer, "%d | ", i+1);
+				printf("%*s", column_width+2, buffer);
 
-        /* cost is zero for new variables, they matter for new constraints only */
-		sprintf(cname[0], "y(%ld)(%ld)", i+1,j+1);
-		double obj = 0;
+				sprintf(buffer, "%d ", sol->edges[i].i+1);
+				printf("%*s", column_width, buffer);
 
-		/* inject variable and test it's position (upos) inside CPLEX */
-		if (CPXnewcols(env, lp, 1, &obj, &lb, &ub, &integer, cname)) {
-			print_error("wrong CPXnewcols on x var.s");
+				sprintf(buffer, "%d ", sol->edges[i].j+1);
+				printf("%*s\n", column_width, buffer);
+			}
+			free(buffer);
 		}
-		if (CPXgetnumcols(env, lp)-1 != ypos(i, j, inst)) {
-			print_error(" wrong position for x var.s");
-		}
+        printf("- parent:\n");
+        if (sol->parent != NULL) {
+            int column_width = 1 + (int) log10(sol->num_edges);
+            char* buffer = (char*) calloc(column_width, sizeof(char));
+
+            for (int i=0; i<sol->num_edges; i++) {
+                sprintf(buffer, "%d", i+1);
+                printf("%*s", column_width+1, buffer);
+            }
+            printf("\n");
+            for (int i=0; i<sol->num_edges; i++) {
+                sprintf(buffer, "%d", sol->parent[i]+1);
+                printf("%*s", column_width+1, buffer);
+            }
+            printf("\n");
+            free(buffer);
+        }
+	}
+	printf("- distance time: %lf ms\n", sol->distance_time);
+	printf("- build time: %lf ms\n", sol->build_time);
+	printf("- solve time: %lf s\n", sol->solve_time / 1000.0);
+}
+
+void plot_solution_graphviz(solution sol) {
+	plot_solutions_graphviz((solution[]) {sol}, 1);
+}
+
+void plot_solutions_graphviz(solution* sols, int num_sols) {
+	double box_size = 20.0; // TODO: make proportional to the number of nodes
+	double max_coord = 0.0;
+
+	instance inst = sols[0]->inst;
+    assert(inst != NULL && "no instance associated with solution");
+
+	for (int i=0; i<inst->num_nodes && inst->nodes != NULL; i++) {
+		max_coord = max(max_coord, fabs(inst->nodes[i].x));
+		max_coord = max(max_coord, fabs(inst->nodes[i].y));
 	}
 
-	double rhs = 0;
-	char sense = 'L';
+	char* filename;
+	filename = (char*) calloc(100, sizeof(char));
+	if (inst->model_folder == TSPLIB)    sprintf(filename, "../data_tsplib/%s/%s.dot", inst->model_name, inst->model_name);
+	if (inst->model_folder == GENERATED) sprintf(filename, "../data_generated/%s/%s.dot", inst->model_name, inst->model_name);
 
-	for (size_t i=0; i<inst->num_nodes; i++) for (size_t h=0; h<inst->num_nodes; h++) {
-        if (i == h) continue;
+	FILE* fp;
+	fp = fopen(filename, "w");
+	assert(fp != NULL && "file not found while saving .dot");
 
-        /* fetch last row position in current model (better: the new one)
-         * in CPLEX row == constraint */
-        int lastrow = CPXgetnumrows(env, lp);
-        sprintf(cname[0], "xy(%ld)(%ld)", i+1,h+1);
+	fprintf(fp, "graph %s {\n", inst->model_name);
+	fprintf(fp, "\tnode [shape=circle fillcolor=white]\n");
+	for (int i=0; i<inst->num_nodes && inst->nodes != NULL; i++) {
+		double plot_posx = inst->nodes[i].x / max_coord * box_size;
+		double plot_posy = inst->nodes[i].y / max_coord * box_size;
 
-        /* add the new constraint and change coeff from zero to 1 and 1-m */
-        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-            print_error("wrong CPXnewrows [degree]");
-        }
-        if (CPXchgcoef(env, lp, lastrow, xxpos(i, h, inst), 1-inst->num_nodes)) {
-            print_error("wrong CPXchgcoef [degree]");
-        }
-        if (CPXchgcoef(env, lp, lastrow, ypos(i, h, inst), 1.0)) {
-            print_error("wrong CPXchgcoef [degree]");
-        }
-    }
+		fprintf(fp, "\t%d [ pos = \"%lf,%lf!\"]\n", i, plot_posx, plot_posy);
+	}
+	fprintf(fp, "\n");
 
-    rhs = inst->num_nodes - 1;
-    sense = 'E';
-    int lastrow = CPXgetnumrows(env, lp);
-    sprintf(cname[0], "y1j");
+	for (int u=0; u<num_sols; u++) {
+		for (int k=0; k<sols[u]->num_edges; k++) {
+			fprintf(fp, "\t%d -- %d", sols[u]->edges[k].i, sols[u]->edges[k].j);
 
-    /* add the new constraint (with coefficent zero, null lhs) */
-    if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-        print_error("wrong CPXnewrows [degree]");
-    }
+			if (sols[u]->model_type == OPTIMAL_TOUR) fprintf(fp, " [color = red]");
+			fprintf(fp, "\n");
+		}
+	}
+	fprintf(fp, "}");
 
-    for (size_t h=1; h<inst->num_nodes; h++) {
-        if (CPXchgcoef(env, lp, lastrow, ypos(0, h, inst), 1.0)) {
-            print_error("wrong CPXchgcoef [degree]");
-        }
-    }
-
-    rhs = 1;
-    sense = 'E';
-    for (size_t j=1; j<inst->num_nodes; j++) {
-
-        int lastrow = CPXgetnumrows(env, lp);
-        sprintf(cname[0], "y(%ld)", j+1);
-
-        /* add the new constraint (with coefficent zero, null lhs) */
-        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-            print_error("wrong CPXnewrows [degree]");
-        }
-
-        /* and change the coefficent if node i is adiacent to h */
-        for (int i = 0; i<inst->num_nodes; i++) {
-            /* the graph is complete so we only skip self loops */
-            if (i == j) continue;
-
-            /* change the coefficent from 0 to 1.0 */
-            if (CPXchgcoef(env, lp, lastrow, ypos(i, j, inst), 1.0)) {
-                print_error("wrong CPXchgcoef [degree]");
-            }
-        }
-
-        /* and change the coefficent if node i is adiacent to h */
-        for (int h = 0; h<inst->num_nodes; h++) {
-            /* the graph is complete so we only skip self loops */
-            if (h == j) continue;
-
-            /* change the coefficent from 0 to 1.0 */
-            if (CPXchgcoef(env, lp, lastrow, ypos(j, h, inst), -1.0)) {
-                print_error("wrong CPXchgcoef [degree]");
-            }
-        }
-    }
-
-    free(cname[0]);
-    free(cname);
+	fclose(fp);
+	free(filename);
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-void add_cool_subtour_elimination(instance inst, CPXENVptr env, CPXLPptr lp) {
-    int visited[inst->num_nodes];
-    for (int i=0; i<inst->num_nodes; i++) visited[i]=0;
-    /*memset(visited, 0, inst->num_nodes*sizeof(int));*/
-
-    /* ColumnNAME: array of array used to inject variables in CPLEX */
-    char** cname = (char**) calloc(1, sizeof(char*));
-    cname[0] = (char*) calloc(100, sizeof(char));
-
-    for (int i=0; i<inst->num_nodes; i++) {
-        if (visited[i]) continue;
-
-        int act_set = uf_find_set(uf, i);
-        int set_size = uf_set_size(uf, i);
-
-        if (set_size <= 2) continue;
-
-        double rhs = uf_set_size(uf, i) - 1;
-        char sense = 'L';
-
-		/* fetch last row position in current model (better: the new one)
-		 * write the constraint name inside CPLEX */
-        int lastrow = CPXgetnumrows(env, lp);
-        sprintf(cname[0], "subelimination(%d)", i+1);
-
-        /* add the new constraint (with coefficent zero, null lhs) */
-        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-            print_error("wrong CPXnewrows [degree]");
-        }
-
-        // TODO: this is dumb af and overcomplicated
-
-        int j=i;
-        do {
-            int k = uf->next[j];
-            do {
-                /* change the coefficent from 0 to 1.0 */
-                if (CPXchgcoef(env, lp, lastrow, xpos(j, k, inst), 1.0)) {
-                    print_error("wrong CPXchgcoef [degree]");
-                }
-                k = uf->next[k];
-            } while (k != i);
-
-            j = uf->next[j];
-        } while (uf->next[j] != i);
-
-        /* visit all the nodes in the set */
-        for (int j=0; j<inst->num_nodes; j++) {
-            if (uf_find_set(uf, j) == act_set) visited[j] = 1;
-        }
-    }
-
-    if (VERBOSE) {
-        // TODO: add modle type to filename
-        char* filename;
-        filename = (char*) calloc(100, sizeof(char));
-        sprintf(filename, "../data/%s/%s.model.lp", inst->model_name, inst->model_name);
-
-        CPXwriteprob(env, lp, filename, NULL);
-        free(filename);
-    }
-
-    free(cname[0]);
-    free(cname);
-}
-=======
->>>>>>> parent of f2d3960 (added benders)
-=======
->>>>>>> parent of f2d3960 (added benders)

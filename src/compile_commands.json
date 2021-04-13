@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-O0",
+      "-g",
+      "-I../include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio201/cplex/include/ilcplex",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "/home/lugot/documents/university/master/52/operation_research_2/project/src",
+    "file": "/home/lugot/documents/university/master/52/operation_research_2/project/src/main.c",
+    "output": "/home/lugot/documents/university/master/52/operation_research_2/project/src/main.o"
+  }
+]
