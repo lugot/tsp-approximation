@@ -81,6 +81,8 @@ typedef struct solution_t {
 	edge* edges;
 	int* parent;
 
+	double start;
+	double end;
 	double distance_time;
 	double build_time;
 	double solve_time;
