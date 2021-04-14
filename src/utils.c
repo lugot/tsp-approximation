@@ -1,7 +1,7 @@
 #include "utils.h"
 #include "tsp.h"
-#include "math.h"
 #include <math.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -191,6 +191,38 @@ void print_error(const char *err, ...) {
 	fflush(NULL);
 
 	exit(EXIT_FAILURE);
+}
+
+char* model_type_tostring(enum model_types model_type) {
+	char* ans = (char*) calloc(20, sizeof(char));
+
+	switch (model_type) {
+		case SYMMETRIC:
+			strcpy(ans, "symmetric");
+			break;
+
+		case OPTIMAL_TOUR:
+			strcpy(ans, "optimal_tour");
+			break;
+
+		case ASYMMETRIC_MTZ:
+			strcpy(ans, "mtz");
+			break;
+
+		case ASYMMETRIC_GG:
+			strcpy(ans, "gg");
+			break;
+
+		case SYMMETRIC_BENDERS:
+			strcpy(ans, "benders");
+			break;
+
+		case SYMMETRIC_BENDERS_CALLBACK: ;
+			strcpy(ans, "benders_callback");
+			break;
+	}
+
+	return ans;
 }
 
 

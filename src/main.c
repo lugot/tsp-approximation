@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <cplex.h>
 #include <stdlib.h>
+#include <assert.h>
 
 int main(int argc, char** argv) {
 
@@ -42,10 +43,16 @@ int main(int argc, char** argv) {
         instance inst = insts[i];
         add_params(inst, params);
 
-        for (int i=0; i<2; i++) TSPopt(inst, tests[i]);
+        for (int i=0; i<2; i++) {
+            char* model_type_str = model_type_tostring(tests[i]);
+            printf("solving %s on instance %s\n", model_type_str, inst->model_name);
+            free(model_type_str);
+
+            TSPopt(inst, tests[i]);
+        }
         /*print_solution(sol, 1);*/
         /*plot_solution_graphviz(sol);*/
-        print_instance(inst, 1);
+        /*print_instance(inst, 1);*/
     }
     save_results(insts, options->battery_test);
 

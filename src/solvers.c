@@ -12,6 +12,7 @@
 
 
 solution TSPopt(instance inst, enum model_types model_type) {
+	assert(inst != NULL);
 	assert(inst->params != NULL && "no CPLEX params found");
 	assert(inst->instance_type == TSP && "need TSP instance");
 
@@ -44,7 +45,6 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	/* add callback if required */
 	if(model_type == SYMMETRIC_BENDERS_CALLBACK) {
 		CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
-
         if (CPXcallbacksetfunc(env, lp, contextid, add_BENDERS_sec_callback, sol)) {
             print_error("CPXcallbacksetfunc() error");
 		}
@@ -71,9 +71,13 @@ solution TSPopt(instance inst, enum model_types model_type) {
 		case SYMMETRIC_BENDERS:
 			retreive_symmetric_solution(xstar, sol);
 
-			do {
+			while (!visitable(sol)) {
 				/* add the constraints */
 				add_BENDERS_sec(env, lp, sol);
+
+				/* some time has passed, updat the timelimit */
+				gettimeofday(&end, NULL);
+				CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit - (end.tv_sec - start.tv_sec));
 
 				/* solve! */
 				if (CPXmipopt(env,lp)) print_error("CPXmipopt() error");
@@ -85,8 +89,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 				/* retrive the solution */
 				retreive_symmetric_solution(xstar, sol);
-
-			} while (!visitable(sol));
+			}
 
 			/* save the complete model */
 			char* filename;
@@ -103,21 +106,22 @@ solution TSPopt(instance inst, enum model_types model_type) {
 			retreive_asymmetric_solution(xstar, sol);
 			break;
 
-		default:
+		case OPTIMAL_TOUR:
+			assert(model_type != OPTIMAL_TOUR && "tried to solve an optimal tour instance");
 			break;
 	}
 
 	free(xstar);
 
 	gettimeofday(&end, NULL);
-	long seconds = (end.tv_sec - start.tv_sec);
-	long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
-	sol->solve_time = micros / 1000.0;
+	sol->solve_time = end.tv_sec - start.tv_sec;
+
+
+	CPXgetobjval(env, lp, &sol->zstar);
+	/*sol->zstar = zstar(inst, sol);*/
 
 	/* add the solution to the pool associated with it's instance */
 	add_solution(inst, sol);
-
-	sol->zstar = zstar(inst, sol); // TODO: add from cplex!
 
 	CPXfreeprob(env, &lp);
 	CPXcloseCPLEX(&env);

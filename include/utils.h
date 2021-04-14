@@ -16,6 +16,8 @@ double compute_dist(instance inst);
 int reachable(solution sol, int i, int j);
 int visitable(solution sol);
 
+char* model_type_tostring(enum model_types model_type);
+
 void print_error(const char *err, ...);
 
 double max(double a, double b);
