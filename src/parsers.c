@@ -61,8 +61,9 @@ void parse_command_line(int argc, char** argv, cplex_params params, run_options 
     static struct option long_options[] = {
         {"verbose",       no_argument,       NULL, 'v'},
         {"model_name",    required_argument, NULL, 'm'},
+        {"battery test",  required_argument, NULL, 'b'},
         {"time_limit",    required_argument, NULL, 't'},
-        {"seed",          required_argument, NULL, 's'},
+        {"cplex_seed",    required_argument, NULL, 's'},
         {"threads",       required_argument, NULL, 'T'},
         {"memory",        required_argument, NULL, 'M'},
         {"integer_costs", no_argument,       NULL, 'i'},
@@ -72,7 +73,7 @@ void parse_command_line(int argc, char** argv, cplex_params params, run_options 
 
     int long_index, opt;
     long_index = opt = 0;
-    while ((opt = getopt_long(argc, argv,"vm:t:s:T:M:i:h",
+    while ((opt = getopt_long(argc, argv,"vm:b:t:s:T:M:i:h",
                     long_options, &long_index)) != -1) {
         switch (opt) {
             case 'v': VERBOSE = 1;
@@ -81,6 +82,10 @@ void parse_command_line(int argc, char** argv, cplex_params params, run_options 
             case 'm':
                 options->model_name = (char*) calloc(strlen(optarg), sizeof(char));
                 strcpy(options->model_name, optarg);
+                break;
+
+            case 'b':
+                options->battery_test = atoi(optarg);
                 break;
 
             case 'l': params->timelimit = atof(optarg);

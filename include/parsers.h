@@ -5,8 +5,7 @@
 
 typedef struct run_options_t {
 	char* model_name;
-	int generate_instances;
-	int read_generated;
+	int battery_test;
 } *run_options;
 
 void parse_command_line(int argc, char** argv, cplex_params params, run_options options);

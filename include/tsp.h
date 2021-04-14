@@ -90,8 +90,8 @@ typedef struct solution_t {
 instance create_empty_instance();
 instance create_instance(cplex_params params);
 void add_params(instance inst, cplex_params params);
-instance create_random_instance(int id, int num_nodes, int box_size, cplex_params params);
-instance* create_random_instances(int num_instances, int num_nodes, int box_size, cplex_params params);
+instance generate_random_instance(int id, int num_nodes, int box_size);
+instance* generate_random_instances(int num_instances, int num_nodes, int box_size);
 instance clone_instance(instance inst);
 void free_instance();
 void add_solution(instance inst, solution sol);

@@ -31,8 +31,8 @@ void add_params(instance inst, cplex_params params) {
     memcpy(inst->params, params, sizeof(struct cplex_params_t));
 }
 
-instance create_random_instance(int id, int num_nodes, int box_size, cplex_params params) {
-    instance inst = create_instance(params);
+instance generate_random_instance(int id, int num_nodes, int box_size) {
+    instance inst = create_empty_instance();
     srand(id);
 
     char* buf;
@@ -64,7 +64,7 @@ instance create_random_instance(int id, int num_nodes, int box_size, cplex_param
     return inst;
 }
 
-instance* create_random_instances(int num_instances, int num_nodes, int box_size, cplex_params params) {
+instance* generate_random_instances(int num_instances, int num_nodes, int box_size) {
     instance* insts = (instance*) calloc(num_instances, sizeof(struct instance_t));
 
     //TODO: do it better
@@ -72,9 +72,8 @@ instance* create_random_instances(int num_instances, int num_nodes, int box_size
 
     for (int i=0; i<num_instances; i++) {
         int rand_id = rand(); /* between 0 and RAND_MAX (2^31 or smht here) */
-        printf("random id: %d", rand_id);
 
-        insts[i] = create_random_instance(rand_id, num_nodes, box_size, params);
+        insts[i] = generate_random_instance(rand_id, num_nodes, box_size);
     }
 
     return insts;

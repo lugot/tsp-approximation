@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "union_find.h"
 #include <cplex.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <sys/time.h>
@@ -166,3 +167,71 @@ void retreive_asymmetric_solution(double* xstar, solution sol) {
 	assert(k == sol->num_edges && "not enought edges CPLEX solution");
 }
 
+
+void save_results(instance* insts, int num_instances) {
+	assert(insts != NULL);
+	assert(insts[0] != NULL);
+
+	/* remove and create new fresh csv */
+	remove("../results/results.csv");
+	FILE* fp;
+	fp = fopen("../results/results.csv", "w");
+	assert(fp != NULL && "file not found while saving .csv");
+
+	/* save the data */
+	int num_models = insts[0]->num_solutions;
+	fprintf(fp, "%d,", num_models);
+
+	for (int i=0; i<num_models; i++) {
+		enum model_types model_type = insts[0]->sols[i]->model_type;
+
+		switch (model_type) {
+			case SYMMETRIC:
+			case OPTIMAL_TOUR:
+				assert((model_type == SYMMETRIC || model_type == OPTIMAL_TOUR) &&
+						"cannot retreive time from this kind of models");
+				break;
+
+			case ASYMMETRIC_MTZ:
+				fprintf(fp, "MTZ");
+				break;
+
+			case ASYMMETRIC_GG:
+				fprintf(fp, "GG");
+				break;
+
+			case SYMMETRIC_BENDERS:
+				fprintf(fp, "BENDERS");
+				break;
+
+			case SYMMETRIC_BENDERS_CALLBACK: ;
+				fprintf(fp, "BENDERS_CALLBACK");
+				break;
+		}
+
+		if (i < num_models-1) fprintf(fp, ",");
+		else                  fprintf(fp, "\n");
+	}
+
+
+	for (int i=0; i<num_instances; i++) {
+		instance inst = insts[i];
+		fprintf(fp, "%s,", inst->model_name);
+
+		assert(inst->num_solutions == num_models && "missing some solutions");
+
+		for (int j=0; j<num_models; j++) {
+			assert(inst->sols[j]->model_type == insts[0]->sols[j]->model_type);
+
+			if (j < num_models-1) fprintf(fp, "%lf,",  inst->sols[j]->solve_time);
+			else                  fprintf(fp, "%lf\n", inst->sols[j]->solve_time);
+		}
+
+	}
+
+	fclose(fp);
+
+	/* generate the plot */
+	//TODO: adjust timelimit
+	system("python ../results/perprof.py -D , -T 3600 -S 2 -M 20 ../results/results.csv ../results/pp.pdf -P 'model comparisons'");
+}
