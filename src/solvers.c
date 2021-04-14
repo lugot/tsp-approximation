@@ -36,6 +36,15 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	 * - EpInteger: CPLEX tollerance to declare a variable integer, important in bigM
 	 * - EpRightHandSide: the less or equal satisfied up to this tollerance, usually 1e-5, with bigM 1e-9 */
 	CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit);
+	
+	char* logfile;
+	logfile = (char*) calloc(100, sizeof(char));
+	if (inst->model_folder == TSPLIB)    sprintf(logfile, "../data_tsplib/%s/%slog.txt", inst->model_name, inst->model_name);
+	if (inst->model_folder == GENERATED) sprintf(logfile, "../data_generated/%s/%slog.txt", inst->model_name, inst->model_name);
+	
+	CPXsetlogfilename(env, logfile, "w");
+	
+	CPXgetdettime(env,&sol->start);
 	CPXsetdblparam(env, CPX_PARAM_EPINT, 0.0);
 	CPXsetdblparam(env, CPX_PARAM_EPRHS, 1e-9);
 
@@ -91,6 +100,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 				retreive_symmetric_solution(xstar, sol);
 			}
 
+
 			/* save the complete model */
 			char* filename;
 			filename = (char*) calloc(100, sizeof(char));
@@ -113,9 +123,11 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 	free(xstar);
 
-	gettimeofday(&end, NULL);
-	sol->solve_time = end.tv_sec - start.tv_sec;
+	CPXgetdettime(env,&sol->end);
 
+	gettimeofday(&end, NULL);
+	sol->solve_time = end.tv_sec - start.tv_sec; //sec
+	//sol->solve_time = sol->end - sol->start; //ticks
 
 	CPXgetobjval(env, lp, &sol->zstar);
 	/*sol->zstar = zstar(inst, sol);*/

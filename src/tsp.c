@@ -297,6 +297,7 @@ void print_solution(solution sol, int print_data) {
 	printf("- distance time: %lf ms\n", sol->distance_time);
 	printf("- build time: %lf ms\n", sol->build_time);
 	printf("- solve time: %lf s\n", sol->solve_time / 1000.0);
+	printf("- solve time(ticks): %lf ticks\n", sol->end-sol->start);
 }
 
 void plot_solution_graphviz(solution sol) {
