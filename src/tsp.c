@@ -331,13 +331,13 @@ void plot_solutions_graphviz(solution* sols, int num_sols) {
 		double plot_posx = inst->nodes[i].x / max_coord * box_size;
 		double plot_posy = inst->nodes[i].y / max_coord * box_size;
 
-		fprintf(fp, "\t%d [ pos = \"%lf,%lf!\"]\n", i, plot_posx, plot_posy);
+		fprintf(fp, "\t%d [ pos = \"%lf,%lf!\"]\n", i+1, plot_posx, plot_posy);
 	}
 	fprintf(fp, "\n");
 
 	for (int u=0; u<num_sols; u++) {
 		for (int k=0; k<sols[u]->num_edges; k++) {
-			fprintf(fp, "\t%d -- %d", sols[u]->edges[k].i, sols[u]->edges[k].j);
+			fprintf(fp, "\t%d -- %d", sols[u]->edges[k].i+1, sols[u]->edges[k].j+1);
 
 			if (sols[u]->model_type == OPTIMAL_TOUR) fprintf(fp, " [color = red]");
 			fprintf(fp, "\n");

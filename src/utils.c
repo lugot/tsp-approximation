@@ -27,7 +27,7 @@ int xpos(int i, int j, int num_nodes) {
  	 * 4   X X X X
  	 */
 
-	assert(i != j && "i == j in xpos");
+	if (i == j) print_error("i == j in xpos");
 	if (i > j) return xpos(j, i, num_nodes);
 
 	/*     area of triangle defined by row i */
@@ -64,7 +64,7 @@ int ypos(int i, int j, int num_nodes) {
 	 * 4   9 10 11 x
 	 */
 
-	assert(i != j && "variable y does not exist for same i and j");
+	if (i == j) print_error("variable y does not exist for same i and j");
 
 	int n = num_nodes * num_nodes + i*(num_nodes-1) + j;
 	if (i < j) n--;

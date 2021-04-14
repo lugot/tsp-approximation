@@ -422,16 +422,23 @@ void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, solution sol) {
     char** cname = (char**) calloc(1, sizeof(char*));
     cname[0] = (char*) calloc(100, sizeof(char));
 
+    int num_subtours = 0;
     for (int i=0; i<sol->num_edges; i++) {
         /* i could be part of a subtour already visited */
         if (visited[i]) continue;
-
-        double rhs = 0.0;
-        char sense = 'L';
+        num_subtours++;
 
         /* compute the rhs: number of nodes in a subtour, unknown a priori */
+        int* subtour = (int*) calloc(sol->num_edges, sizeof(int));
+        int subtour_size = 0;
+
+        /* travel the subtour */
         int j = i;
-        while ((j = sol->parent[j]) != i) rhs += 1.0;
+        while ((j = sol->parent[j]) != i) subtour[subtour_size++] = j;
+        subtour[subtour_size++] = i;
+
+        double rhs = (double) subtour_size - 1;
+        char sense = 'L';
 
 
 		/* fetch last row position in current model (better: the new one)
@@ -444,29 +451,21 @@ void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, solution sol) {
             print_error("wrong CPXnewrows [degree]");
         }
 
-        /* i: iterate over subtours, start element
-         * j: iterate inside subtour, first index
-         * k: iterate inside subtour, second index
-         * -> we will add x_jk to the subtour
-         */
-        j = i;
-        do {
-            int k = sol->parent[j];
-            do {
-                /* change the coefficent from 0 to 1.0 */
-                if (CPXchgcoef(env, lp, lastrow, xpos(j, k, sol->num_edges), 1.0)) {
-                    print_error("wrong CPXchgcoef [degree]");
-                }
-                k = sol->parent[k];
-            } while (k != i);
-
-            j = sol->parent[j];
-        } while (sol->parent[j] != i);
+        /* travel the subtour by vector */
+        for (j=0; j<subtour_size; j++) for (int k=j+1; k<subtour_size; k++) {
+            /* change the coefficent from 0 to 1.0 */
+            if (CPXchgcoef(env, lp, lastrow, xpos(subtour[j], subtour[k], sol->num_edges), 1.0)) {
+                print_error("wrong CPXchgcoef [degree]");
+            }
+        }
 
         /* visit all the nodes in the set */
         j = i;
         while ((j = sol->parent[j]) != i) visited[j] = 1;
+
+        free(subtour);
     }
+    if (VERBOSE) printf("[Verbose] num subtour BENDERS %d\n", num_subtours);
 
     free(visited);
 }
@@ -490,38 +489,36 @@ int CPXPUBLIC add_BENDERS_sec_callback(CPXCALLBACKCONTEXTptr context, CPXLONG co
     retreive_symmetric_solution(xstar, sol);
 
 
+    int num_subtours = 0;
     for (int i=0; i<sol->num_edges; i++) {
         /* i could be part of a subtour already visited */
         if (visited[i]) continue;
+        num_subtours++;
+
+
+        /* compute the rhs: number of nodes in a subtour, unknown a priori */
+        int* subtour = (int*) calloc(sol->num_edges, sizeof(int));
+        int subtour_size = 0;
+
+        /* travel the subtour */
+        int j = i;
+        while ((j = sol->parent[j]) != i) subtour[subtour_size++] = j;
+        subtour[subtour_size++] = i;
 
         int nnz = 0;
         int izero = 0;
-        double rhs = 0.0;
+        double rhs = (double) subtour_size - 1;
         char sense = 'L';
         int* index = (int*) calloc(num_cols, sizeof(int));
         double* value = (double*) calloc(num_cols, sizeof(double));
 
 
-        /* compute the rhs: number of nodes in a subtour, unknown a priori */
-        int j = i;
-        while ((j = sol->parent[j]) != i) rhs += 1.0;
-
-        /* i: iterate over subtours, start element
-         * j: iterate inside subtour, first index
-         * k: iterate inside subtour, second index
-         * -> we will add x_jk to the subtour
-         */
-        j = i;
-        do {
-            int k = sol->parent[j];
-            do {
-                index[nnz] = xpos(j, k, sol->num_edges);
-                value[nnz++] = 1.0;
-                k = sol->parent[k];
-            } while (k != i);
-
-            j = sol->parent[j];
-        } while (sol->parent[j] != i);
+        /* travel the subtour by vector */
+        for (j=0; j<subtour_size; j++) for (int k=j+1; k<subtour_size; k++) {
+            /* change the coefficent from 0 to 1.0 */
+            index[nnz] = xpos(subtour[j], subtour[k], sol->num_edges);
+            value[nnz++] = 1.0;
+        }
 
         /* visit all the nodes in the set */
         j = i;
@@ -537,6 +534,7 @@ int CPXPUBLIC add_BENDERS_sec_callback(CPXCALLBACKCONTEXTptr context, CPXLONG co
         free(index);
         free(value);
     }
+    if (VERBOSE) printf("[Verbose] num subtour BENDERS %d\n", num_subtours);
 
     free(visited);
 

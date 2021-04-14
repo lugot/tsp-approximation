@@ -44,7 +44,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 	if(model_type == SYMMETRIC_BENDERS_CALLBACK) {
 		CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
 
-        if (CPXcallbacksetfunc(env, lp, contextid, add_BENDERS_sec_callback, inst)) {
+        if (CPXcallbacksetfunc(env, lp, contextid, add_BENDERS_sec_callback, sol)) {
             print_error("CPXcallbacksetfunc() error");
 		}
 	}
@@ -138,11 +138,11 @@ void retreive_symmetric_solution(double* xstar, solution sol) {
 			sol->edges[k++] = (edge) {i, j};
 
 			/* actually a shifted linked list */
-			if (!reachable(sol, i, j)) swap(&sol->parent[i], &sol->parent[j]);
+			if (!reachable(sol, i, j) && !reachable(sol, j, i)) swap(&sol->parent[i], &sol->parent[j]);
 		}
 	}
 
-	/*assert(k == sol->num_edges && "not enought edges CPLEX solution");*/
+	assert(k == sol->num_edges && "not enought edges CPLEX solution");
 }
 
 void retreive_asymmetric_solution(double* xstar, solution sol) {
@@ -163,6 +163,6 @@ void retreive_asymmetric_solution(double* xstar, solution sol) {
 		}
 	}
 
-	/*assert(k == sol->num_edges && "not enought edges CPLEX solution");*/
+	assert(k == sol->num_edges && "not enought edges CPLEX solution");
 }
 
