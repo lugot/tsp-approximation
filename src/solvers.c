@@ -116,6 +116,10 @@ solution TSPopt(instance inst, enum model_types model_type) {
 			retreive_asymmetric_solution(xstar, sol);
 			break;
 
+		case ASYMMETRIC_PROF_GG:
+			retreive_asymmetric_solution(xstar, sol);
+			break;
+
 		case OPTIMAL_TOUR:
 			assert(model_type != OPTIMAL_TOUR && "tried to solve an optimal tour instance");
 			break;
@@ -216,6 +220,10 @@ void save_results(instance* insts, int num_instances) {
 				fprintf(fp, "GG");
 				break;
 
+			case ASYMMETRIC_PROF_GG:
+				fprintf(fp, "PROF_GG");
+				break;
+
 			case SYMMETRIC_BENDERS:
 				fprintf(fp, "BENDERS");
 				break;
@@ -249,5 +257,6 @@ void save_results(instance* insts, int num_instances) {
 
 	/* generate the plot */
 	//TODO: adjust timelimit
-	system("python ../results/perprof.py -D , -T 3600 -S 2 -M 20 ../results/results.csv ../results/pp.pdf -P 'model comparisons'");
+
+	system("python3 ../results/perprof.py -D , -T 3600 -S 2 -M 20 ../results/results.csv ../results/pp.pdf -P 'model comparisons'");
 }

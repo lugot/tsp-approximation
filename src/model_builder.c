@@ -20,6 +20,8 @@ void add_asymmetric_constraints(CPXENVptr env, CPXLPptr lp, instance inst);
 
 void add_MTZ_sec(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_GG_sec(CPXENVptr env, CPXLPptr lp, instance inst);
+void add_prof_GG_sec(CPXENVptr env, CPXLPptr lp, instance inst);
+
 
 double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst, enum model_types model_type) {
 
@@ -50,6 +52,11 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst, enum model_typ
             add_asymmetric_constraints(env, lp, inst);
             add_GG_sec(env, lp, inst);
             break;
+        case ASYMMETRIC_PROF_GG:
+            add_asymmetric_variables(env, lp, inst);
+            add_asymmetric_constraints(env, lp, inst);
+            add_prof_GG_sec(env, lp, inst);
+            break;
 
         default:
             print_error("unhandeled model type in variables");
@@ -68,12 +75,16 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst, enum model_typ
         case SYMMETRIC_BENDERS:
             strcat(filename, "benders.lp");
             break;
+        case SYMMETRIC_BENDERS_CALLBACK:
+            strcat(filename, "benders_callback.lp");
+            break;
         case ASYMMETRIC_MTZ:
             strcat(filename, "mtz.lp");
             break;
         case ASYMMETRIC_GG:
             strcat(filename, "gg.lp");
-
+        case ASYMMETRIC_PROF_GG:
+            strcat(filename, "prof_gg.lp");
             break;
         default:
             break;
@@ -414,6 +425,149 @@ void add_GG_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
         }
     }
 }
+
+
+void add_prof_GG_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
+    /* new integer variables
+     * upper bound equal to m-1 */
+    char integer = 'I';
+    double lb = 0.0;
+    double ub = inst->num_nodes-2;
+
+    /* ColumnNAME: array of array used to inject variables in CPLEX */
+    char** cname = (char**) calloc(1, sizeof(char*));
+    cname[0] = (char*) calloc(100, sizeof(char));
+
+    /* add a single flux variable y(i,j) forall i,j */
+    for (int i=0; i<inst->num_nodes; i++) for(int j=0; j<inst->num_nodes; j++){
+        if(i==j) continue;
+
+        /* cost is zero for new variables, they matter for new constraints only */
+        sprintf(cname[0], "y(%d)(%d)", i+1,j+1);
+        double obj = 0;
+
+        if (i==0)
+            ub++;
+
+        /* inject variable and test it's position (upos) inside CPLEX */
+        if (CPXnewcols(env, lp, 1, &obj, &lb, &ub, &integer, cname)) {
+            print_error("wrong CPXnewcols on x var.s");
+        }
+        if (CPXgetnumcols(env, lp)-1 != ypos(i, j, inst->num_nodes)) {
+            print_error(" wrong position for x var.s");
+        }
+
+        if(i==0)
+            ub--;
+    }
+
+    //linking constraint
+    double rhs = 0.0;
+    char sense = 'L';
+
+    for (int i=1; i<inst->num_nodes; i++) for (int h=1; h<inst->num_nodes; h++) {
+        if (i == h) continue;
+
+        /* fetch last row position in current model (better: the new one)
+         * in CPLEX row == constraint */
+        int lastrow = CPXgetnumrows(env, lp);
+        sprintf(cname[0], "xy(%d)(%d)", i+1,h+1);
+
+        /* add the new constraint and change coeff from zero to 1 and 1-m */
+        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
+            print_error("wrong CPXnewrows [degree]");
+        }
+        if (CPXchgcoef(env, lp, lastrow, xxpos(i, h, inst->num_nodes), 2-inst->num_nodes)) {
+            print_error("wrong CPXchgcoef [degree]");
+        }
+        if (CPXchgcoef(env, lp, lastrow, ypos(i, h, inst->num_nodes), 1.0)) {
+            print_error("wrong CPXchgcoef [degree]");
+        }
+    }
+
+
+    //node 1 out flow
+    rhs = 0;
+    sense = 'E';
+
+    for(int i=1; i<inst->num_nodes;i++)
+    {
+
+        sprintf(cname[0], "y1%d",i+1);
+        int lastrow = CPXgetnumrows(env, lp);
+        /* add the new constraint (with coefficent zero, null lhs) */
+        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
+            print_error("wrong CPXnewrows [degree]");
+        }
+
+        if (CPXchgcoef(env, lp, lastrow, ypos(0, i, inst->num_nodes), 1.0)) {
+            print_error("wrong CPXchgcoef [degree]");
+            }
+       
+        if (CPXchgcoef(env, lp, lastrow, xpos(0, i+1, inst->num_nodes), 1.0-inst->num_nodes)) {
+            print_error("wrong CPXchgcoef [degree]");        
+            }
+    }
+
+    //node 1 in flow
+    rhs = 0;
+    sense = 'E';
+
+    /* add the new constraint (with coefficent zero, null lhs) */
+    
+    for (int i=1; i<inst->num_nodes; i++) {
+
+        sprintf(cname[0], "y%d1",i+1);
+
+        int lastrow = CPXgetnumrows(env, lp);
+
+        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
+            print_error("wrong CPXnewrows [degree]");
+        }
+
+        if (CPXchgcoef(env, lp, lastrow, ypos(i, 0, inst->num_nodes), 1.0)) {
+            print_error("wrong CPXchgcoef [degree]");
+        }
+    }
+
+
+    //flow constraint
+    rhs = 1;
+    sense = 'E';
+    for (int j=1; j<inst->num_nodes; j++) {
+
+        int lastrow = CPXgetnumrows(env, lp);
+        sprintf(cname[0], "y(%d)", j+1);
+
+        /* add the new constraint (with coefficent zero, null lhs) */
+        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
+            print_error("wrong CPXnewrows [degree]");
+        }
+
+        /* and change the coefficent if node i is adiacent to h */
+        for (int i = 0; i<inst->num_nodes; i++) {
+            /* the graph is complete so we only skip self loops */
+            if (i == j) continue;
+
+            /* change the coefficent from 0 to 1.0 */
+            if (CPXchgcoef(env, lp, lastrow, ypos(i, j, inst->num_nodes), 1.0)) {
+                print_error("wrong CPXchgcoef [degree]");
+            }
+        }
+
+        /* and change the coefficent if node i is adiacent to h */
+        for (int h = 0; h<inst->num_nodes; h++) {
+            /* the graph is complete so we only skip self loops */
+            if (h == j) continue;
+
+            /* change the coefficent from 0 to 1.0 */
+            if (CPXchgcoef(env, lp, lastrow, ypos(j, h, inst->num_nodes), -1.0)) {
+                print_error("wrong CPXchgcoef [degree]");
+            }
+        }
+    }
+}
+
 
 void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, solution sol) {
     int* visited = (int*) calloc(sol->num_edges, sizeof(int));

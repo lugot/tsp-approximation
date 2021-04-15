@@ -252,6 +252,9 @@ void print_solution(solution sol, int print_data) {
 		case ASYMMETRIC_GG:
 			printf("asymmetric, gg subtour elimination\n");
 			break;
+		case ASYMMETRIC_PROF_GG:
+			printf("asymmetric, gg subtour elimination\n");
+			break;
 		default:
 			printf("\n");
 			break;
@@ -348,3 +351,7 @@ void plot_solutions_graphviz(solution* sols, int num_sols) {
 	fclose(fp);
 	free(filename);
 }
+
+
+
+
