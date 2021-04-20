@@ -37,6 +37,12 @@ enum sections section_enumerator(char* section_name);
 enum instance_types instance_type_enumerator(char* section_param);
 enum weight_types weight_type_enumerator(char* section_param);
 
+run_options create_options() {
+    run_options options = (run_options)calloc(1, sizeof(struct run_options_t));
+
+    return options;
+}
+
 void print_usage() {
     printf("Usage: ./<name_executable> [options]\n");
     printf("Options:\n");
@@ -56,12 +62,6 @@ void parse_command_line(int argc, char** argv, cplex_params params,
                         run_options options) {
     assert(params != NULL);
     assert(options != NULL);
-
-    /* set defaults for params */
-    params->num_threads = -1;
-    params->timelimit = CPX_INFBOUND;
-    params->available_memory = 4096;
-    params->cost = REAL;
 
     static struct option long_options[] = {
         {"verbose", no_argument, NULL, 'v'},
@@ -87,7 +87,7 @@ void parse_command_line(int argc, char** argv, cplex_params params,
             case 'm':
                 options->model_name =
                     (char*)calloc(strlen(optarg), sizeof(char));
-                snprintf(options->model_name, strlen(optarg), "%s", optarg);
+                snprintf(options->model_name, 1 + strlen(optarg), "%s", optarg);
                 break;
 
             case 'b':
@@ -130,7 +130,7 @@ instance parse_input_file(char* model_name, char* file_extension,
            "dont know what to parse, wrong execution mode");
 
     inst->model_name = (char*)calloc(strlen(model_name), sizeof(char));
-    snprintf(inst->model_name, strlen(model_name), "%s", model_name);
+    snprintf(inst->model_name, 1+strlen(model_name), "%s", model_name);
 
     inst->model_folder = folder;
 
@@ -138,20 +138,20 @@ instance parse_input_file(char* model_name, char* file_extension,
 
     /* build filename depending on folder, model name and extention (tour or
      * tsp) */
-    char* filename;
-    filename = (char*)calloc(100, sizeof(char));
+    char* fname;
+    fname = (char*)calloc(100, sizeof(char));
     if (folder == TSPLIB)
-        snprintf(filename, 17 + 2 * strlen(model_name), "../data_tsplib/%s/%s.",
+        snprintf(fname, sizeof(fname), "../data_tsplib/%s/%s.",
                  inst->model_name, inst->model_name);
     if (folder == GENERATED)
-        snprintf(filename, 17 + 2 * strlen(model_name),
-                 "../data_generated/%s/%s.", inst->model_name,
-                 inst->model_name);
-    snprintf(filename + strlen(filename), strlen(file_extension), "%s",
+        snprintf(fname, 17 + 2 * strlen(model_name), "../data_generated/%s/%s.",
+                 inst->model_name, inst->model_name);
+    snprintf(fname + strlen(fname), strlen(file_extension), "%s",
              file_extension);
 
     FILE* fp;
-    fp = fopen(filename, "r");
+    fp = fopen(fname, "r");
+    printf("filename: %s\n", fname);
     assert(fp != NULL && "file not found while parsing");
 
     char* line;
@@ -317,7 +317,7 @@ instance parse_input_file(char* model_name, char* file_extension,
     }
     free(line);
     fclose(fp);
-    free(filename);
+    free(fname);
 
     return inst;
 }

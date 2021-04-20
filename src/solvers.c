@@ -163,7 +163,8 @@ void get_symmsol(double* xstar, int nedges, edge* edges, int* link) {
         for (int j = i + 1; j < nedges; j++) {
             if (xstar[xpos(i, j, nedges)] > 0.5) {
                 /* link is mandatory, edges is optional */
-                if (edges != NULL) edges[k++] = (edge){i, j};
+                if (edges != NULL) edges[k] = (edge){i, j};
+                k++;
 
                 /* actually a shifted linked list */
                 if (!reachable(link, i, j) && !reachable(link, j, i))
@@ -189,7 +190,8 @@ void get_asymmsol(double* xstar, int nedges, edge* edges, int* link) {
         for (int j = 0; j < nedges; j++) {
             if (xstar[xxpos(i, j, nedges)] > 0.5) {
                 /* link is mandatory, edges is optional */
-                if (edges != NULL) edges[k++] = (edge){i, j};
+                if (edges != NULL) edges[k] = (edge){i, j};
+                k++;
 
                 /* actually a shifted linked list */
                 if (!reachable(link, i, j)) swap(&link[i], &link[j]);

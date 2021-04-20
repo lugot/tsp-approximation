@@ -8,6 +8,8 @@ typedef struct run_options_t {
     int battery_test;
 } * run_options;
 
+run_options create_options();
+
 void parse_command_line(int argc, char** argv, cplex_params params,
                         run_options options);
 instance parse_input_file(char* model_name, char* file_extension,

@@ -6,6 +6,19 @@
 #include "../include/string.h"
 #include "../include/utils.h"
 
+cplex_params create_params() {
+    cplex_params params =
+        (cplex_params)calloc(1, sizeof(struct cplex_params_t));
+
+    /* set defaults for params */
+    params->num_threads = -1;
+    params->timelimit = CPX_INFBOUND;
+    params->available_memory = 4096;
+    params->cost = REAL;
+
+    return params;
+}
+
 instance create_empty_instance() {
     instance inst = (instance)calloc(1, sizeof(struct instance_t));
     inst->params = (cplex_params)calloc(1, sizeof(struct cplex_params_t));
@@ -182,8 +195,7 @@ void print_instance(instance inst, int print_data) {
                     column_width = max(column_width,
                                        1 + (int)log10(inst->adjmatrix[i][j]));
                 }
-            column_width =
-                2 + max(column_width, 1 + (int)log10(nnodes));
+            column_width = 2 + max(column_width, 1 + (int)log10(nnodes));
 
             /* figures.ab so max 1 decimal figures */
             char* buf = (char*)calloc(column_width, sizeof(char));
@@ -209,8 +221,7 @@ void print_instance(instance inst, int print_data) {
                 column_width =
                     max(column_width, 1 + (int)log10(inst->nodes[i].y));
             }
-            column_width =
-                2 + max(column_width, 1 + (int)log10(nnodes));
+            column_width = 2 + max(column_width, 1 + (int)log10(nnodes));
 
             /* figures.ab so max 1 decimal figures */
             char* buf = (char*)calloc(column_width, sizeof(char));

@@ -9,9 +9,8 @@
 #include "../include/utils.h"
 
 int main(int argc, char** argv) {
-    cplex_params params =
-        (cplex_params)calloc(1, sizeof(struct cplex_params_t));
-    run_options options = (run_options)calloc(1, sizeof(struct run_options_t));
+    cplex_params params = create_params();
+    run_options options = create_options();
     parse_command_line(argc, argv, params, options);
 
     if (options->model_name != NULL) {
@@ -43,12 +42,14 @@ int main(int argc, char** argv) {
         generate_random_instances(options->battery_test, num_nodes, 20.0);
 
     for (int i = 0; i < options->battery_test; i++) {
+        printf("battery %d:\n", i+1);
+
         instance inst = insts[i];
         add_params(inst, params);
 
         for (int j = 0; j < 4; j++) {
             char* model_type_str = model_type_tostring(tests[j]);
-            printf("solving %s on instance %s\n", model_type_str,
+            printf("\tsolving %s on instance %s\n", model_type_str,
                    inst->model_name);
             free(model_type_str);
 

@@ -88,6 +88,9 @@ typedef struct solution_t {
 	double solve_time;
 } *solution;
 
+/* cplex param manipulators */
+cplex_params create_params();
+
 /* instance manipulators */
 instance create_empty_instance();
 instance create_instance(cplex_params params);
