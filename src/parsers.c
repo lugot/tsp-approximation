@@ -141,7 +141,7 @@ instance parse_input_file(char* model_name, char* file_extension,
     char* fname;
     fname = (char*)calloc(100, sizeof(char));
     if (folder == TSPLIB)
-        snprintf(fname, sizeof(fname), "../data_tsplib/%s/%s.",
+        snprintf(fname, strlen(fname), "../data_tsplib/%s/%s.",
                  inst->model_name, inst->model_name);
     if (folder == GENERATED)
         snprintf(fname, 17 + 2 * strlen(model_name), "../data_generated/%s/%s.",

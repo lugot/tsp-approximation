@@ -108,7 +108,7 @@ void add_symm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {
 
     /* add a single binary variables x(i,j) for i < j at the time */
     int nnodes = inst->nnodes;
-    for (int i = 0; i < nnodes; i++)
+    for (int i = 0; i < nnodes; i++) {
         for (int j = i + 1; j < nnodes; j++) {
             /* write name of 1-indexed variable insede CPLEX
              * compute cost of var as distance x(i,j) */
@@ -123,6 +123,7 @@ void add_symm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {
                 print_error("wrong position for x var.s");
             }
         }
+    }
 
     free(cname[0]);
     free(cname);

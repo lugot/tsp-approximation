@@ -53,11 +53,11 @@ instance generate_random_instance(int id, int nnodes, int box_size) {
     char* buf;
     buf = (char*)calloc(100, sizeof(char));
 
-    snprintf(buf, strlen(buf), "random%d", id);
+    snprintf(buf, 7 + (int)log10(id), "random%d", id);
     inst->model_name = (char*)calloc(strlen(buf), sizeof(char));
     snprintf(inst->model_name, strlen(buf), "%s", buf);
 
-    snprintf(buf, strlen(buf), "random generated with id %d", id);
+    snprintf(buf, 7 + (int)log10(id), "random generated with id %d", id);
     inst->model_comment = (char*)calloc(strlen(buf), sizeof(char));
     snprintf(inst->model_comment, strlen(buf), "%s", buf);
 
@@ -75,6 +75,8 @@ instance generate_random_instance(int id, int nnodes, int box_size) {
          */
     }
 
+    free(buf);
+
     return inst;
 }
 
@@ -83,12 +85,11 @@ instance* generate_random_instances(int ninstances, int nnodes, int box_size) {
 
     // TODO(lugot): do it better
     srand(time(NULL));
-    unsigned int seedp;
+    unsigned int seedp = 0;
 
     for (int i = 0; i < ninstances; i++) {
         /* between 0 and RAND_MAX (2^31 or smht here) */
-        int rand_id = rand_r(&seedp);
-        insts[i] = generate_random_instance(rand_id, nnodes, box_size);
+        insts[i] = generate_random_instance(rand_r(&seedp), nnodes, box_size);
     }
 
     return insts;
