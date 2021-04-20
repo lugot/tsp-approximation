@@ -1,22 +1,24 @@
-#include "union_find.h"
-#include "utils.h"
+#include "../include/union_find.h"
+
 #include <stdlib.h>
 #include <string.h>
 
-union_find uf_create(int N) {
-    union_find uf = (union_find) calloc(1, sizeof(struct union_find_t));
+#include "../include/utils.h"
 
-    uf->p = (int*) calloc(N, sizeof(int));
-    uf->rank = (int*) calloc(N, sizeof(int));
-    uf->size_of_set = (int*) calloc(N, sizeof(int));
-    uf->next= (int*) calloc(N, sizeof(int));
+union_find uf_create(int N) {
+    union_find uf = (union_find)calloc(1, sizeof(struct union_find_t));
+
+    uf->p = (int*)calloc(N, sizeof(int));
+    uf->rank = (int*)calloc(N, sizeof(int));
+    uf->size_of_set = (int*)calloc(N, sizeof(int));
+    uf->next = (int*)calloc(N, sizeof(int));
 
     /* initialize data structure */
-    for (int i=0; i<N; i++) uf->p[i] = i;
+    for (int i = 0; i < N; i++) uf->p[i] = i;
     /* rank already initialized by calloc */
     /*memset(uf->size_of_set, 1, N*sizeof(int));*/
-    for (int i=0; i<N; i++) uf->size_of_set[i] = 1;
-    for (int i=0; i<N; i++) uf->next[i] = i;
+    for (int i = 0; i < N; i++) uf->size_of_set[i] = 1;
+    for (int i = 0; i < N; i++) uf->next[i] = i;
 
     uf->num_sets = N;
 

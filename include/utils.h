@@ -3,18 +3,18 @@
 
 #include "tsp.h"
 
-int xpos(int i, int j, int num_nodes);
-int xxpos(int i, int j, int num_nodes);
-int upos(int i, int num_nodes);
-int ypos(int i, int j, int num_nodes);
+int xpos(int i, int j, int nnodes);
+int xxpos(int i, int j, int nnodes);
+int upos(int i, int nnodes);
+int ypos(int i, int j, int nnodes);
 
 double zstar(instance inst, solution sol);
 
 double dist(int i, int j, instance inst);
 double compute_dist(instance inst);
 
-int reachable(solution sol, int i, int j);
-int visitable(solution sol);
+int reachable(int* link, int i, int j);
+int visitable(int* link, int nnodes);
 
 char* model_type_tostring(enum model_types model_type);
 

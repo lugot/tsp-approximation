@@ -53,12 +53,12 @@ typedef struct instance_t {
 
 	/* data */
 	enum weight_types weight_type;
-	int num_nodes;
+	int nnodes;
 	node* nodes;
 	double** adjmatrix;
 
 	/* solutions */
-	int num_solutions;
+	int nsols;
 	struct solution_t** sols;
 }
 *instance;
@@ -66,20 +66,22 @@ typedef struct instance_t {
 
 enum model_types {
 	OPTIMAL_TOUR,
-	SYMMETRIC,
-	ASYMMETRIC_MTZ,
-	ASYMMETRIC_GG,
-	SYMMETRIC_BENDERS,
-	SYMMETRIC_BENDERS_CALLBACK
+	NOSEC,
+	MTZ_STATIC,
+	MTZ_LAZY,
+	GG_STATIC,
+	GG_LAZY,
+	BENDERS,
+	BENDERS_CALLBACK
 };
 typedef struct solution_t {
 	struct instance_t* inst;
 	enum model_types model_type;
 
 	double zstar;
-	int num_edges;
+	int nedges;
 	edge* edges;
-	int* parent;
+	int* link;
 
 	double distance_time;
 	double build_time;
