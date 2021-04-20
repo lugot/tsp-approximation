@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
         add_params(inst, params);
 
         print_instance(inst, 1);
-        solution sol = TSPopt(inst, BENDERS_CALLBACK);
+        solution sol = TSPopt(inst, GGLIT_STATIC);
         print_solution(sol, 1);
         plot_solution_graphviz(sol);
 
@@ -32,12 +32,12 @@ int main(int argc, char** argv) {
     options->battery_test = maxi(1, options->battery_test);
     printf("generating %d instances\n", options->battery_test);
 
+    int nmodels = 6;
     enum model_types tests[] = {
-        MTZ_STATIC, MTZ_LAZY, GG_LAZY,
-        BENDERS,  //   SYMMETRIC_BENDERS_CALLBACK,*/
+        GGLIT_STATIC, GGFISH_STATIC, MTZ_STATIC, MTZ_LAZY, BENDERS, BENDERS_CALLBACK,
     };
 
-    int num_nodes = 20;
+    int num_nodes = 10;
     instance* insts =
         generate_random_instances(options->battery_test, num_nodes, 20.0);
 
@@ -47,13 +47,14 @@ int main(int argc, char** argv) {
         instance inst = insts[i];
         add_params(inst, params);
 
-        for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < nmodels; j++) {
             char* model_type_str = model_type_tostring(tests[j]);
-            printf("\tsolving %s on instance %s\n", model_type_str,
+            printf("\tsolving %s on instance %s: ", model_type_str,
                    inst->model_name);
             free(model_type_str);
 
-            TSPopt(inst, tests[j]);
+            solution sol = TSPopt(inst, tests[j]);
+            printf("%lf\n", sol->zstar);
         }
     }
     save_results(insts, options->battery_test);

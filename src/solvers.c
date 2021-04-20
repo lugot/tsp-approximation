@@ -13,6 +13,8 @@
 #include "../include/union_find.h"
 #include "../include/utils.h"
 
+void assert_correctness(solution sol);
+
 solution TSPopt(instance inst, enum model_types model_type) {
     assert(inst != NULL);
     assert(inst->params != NULL && "no CPLEX params found");
@@ -48,7 +50,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
     sol->build_time = build_tsp_model(env, lp, inst, model_type);
 
     /* add callback if required */
-    if (model_type == BENDERS) {
+    if (model_type == BENDERS_CALLBACK) {
         CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
         if (CPXcallbacksetfunc(env, lp, contextid, add_BENDERS_sec_callback,
                                sol)) {
@@ -92,14 +94,12 @@ solution TSPopt(instance inst, enum model_types model_type) {
                 /* store the optimal solution found by CPLEX */
                 int num_cols = CPXgetnumcols(env, lp);
 
-                free(xstar);
-                xstar = (double*)calloc(num_cols, sizeof(double));
+                memset(xstar, '\0', num_cols * sizeof(double));
                 if (CPXgetx(env, lp, xstar, 0, num_cols - 1))
                     print_error("CPXgetx() error\n");
 
                 /* retrive the solution */
                 get_symmsol(xstar, nedges, sol->edges, sol->link);
-                free(xstar);
             }
 
             /* save the complete model */
@@ -120,7 +120,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
         case MTZ_STATIC:
         case MTZ_LAZY:
-        case GG_STATIC:
+        case GGLIT_STATIC:
+        case GGFISH_STATIC:
         case GG_LAZY:
             get_asymmsol(xstar, nedges, sol->edges, sol->link);
             break;
@@ -139,6 +140,10 @@ solution TSPopt(instance inst, enum model_types model_type) {
     /* retreive the min cost */
     CPXgetobjval(env, lp, &sol->zstar);
     /*sol->zstar = zstar(inst, sol);*/
+
+    /* assert single cycle */
+    /*print_solution(sol, 1);*/
+    assert_correctness(sol);
 
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
@@ -202,6 +207,16 @@ void get_asymmsol(double* xstar, int nedges, edge* edges, int* link) {
     assert(k == nedges && "not enought edges CPLEX solution");
 }
 
+void assert_correctness(solution sol) {
+    int visited = 0;
+    int act = 0;
+    do {
+        visited++;
+    } while ((act = sol->link[act]) != 0);
+
+    assert(visited == sol->nedges);
+}
+
 void save_results(instance* insts, int ninstances) {
     assert(insts != NULL);
     assert(insts[0] != NULL);
@@ -251,6 +266,6 @@ void save_results(instance* insts, int ninstances) {
     /* generate the plot */
     // TODO(lugot): adjust timelimit
     system(
-        "python ../results/perprof.py -D , -T 3600 -S 2 -M 20 "
+        "python ../results/perprof.py -D , -T 3600 -S 2 -M 2 "
         "../results/results.csv ../results/pp.pdf -P 'model comparisons'");
 }

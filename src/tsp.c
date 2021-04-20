@@ -51,15 +51,16 @@ instance generate_random_instance(int id, int nnodes, int box_size) {
     srand(id);
 
     char* buf;
-    buf = (char*)calloc(100, sizeof(char));
+    int bufsize = 100;
+    buf = (char*)calloc(bufsize, sizeof(char));
 
-    snprintf(buf, 7 + (int)log10(id), "random%d", id);
+    snprintf(buf, bufsize, "random%d", id);
     inst->model_name = (char*)calloc(strlen(buf), sizeof(char));
-    snprintf(inst->model_name, strlen(buf), "%s", buf);
+    snprintf(inst->model_name, bufsize, "%s", buf);
 
-    snprintf(buf, 7 + (int)log10(id), "random generated with id %d", id);
-    inst->model_comment = (char*)calloc(strlen(buf), sizeof(char));
-    snprintf(inst->model_comment, strlen(buf), "%s", buf);
+    snprintf(buf, bufsize, "random generated with id %d", id);
+    inst->model_comment = (char*)calloc(1 + strlen(buf), sizeof(char));
+    snprintf(inst->model_comment, bufsize, "%s", buf);
 
     inst->weight_type = ATT;
     inst->nnodes = nnodes;
@@ -99,12 +100,13 @@ instance* generate_random_instances(int ninstances, int nnodes, int box_size) {
 instance clone_instance(instance inst) {
     instance newone = (instance)calloc(1, sizeof(struct instance_t));
 
-    newone->model_name = (char*)calloc(strlen(inst->model_name), sizeof(char));
-    snprintf(newone->model_name, strlen(inst->model_name), "%s",
+    newone->model_name =
+        (char*)calloc(1 + strlen(inst->model_name), sizeof(char));
+    snprintf(newone->model_name, 1 + strlen(inst->model_name), "%s",
              inst->model_name);
     newone->model_comment =
-        (char*)calloc(strlen(inst->model_comment), sizeof(char));
-    snprintf(newone->model_comment, strlen(inst->model_comment), "%s",
+        (char*)calloc(1 + strlen(inst->model_comment), sizeof(char));
+    snprintf(newone->model_comment, 1 + strlen(inst->model_comment), "%s",
              inst->model_comment);
 
     newone->params = (cplex_params)calloc(1, sizeof(struct cplex_params_t));
@@ -129,16 +131,18 @@ void free_instance(instance inst) {
 
 void save_instance(instance inst) {
     char* filename;
-    filename = (char*)calloc(100, sizeof(char));
-    snprintf(filename, 23 + 2 * strlen(inst->model_name),
-             "../data_generated/%s/%s.tsp", inst->model_name, inst->model_name);
+    int bufsize = 100;
+    filename = (char*)calloc(bufsize, sizeof(char));
+    snprintf(filename, bufsize, "../data_generated/%s/%s.tsp", inst->model_name,
+             inst->model_name);
 
     free(filename);
 }
 
 void add_solution(instance inst, solution sol) {
     int nsols = inst->nsols;
-    inst->sols = (solution*)realloc(inst->sols, nsols + 1);
+    inst->sols =
+        (solution*)realloc(inst->sols, (nsols + 1) * sizeof(struct solution_t));
     inst->sols[nsols] = sol;
     sol->inst = inst;
 
@@ -199,15 +203,16 @@ void print_instance(instance inst, int print_data) {
             column_width = 2 + max(column_width, 1 + (int)log10(nnodes));
 
             /* figures.ab so max 1 decimal figures */
-            char* buf = (char*)calloc(column_width, sizeof(char));
+            char* buf = (char*)calloc(1 + column_width, sizeof(char));
 
             for (int i = 0; i < nnodes; i++) {
-                snprintf(buf, strlen(buf), "%d | ", i + 1);
-                printf("%*s", column_width + 1, buf);
+                snprintf(buf, 1 + column_width, "%d | ", i + 1);
+                printf("%*s", 1 + column_width, buf);
 
                 for (int j = 0; j <= i; j++) {
-                    snprintf(buf, strlen(buf), "%.1lf ", inst->adjmatrix[i][j]);
-                    printf("%*s", column_width + 1, buf);
+                    snprintf(buf, 1 + column_width, "%.1lf ",
+                             inst->adjmatrix[i][j]);
+                    printf("%*s", 1 + column_width, buf);
                 }
                 printf("\n");
             }
@@ -225,16 +230,16 @@ void print_instance(instance inst, int print_data) {
             column_width = 2 + max(column_width, 1 + (int)log10(nnodes));
 
             /* figures.ab so max 1 decimal figures */
-            char* buf = (char*)calloc(column_width, sizeof(char));
+            char* buf = (char*)calloc(1 + column_width, sizeof(char));
 
             for (int i = 0; i < nnodes; i++) {
-                snprintf(buf, strlen(buf), "%d | ", i + 1);
+                snprintf(buf, 1 + column_width, "%d | ", i + 1);
                 printf("%*s", column_width + 1, buf);
 
-                snprintf(buf, strlen(buf), "%.1lf ", inst->nodes[i].x);
+                snprintf(buf, 1 + column_width, "%.1lf ", inst->nodes[i].x);
                 printf("%*s", column_width + 1, buf);
 
-                snprintf(buf, strlen(buf), "%.1lf ", inst->nodes[i].y);
+                snprintf(buf, 1 + column_width, "%.1lf ", inst->nodes[i].y);
                 printf("%*s\n", column_width + 1, buf);
             }
             free(buf);
@@ -286,8 +291,11 @@ void print_solution(solution sol, int print_data) {
         case MTZ_LAZY:
             printf("asymmetric, mtz subtour elimination, lazy constraints\n");
             break;
-        case GG_STATIC:
-            printf("asymmetric, gg subtour elimination\n");
+        case GGLIT_STATIC:
+            printf("asymmetric, gg literature subtour elimination\n");
+            break;
+        case GGFISH_STATIC:
+            printf("asymmetric, gg prof formulation subtour elimination\n");
             break;
         case GG_LAZY:
             printf("asymmetric, gg subtour elimination, lazy constraints\n");
@@ -308,29 +316,29 @@ void print_solution(solution sol, int print_data) {
             char* buf = (char*)calloc(column_width, sizeof(char));
 
             for (int i = 0; i < nedges; i++) {
-                snprintf(buf, strlen(buf), "%d | ", i + 1);
+                snprintf(buf, column_width, "%d | ", i + 1);
                 printf("%*s", column_width + 2, buf);
 
-                snprintf(buf, strlen(buf), "%d ", sol->edges[i].i + 1);
+                snprintf(buf, column_width, "%d ", sol->edges[i].i + 1);
                 printf("%*s", column_width, buf);
 
-                snprintf(buf, strlen(buf), "%d ", sol->edges[i].j + 1);
+                snprintf(buf, column_width, "%d ", sol->edges[i].j + 1);
                 printf("%*s\n", column_width, buf);
             }
             free(buf);
         }
         printf("- parent:\n");
         if (sol->link != NULL) {
-            int column_width = 1 + (int)log10(nedges);
+            int column_width = 2 + (int)log10(nedges);
             char* buf = (char*)calloc(column_width, sizeof(char));
 
             for (int i = 0; i < nedges; i++) {
-                snprintf(buf, strlen(buf), "%d", i + 1);
+                snprintf(buf, column_width, "%d", i + 1);
                 printf("%*s", column_width + 1, buf);
             }
             printf("\n");
             for (int i = 0; i < nedges; i++) {
-                snprintf(buf, strlen(buf), "%d", sol->link[i] + 1);
+                snprintf(buf, column_width, "%d", sol->link[i] + 1);
                 printf("%*s", column_width + 1, buf);
             }
             printf("\n");
@@ -360,19 +368,18 @@ void plot_solutions_graphviz(solution* sols, int num_sols) {
         max_coord = max(max_coord, fabs(inst->nodes[i].y));
     }
 
-    char* filename;
-    filename = (char*)calloc(100, sizeof(char));
+    char* fname;
+    int bufsize = 100;
+    fname = (char*)calloc(bufsize, sizeof(char));
     if (inst->model_folder == TSPLIB)
-        snprintf(filename, 20 + 2 * strlen(inst->model_name),
-                 "../data_tsplib/%s/%s.dot", inst->model_name,
+        snprintf(fname, bufsize, "../data_tsplib/%s/%s.dot", inst->model_name,
                  inst->model_name);
     if (inst->model_folder == GENERATED)
-        snprintf(filename, 23 + 2 * strlen(inst->model_name),
-                 "../data_generated/%s/%s.dot", inst->model_name,
-                 inst->model_name);
+        snprintf(fname, bufsize, "../data_generated/%s/%s.dot",
+                 inst->model_name, inst->model_name);
 
     FILE* fp;
-    fp = fopen(filename, "w");
+    fp = fopen(fname, "w");
     assert(fp != NULL && "file not found while saving .dot");
 
     fprintf(fp, "graph %s {\n", inst->model_name);
@@ -399,5 +406,5 @@ void plot_solutions_graphviz(solution* sols, int num_sols) {
     fprintf(fp, "}");
 
     fclose(fp);
-    free(filename);
+    free(fname);
 }

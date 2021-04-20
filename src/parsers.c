@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "../include/globals.h"
 #include "../include/tsp.h"
@@ -83,37 +84,29 @@ void parse_command_line(int argc, char** argv, cplex_params params,
             case 'v':
                 VERBOSE = 1;
                 break;
-
             case 'm':
                 options->model_name =
-                    (char*)calloc(strlen(optarg), sizeof(char));
+                    (char*)calloc(1 + strlen(optarg), sizeof(char));
                 snprintf(options->model_name, 1 + strlen(optarg), "%s", optarg);
                 break;
-
             case 'b':
                 options->battery_test = atoi(optarg);
                 break;
-
             case 'l':
                 params->timelimit = atof(optarg);
                 break;
-
             case 's':
                 params->randomseed = abs(atoi(optarg));
                 break;
-
             case 'T':
                 params->num_threads = atoi(optarg);
                 break;
-
             case 'M':
                 params->available_memory = atoi(optarg);
                 break;
-
             case 'c':
                 params->cost = INTEGER;
                 break;
-
             case '?':
                 print_usage();
                 assert(opt != '?' && "unknown option");
@@ -129,8 +122,8 @@ instance parse_input_file(char* model_name, char* file_extension,
     assert(model_name != NULL &&
            "dont know what to parse, wrong execution mode");
 
-    inst->model_name = (char*)calloc(strlen(model_name), sizeof(char));
-    snprintf(inst->model_name, 1+strlen(model_name), "%s", model_name);
+    inst->model_name = (char*)calloc(1 + strlen(model_name), sizeof(char));
+    snprintf(inst->model_name, 1 + strlen(model_name), "%s", model_name);
 
     inst->model_folder = folder;
 
@@ -139,14 +132,15 @@ instance parse_input_file(char* model_name, char* file_extension,
     /* build filename depending on folder, model name and extention (tour or
      * tsp) */
     char* fname;
-    fname = (char*)calloc(100, sizeof(char));
+    int bufsize = 100;
+    fname = (char*)calloc(bufsize, sizeof(char));
     if (folder == TSPLIB)
-        snprintf(fname, strlen(fname), "../data_tsplib/%s/%s.",
-                 inst->model_name, inst->model_name);
+        snprintf(fname, bufsize, "../data_tsplib/%s/%s.", inst->model_name,
+                 inst->model_name);
     if (folder == GENERATED)
-        snprintf(fname, 17 + 2 * strlen(model_name), "../data_generated/%s/%s.",
-                 inst->model_name, inst->model_name);
-    snprintf(fname + strlen(fname), strlen(file_extension), "%s",
+        snprintf(fname, bufsize, "../data_generated/%s/%s.", inst->model_name,
+                 inst->model_name);
+    snprintf(fname + strlen(fname), bufsize - strlen(fname), "%s",
              file_extension);
 
     FILE* fp;
@@ -154,17 +148,18 @@ instance parse_input_file(char* model_name, char* file_extension,
     printf("filename: %s\n", fname);
     assert(fp != NULL && "file not found while parsing");
 
-    char* line;
+    char* line = "";
     char *section_name, *section_param;
     size_t len = 0;
-    char *saveptr1, *saveptr2;
+    char *saveptr1 = "";
 
     while ((getline(&line, &len, fp) != -1)) {
         if (strlen(line) <= 1) continue;
         line[strlen(line) - 1] = 0; /* get rid of linefeed */
 
-        section_name = strtok_r(line, " :", &saveptr1);
-        section_param = strtok_r(NULL, " :", &saveptr2);
+        section_name = strtok_r(line, " : ", &saveptr1);
+        strtok_r(NULL, " ", &saveptr1);
+        section_param = strtok_r(NULL, ":", &saveptr1);
 
         if (VERBOSE)
             printf("[Verbose] parsing |%s| on |%s|\n", section_name,
@@ -192,8 +187,8 @@ instance parse_input_file(char* model_name, char* file_extension,
 
             case COMMENT:
                 inst->model_comment =
-                    (char*)malloc(strlen(section_param) * sizeof(char));
-                snprintf(inst->model_comment, strlen(section_param), "%s",
+                    (char*)calloc(1 + strlen(section_param), sizeof(char));
+                snprintf(inst->model_comment, 1 + strlen(section_param), "%s",
                          section_param);
                 break;
 
@@ -221,14 +216,14 @@ instance parse_input_file(char* model_name, char* file_extension,
                 int i;
                 for (i = 1; i <= nnodes; i++) {
                     /* reached eof */
-                    if (getline(&line, &len, fp) != -1) break;
+                    if (getline(&line, &len, fp) == -1) break;
 
                     int node_idx;
                     double x, y;
 
-                    node_idx = atoi(strtok_r(line, " ", &saveptr2));
-                    x = atof(strtok_r(NULL, " ", &saveptr2));
-                    y = atof(strtok_r(NULL, " ", &saveptr2));
+                    node_idx = atoi(strtok_r(line, " ", &saveptr1));
+                    x = atof(strtok_r(NULL, " ", &saveptr1));
+                    y = atof(strtok_r(NULL, " ", &saveptr1));
 
                     assert(node_idx == i &&
                            "incoherent node indexing in NODE_COORD or "
@@ -259,7 +254,7 @@ instance parse_input_file(char* model_name, char* file_extension,
 
                 int i;
                 for (i = 1; i <= inst->nnodes - 1; i++) {
-                    if (getline(&line, &len, fp) != -1) break;
+                    if (getline(&line, &len, fp) == -1) break;
                     int act = atoi(line) - 1;
 
                     sol->link[prev] = act;
@@ -284,11 +279,11 @@ instance parse_input_file(char* model_name, char* file_extension,
                 int k = 0;
                 while (getline(&line, &len, fp) && strcmp(line, "EOF\n")) {
                     char* weight_str;
-                    weight_str = strtok_r(line, " ", &saveptr2);
+                    weight_str = strtok_r(line, " ", &saveptr1);
 
                     weights[k++] = atof(weight_str);
 
-                    while ((weight_str = strtok_r(NULL, " ", &saveptr2)) !=
+                    while ((weight_str = strtok_r(NULL, " ", &saveptr1)) !=
                            NULL) {
                         weights[k++] = atof(weight_str);
                     }

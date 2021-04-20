@@ -193,32 +193,36 @@ void print_error(const char* err, ...) {
 }
 
 char* model_type_tostring(enum model_types model_type) {
-    char* ans = (char*)calloc(20, sizeof(char));
+    int bufsize = 100;
+    char* ans = (char*)calloc(bufsize, sizeof(char));
 
     switch (model_type) {
         case NOSEC:
-            snprintf(ans, 1 + strlen("symmetric"), "symmetric");
+            snprintf(ans, bufsize, "symmetric");
             break;
         case OPTIMAL_TOUR:
-            snprintf(ans, 1 + strlen("optimal_tour"), "optimal_tour");
+            snprintf(ans, bufsize, "optimal_tour");
             break;
         case MTZ_STATIC:
-            snprintf(ans, 1 + strlen("mtz_static"), "mtz_static");
+            snprintf(ans, bufsize, "mtz_static");
             break;
         case MTZ_LAZY:
-            snprintf(ans, 1 + strlen("mtz_lazy"), "mtz_lazy");
+            snprintf(ans, bufsize, "mtz_lazy");
             break;
-        case GG_STATIC:
-            snprintf(ans, 1 + strlen("gg_static"), "gg_static");
+        case GGLIT_STATIC:
+            snprintf(ans, bufsize, "gglit_static");
+            break;
+        case GGFISH_STATIC:
+            snprintf(ans, bufsize, "ggfish_static");
             break;
         case GG_LAZY:
-            snprintf(ans, 1 + strlen("gg_lazy"), "gg_lazy");
+            snprintf(ans, bufsize, "gg_lazy");
             break;
         case BENDERS:
-            snprintf(ans, 1 + strlen("benders"), "benders");
+            snprintf(ans, bufsize, "benders");
             break;
         case BENDERS_CALLBACK:
-            snprintf(ans, 1 + strlen("benders_callback"), "benders_callback");
+            snprintf(ans, bufsize, "benders_callback");
             break;
     }
 
