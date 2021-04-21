@@ -1111,7 +1111,7 @@ int CPXPUBLIC add_BENDERS_sec_callback_driver_concorde(
     solution sol = (solution)userhandle;
 
     if (contextid == CPX_CALLBACKCONTEXT_CANDIDATE)
-        return add_BENDERS_sec_callback_candidate_concorde(context, sol);
+        return add_BENDERS_sec_callback_candidate(context, sol);
     if (contextid == CPX_CALLBACKCONTEXT_RELAXATION)
         return add_BENDERS_sec_callback_relaxation_concorde(context, sol);
 
@@ -1119,7 +1119,7 @@ int CPXPUBLIC add_BENDERS_sec_callback_driver_concorde(
     return 1;
 }
 
-int CPXPUBLIC add_BENDERS_sec_callback_candidate_concorde(
+int CPXPUBLIC add_BENDERS_sec_callback_relaxation_concorde(
     CPXCALLBACKCONTEXTptr context, solution sol) {
     int nedges = sol->nedges;
 
@@ -1150,15 +1150,19 @@ int CPXPUBLIC add_BENDERS_sec_callback_candidate_concorde(
         printf("- incumbent: %lf\n", incumbent);
     }
 
+    // TODO(lugot): check and use randomness (use rand_r) and avoid this cut
+
     /* elist specify the vertices */
     int* elist = (int*)malloc(2 * ncols * sizeof(int));
     int loader = 0;
     for (int i = 0; i < nedges; i++) {
         for (int j = i + 1; j < nedges; j++) {
+            // TODO(lugot): skip nonzero
             elist[loader++] = i;
             elist[loader++] = j;
         }
     }
+    /* componets infos */
     int ncomps = 0;
     int* comps = (int*)malloc(nedges * sizeof(int));
     int* compscount = (int*)malloc(nedges * sizeof(int));
@@ -1166,6 +1170,9 @@ int CPXPUBLIC add_BENDERS_sec_callback_candidate_concorde(
                                  &compscount, &comps)) {
         print_error("CCcut_connect_components error");
     }
+
+    // TODO(lugot): use CC_cut_violated instad of this!
+    // TODO(lugot): do the callback
 
     int comps_idx = 0;
     for (int i = 0; i < ncomps; i++) {
@@ -1205,101 +1212,6 @@ int CPXPUBLIC add_BENDERS_sec_callback_candidate_concorde(
     if (VERBOSE) printf("[Verbose] num subtour BENDERS %d\n", ncomps);
 
     free(elist);
-
-    return 0;
-}
-
-int CPXPUBLIC add_BENDERS_sec_callback_relaxation_concorde(
-    CPXCALLBACKCONTEXTptr context, solution sol) {
-    int nedges = sol->nedges;
-
-    /* number of columns is n chooses 2 */
-    int ncols = nedges * (nedges - 1) / 2;
-
-    /* get xstar and ojbvar information */
-    double* xstar = (double*)calloc(ncols, sizeof(double));
-    double objval = CPX_INFBOUND;
-    if (CPXcallbackgetrelaxationpoint(context, xstar, 0, ncols - 1, &objval)) {
-        print_error("CPXcallbackgetrelaxationpoint error");
-    }
-
-    /* get node informations */
-    int mynode = -1;
-    int mythread = -1;
-    double zbest;
-    double incumbent = CPX_INFBOUND;
-    CPXcallbackgetinfoint(context, CPXCALLBACKINFO_NODECOUNT, &mynode);
-    CPXcallbackgetinfoint(context, CPXCALLBACKINFO_THREADID, &mythread);
-    CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &zbest);
-    CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &incumbent);
-    if (VERBOSE) {
-        printf("node information:\n");
-        printf("- node index: %d\n", mynode);
-        printf("- thread index: %d\n", mythread);
-        printf("- zbest: %lf\n", zbest);
-        printf("- incumbent: %lf\n", incumbent);
-    }
-
-    /* retreive sol and fill sol's internal parent vector */
-    int* visited = (int*)calloc(nedges, sizeof(int));
-    int* link = (int*)calloc(nedges, sizeof(int));
-    get_symmsol(xstar, nedges, NULL, link);
-    free(xstar);
-
-    int nsubtours = 0;
-    for (int i = 0; i < nedges; i++) {
-        /* i could be part of a subtour already visited */
-        if (visited[i]) continue;
-        nsubtours++;
-
-        /* compute the rhs: number of nodes in a subtour, unknown a priori
-         * TODO(lugot): simplify */
-        int* subtour = (int*)calloc(nedges, sizeof(int));
-        int subtour_size = 0;
-
-        /* travel the subtour */
-        int j = i;
-        while ((j = link[j]) != i) subtour[subtour_size++] = j;
-        subtour[subtour_size++] = i;
-
-        int nnz = 0;
-        int izero = 0;
-        double rhs = (double)subtour_size - 1;
-        char sense = 'L';
-        int* index = (int*)calloc(ncols, sizeof(int));
-        double* value = (double*)calloc(ncols, sizeof(double));
-        int purgeable = CPX_USECUT_FILTER;
-        /* global cut */
-        int local = 0;
-
-        /* travel the subtour by vector */
-        for (j = 0; j < subtour_size; j++)
-            for (int k = j + 1; k < subtour_size; k++) {
-                /* change the coefficent from 0 to 1.0 */
-                index[nnz] = xpos(subtour[j], subtour[k], nedges);
-                value[nnz++] = 1.0;
-            }
-
-        /* visit all the nodes in the set */
-        j = i;
-        while ((j = link[j]) != i) visited[j] = 1;
-
-        /* finally set the callback for rejecte the incumbent */
-        if (rhs != nedges - 1) {
-            if (CPXcallbackaddusercuts(context, 1, nnz, &rhs, &sense, &izero,
-                                       index, value, &purgeable, &local)) {
-                print_error("CPXcallbackaddusercuts() error");
-            }
-        }
-
-        free(index);
-        free(value);
-        free(subtour);
-    }
-    if (VERBOSE) printf("[Verbose] num subtour BENDERS %d\n", nsubtours);
-
-    free(visited);
-    free(link);
 
     return 0;
 }
