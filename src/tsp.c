@@ -55,7 +55,7 @@ instance generate_random_instance(int id, int nnodes, int box_size) {
     buf = (char*)calloc(bufsize, sizeof(char));
 
     snprintf(buf, bufsize, "random%d", id);
-    inst->model_name = (char*)calloc(strlen(buf), sizeof(char));
+    inst->model_name = (char*)calloc(1 + strlen(buf), sizeof(char));
     snprintf(inst->model_name, bufsize, "%s", buf);
 
     snprintf(buf, bufsize, "random generated with id %d", id);

@@ -51,9 +51,10 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
     /* add callback if required */
     if (model_type == BENDERS_CALLBACK) {
-        CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
-        if (CPXcallbacksetfunc(env, lp, contextid, add_BENDERS_sec_callback,
-                               sol)) {
+        CPXLONG contextid =
+            CPX_CALLBACKCONTEXT_CANDIDATE | CPX_CALLBACKCONTEXT_RELAXATION;
+        if (CPXcallbacksetfunc(env, lp, contextid,
+                               add_BENDERS_sec_callback_driver, sol)) {
             print_error("CPXcallbacksetfunc() error");
         }
     }
@@ -178,6 +179,12 @@ void get_symmsol(double* xstar, int nedges, edge* edges, int* link) {
         }
     }
 
+    for (int i=0; i<nedges; i++) printf("%d ", i+1);
+    printf("\n");
+    for (int i=0; i<nedges; i++) printf("%d ", 1+link[i]);
+    printf("\n");
+
+    printf("%d, %d\n", k, nedges);
     assert(k == nedges && "not enought edges CPLEX solution");
 }
 

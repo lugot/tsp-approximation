@@ -157,9 +157,20 @@ instance parse_input_file(char* model_name, char* file_extension,
         if (strlen(line) <= 1) continue;
         line[strlen(line) - 1] = 0; /* get rid of linefeed */
 
-        section_name = strtok_r(line, " : ", &saveptr1);
-        strtok_r(NULL, " ", &saveptr1);
-        section_param = strtok_r(NULL, ":", &saveptr1);
+        int colon = 0;
+        while (line[colon] != ':') colon++;
+        if (line[colon-1] == ' ') {
+            section_name = strtok_r(line, " : ", &saveptr1);
+            strtok_r(NULL, " ", &saveptr1);
+            section_param = strtok_r(NULL, "\n", &saveptr1);
+        }
+        else {
+            section_name = strtok_r(line, ": ", &saveptr1);
+            /*strtok_r(line, " ", &saveptr1);*/
+            // TODO(lugot): fix model comment!
+            section_param = strtok_r(NULL, " \n", &saveptr1);
+        }
+
 
         if (VERBOSE)
             printf("[Verbose] parsing |%s| on |%s|\n", section_name,
@@ -347,6 +358,7 @@ enum sections section_enumerator(char* section_name) {
     return UNHANDLED_SECTION;
 }
 enum instance_types instance_type_enumerator(char* section_param) {
+    printf("sectiona paramas%s\n", section_param);
     char* instance_types[] = {
         "TSP",
         "TOUR",
