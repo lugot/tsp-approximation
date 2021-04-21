@@ -11,5 +11,7 @@ void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, solution sol);
 int CPXPUBLIC add_BENDERS_sec_callback_driver(CPXCALLBACKCONTEXTptr context,
                                               CPXLONG contextid,
                                               void *userhandle);
+int CPXPUBLIC add_BENDERS_sec_callback_driver_concorde(
+    CPXCALLBACKCONTEXTptr context, CPXLONG contextid, void *userhandle);
 
 #endif /* _MODEL_BUILDER_H_ */

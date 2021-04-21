@@ -304,7 +304,10 @@ void print_solution(solution sol, int print_data) {
             printf("symmetric, benders loop method\n");
             break;
         case BENDERS_CALLBACK:
-            printf("symmetric, benders loop method w/ callback\n");
+            printf("symmetric, benders loop method with callback\n");
+            break;
+        case BENDERS_CALLBACK_CONCORDE:
+            printf("symmetric, benders loop method with concorde callback\n");
             break;
     }
     printf("- zstar: %lf\n", sol->zstar);

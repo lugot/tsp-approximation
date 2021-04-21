@@ -1,8 +1,10 @@
 #include <assert.h>
+#include <concorde.h>
 #include <cplex.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../include/globals.h"
 #include "../include/parsers.h"
 #include "../include/solvers.h"
 #include "../include/tsp.h"
@@ -28,6 +30,7 @@ int main(int argc, char** argv) {
         return EXIT_SUCCESS;
     }
 
+
     /* execute battery test */
     options->battery_test = maxi(1, options->battery_test);
     printf("generating %d instances\n", options->battery_test);
@@ -38,13 +41,15 @@ int main(int argc, char** argv) {
         /*GGFISH_STATIC,*/
         /*MTZ_STATIC,*/
         /*MTZ_LAZY,*/
-        BENDERS,
+        /*BENDERS,*/
         BENDERS_CALLBACK,
+        BENDERS_CALLBACK_CONCORDE,
     };
 
-    int num_nodes = 10;
+    int num_nodes = 40;
     instance* insts =
         generate_random_instances(options->battery_test, num_nodes, 20.0);
+    double zstar = 0.0;
 
     for (int i = 0; i < options->battery_test; i++) {
         printf("battery %d:\n", i + 1);
@@ -60,6 +65,9 @@ int main(int argc, char** argv) {
 
             solution sol = TSPopt(inst, tests[j]);
             printf("%lf\n", sol->zstar);
+
+            if (zstar == 0.0) zstar = sol->zstar;
+            assert(fabs(zstar - sol->zstar) < EPSILON);
         }
     }
     save_results(insts, options->battery_test);

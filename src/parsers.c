@@ -163,8 +163,7 @@ instance parse_input_file(char* model_name, char* file_extension,
             section_name = strtok_r(line, " : ", &saveptr1);
             strtok_r(NULL, " ", &saveptr1);
             section_param = strtok_r(NULL, "\n", &saveptr1);
-        }
-        else {
+        } else {
             section_name = strtok_r(line, ": ", &saveptr1);
             /*strtok_r(line, " ", &saveptr1);*/
             // TODO(lugot): fix model comment!

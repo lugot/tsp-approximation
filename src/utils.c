@@ -224,6 +224,9 @@ char* model_type_tostring(enum model_types model_type) {
         case BENDERS_CALLBACK:
             snprintf(ans, bufsize, "benders_callback");
             break;
+        case BENDERS_CALLBACK_CONCORDE:
+            snprintf(ans, bufsize, "benders_callback_concorde");
+            break;
     }
 
     return ans;

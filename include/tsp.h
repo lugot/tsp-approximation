@@ -73,7 +73,8 @@ enum model_types {
 	GGFISH_STATIC,
 	GG_LAZY,
 	BENDERS,
-	BENDERS_CALLBACK
+	BENDERS_CALLBACK,
+    BENDERS_CALLBACK_CONCORDE
 };
 typedef struct solution_t {
 	struct instance_t* inst;
