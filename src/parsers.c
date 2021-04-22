@@ -160,14 +160,14 @@ instance parse_input_file(char* model_name, char* file_extension,
         int colon = 0;
         while (line[colon] != ':') colon++;
         if (line[colon-1] == ' ') {
-            section_name = strtok_r(line, " : ", &saveptr1);
-            strtok_r(NULL, " ", &saveptr1);
-            section_param = strtok_r(NULL, "\n", &saveptr1);
+            section_name = strtok(line, " : ");
+            strtok(NULL, " ");
+            section_param = strtok(NULL, "\n");
         } else {
-            section_name = strtok_r(line, ": ", &saveptr1);
+            section_name = strtok(line, ": ");
             /*strtok_r(line, " ", &saveptr1);*/
             // TODO(lugot): fix model comment!
-            section_param = strtok_r(NULL, " \n", &saveptr1);
+            section_param = strtok(NULL, " \n");
         }
 
 
@@ -231,9 +231,9 @@ instance parse_input_file(char* model_name, char* file_extension,
                     int node_idx;
                     double x, y;
 
-                    node_idx = atoi(strtok_r(line, " ", &saveptr1));
-                    x = atof(strtok_r(NULL, " ", &saveptr1));
-                    y = atof(strtok_r(NULL, " ", &saveptr1));
+                    node_idx = atoi(strtok(line, " "));
+                    x = atof(strtok(NULL, " "));
+                    y = atof(strtok(NULL, " "));
 
                     assert(node_idx == i &&
                            "incoherent node indexing in NODE_COORD or "
@@ -289,11 +289,11 @@ instance parse_input_file(char* model_name, char* file_extension,
                 int k = 0;
                 while (getline(&line, &len, fp) && strcmp(line, "EOF\n")) {
                     char* weight_str;
-                    weight_str = strtok_r(line, " ", &saveptr1);
+                    weight_str = strtok(line, " ");
 
                     weights[k++] = atof(weight_str);
 
-                    while ((weight_str = strtok_r(NULL, " ", &saveptr1)) !=
+                    while ((weight_str = strtok(NULL, " ")) !=
                            NULL) {
                         weights[k++] = atof(weight_str);
                     }
