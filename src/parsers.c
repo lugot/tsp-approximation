@@ -1,12 +1,12 @@
 #include "../include/parsers.h"
 
 #include <assert.h>
+#include <errno.h>
 #include <float.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 #include "../include/globals.h"
 #include "../include/tsp.h"
@@ -151,33 +151,33 @@ instance parse_input_file(char* model_name, char* file_extension,
     char* line = "";
     char *section_name, *section_param;
     size_t len = 0;
-    char *saveptr1 = "";
+    char* saveptr = "";
 
     while ((getline(&line, &len, fp) != -1)) {
         if (strlen(line) <= 1) continue;
         line[strlen(line) - 1] = 0; /* get rid of linefeed */
 
-        int colon = 0;
-        while (line[colon] != ':' && colon < len) colon++;
-        if (colon == len) {
-            section_name = strtok(line, " : ");
+        int icolon = 0;
+        while (icolon < len && line[icolon] != ':') icolon++;
+        if (icolon == len) {
+            /* parsing NODE_COORD_SECTION or similar, no param */
+            section_name = line;
             section_param = NULL;
-        }
-        if (line[colon-1] == ' ') {
-            section_name = strtok(line, " : ");
-            strtok(NULL, " ");
-            section_param = strtok(NULL, "\n");
+        } else if (line[icolon - 1] == ' ') {
+            /* parsing att48-like tsp files */
+            section_name = strtok_r(line, " : ", &saveptr);
+            section_param = strtok_r(NULL, "\n", &saveptr);
+            section_param += 2;
         } else {
-            section_name = strtok(line, ": ");
-            /*strtok_r(line, " ", &saveptr1);*/
-            // TODO(lugot): fix model comment!
-            section_param = strtok(NULL, " \n");
+            /* parsing berlin52-like tsp files */
+            section_name = strtok_r(line, ": ", &saveptr);
+            section_param = strtok_r(NULL, "\n", &saveptr);
+            section_param += 1;
         }
-
 
         if (VERBOSE)
-            printf("[Verbose] parsing |%s| on |%s| %d \n", section_name,
-                   section_param, colon);
+            printf("[Verbose] parsing |%s| on |%s|, icolon: %d\n", section_name,
+                   section_param, icolon);
 
         /* retrive section and inject parameter */
         switch (section_enumerator(section_name)) {
@@ -235,9 +235,9 @@ instance parse_input_file(char* model_name, char* file_extension,
                     int node_idx;
                     double x, y;
 
-                    node_idx = atoi(strtok(line, " "));
-                    x = atof(strtok(NULL, " "));
-                    y = atof(strtok(NULL, " "));
+                    node_idx = atoi(strtok_r(line, " ", &saveptr));
+                    x = atof(strtok_r(NULL, " ", &saveptr));
+                    y = atof(strtok_r(NULL, " ", &saveptr));
 
                     assert(node_idx == i &&
                            "incoherent node indexing in NODE_COORD or "
@@ -293,11 +293,11 @@ instance parse_input_file(char* model_name, char* file_extension,
                 int k = 0;
                 while (getline(&line, &len, fp) && strcmp(line, "EOF\n")) {
                     char* weight_str;
-                    weight_str = strtok(line, " ");
+                    weight_str = strtok_r(line, " ", &saveptr);
 
                     weights[k++] = atof(weight_str);
 
-                    while ((weight_str = strtok(NULL, " ")) !=
+                    while ((weight_str = strtok_r(NULL, " ", &saveptr)) !=
                            NULL) {
                         weights[k++] = atof(weight_str);
                     }
