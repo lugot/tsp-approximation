@@ -158,7 +158,11 @@ instance parse_input_file(char* model_name, char* file_extension,
         line[strlen(line) - 1] = 0; /* get rid of linefeed */
 
         int colon = 0;
-        while (line[colon] != ':') colon++;
+        while (line[colon] != ':' && colon < len) colon++;
+        if (colon == len) {
+            section_name = strtok(line, " : ");
+            section_param = NULL;
+        }
         if (line[colon-1] == ' ') {
             section_name = strtok(line, " : ");
             strtok(NULL, " ");
@@ -172,8 +176,8 @@ instance parse_input_file(char* model_name, char* file_extension,
 
 
         if (VERBOSE)
-            printf("[Verbose] parsing |%s| on |%s|\n", section_name,
-                   section_param);
+            printf("[Verbose] parsing |%s| on |%s| %d \n", section_name,
+                   section_param, colon);
 
         /* retrive section and inject parameter */
         switch (section_enumerator(section_name)) {
