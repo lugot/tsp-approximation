@@ -1,253 +1,374 @@
-#include "solvers.h"
-#include "tsp.h"
-#include "model_builder.h"
-#include "globals.h"
-#include "utils.h"
-#include "union_find.h"
+#include "../include/solvers.h"
+
+#include <assert.h>
 #include <cplex.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+#include <string.h>
 #include <sys/time.h>
 
+#include "../include/globals.h"
+#include "../include/model_builder.h"
+#include "../include/tsp.h"
+#include "../include/union_find.h"
+#include "../include/utils.h"
+
+void assert_correctness(solution sol);
 
 solution TSPopt(instance inst, enum model_types model_type) {
-	assert(inst != NULL);
-	assert(inst->params != NULL && "no CPLEX params found");
-	assert(inst->instance_type == TSP && "need TSP instance");
+    assert(inst != NULL);
+    assert(inst->params != NULL && "no CPLEX params found");
+    assert(inst->instance_type == TSP && "need TSP instance");
 
-	/* create and populate solution */
-	solution sol = (solution) calloc(1, sizeof(struct solution_t));
-	sol->model_type = model_type;
+    /* create and populate solution */
+    solution sol = (solution)calloc(1, sizeof(struct solution_t));
+    sol->model_type = model_type;
 
-	sol->num_edges = inst->num_nodes;
-	sol->edges = (edge*) calloc(sol->num_edges, sizeof(struct edge_t));
-	sol->parent = (int*) calloc(sol->num_edges, sizeof(int));
+    int nedges;
+    nedges = sol->nedges = inst->nnodes;
+    sol->edges = (edge*)calloc(nedges, sizeof(struct edge_t));
+    sol->link = (int*)calloc(nedges, sizeof(int));
 
-	sol->distance_time = compute_dist(inst);
+    sol->distance_time = compute_dist(inst);
+    //sol->timetype = inst->timetype;
 
-	/* open CPLEX model */
-	int error;
-	CPXENVptr env = CPXopenCPLEX(&error);
-	CPXLPptr lp = CPXcreateprob(env, &error, "TSP");
+    /* open CPLEX model */
+    int error;
+    CPXENVptr env = CPXopenCPLEX(&error);
+    CPXLPptr lp = CPXcreateprob(env, &error, "TSP");
 
-	/* set params:
-	 * - timelimit
-	 * - EpInteger: CPLEX tollerance to declare a variable integer, important in bigM
-	 * - EpRightHandSide: the less or equal satisfied up to this tollerance, usually 1e-5, with bigM 1e-9 */
-	CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit);
-	
-	char* logfile;
+    CPXgetdettime(env,&sol->start);
+
+    /* set params:
+     * - timelimit (timetype = 0 -> seconds, timetype = 1 -> ticks)
+     * - EpInteger: CPLEX tollerance to declare a variable integer, important in
+     * bigM
+     * - EpRightHandSide: the less or equal satisfied up to this tollerance,
+     * usually 1e-5, with bigM 1e-9 */
+    
+    //if(inst->timetype == 0)
+    CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit);
+    /*else 
+    	CPXsetdblparam(env, CPX_PARAM_DETTILIM, inst->params->timelimit);*/
+
+    //CPXsetintparam(env, CPX_PARAM_RANDOMSEED, seed); todo: add a seed to Cplexrun (Passed by TSP opt?)
+    CPXsetdblparam(env, CPX_PARAM_EPINT, 0.0);
+    CPXsetdblparam(env, CPX_PARAM_EPRHS, 1e-9);
+
+    char* logfile;
 	logfile = (char*) calloc(100, sizeof(char));
 	if (inst->model_folder == TSPLIB)    sprintf(logfile, "../data_tsplib/%s/%slog.txt", inst->model_name, inst->model_name);
 	if (inst->model_folder == GENERATED) sprintf(logfile, "../data_generated/%s/%slog.txt", inst->model_name, inst->model_name);
 	
 	CPXsetlogfilename(env, logfile, "w");
-	
-	CPXgetdettime(env,&sol->start);
-	CPXsetdblparam(env, CPX_PARAM_EPINT, 0.0);
-	CPXsetdblparam(env, CPX_PARAM_EPRHS, 1e-9);
 
-	/* populate enviorment with model data */
-	sol->build_time = build_tsp_model(env, lp, inst, model_type);
+    /* populate enviorment with model data */
+    sol->build_time = build_tsp_model(env, lp, inst, model_type);
 
-	/* add callback if required */
-	if(model_type == SYMMETRIC_BENDERS_CALLBACK) {
-		CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
-        if (CPXcallbacksetfunc(env, lp, contextid, add_BENDERS_sec_callback, sol)) {
+    /* add callback if required */
+    if (model_type == BENDERS_CALLBACK_CONCORDE) {
+        CPXLONG contextid = 
+            CPX_CALLBACKCONTEXT_CANDIDATE | CPX_CALLBACKCONTEXT_RELAXATION;
+        if (CPXcallbacksetfunc(env, lp, contextid,
+                               add_BENDERS_sec_callback_driver_concorde, sol)) {
             print_error("CPXcallbacksetfunc() error");
-		}
-	}
+        }
+    }
+    if (model_type == BENDERS_CALLBACK) {
+        CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
+        if (CPXcallbacksetfunc(env, lp, contextid,
+                               add_BENDERS_sec_callback_driver, sol)) {
+            print_error("CPXcallbacksetfunc() error");
+        }
+    }
 
+    if (model_type == HARD_FIXING) {
+    	CPXsetintparam(env, CPX_PARAM_NODELIM, 10);
+    	
+    	//if(inst->timetype == 0)
+    	CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit/10);
+    	/*else 
+    		CPXsetdblparam(env, CPX_PARAM_DETTILIM, inst->params->timelimit/10);*/
+    	
+        CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
+        if (CPXcallbacksetfunc(env, lp, contextid,
+                               add_BENDERS_sec_callback_driver, sol)) {
+            print_error("CPXcallbacksetfunc() error");
+        }
+    }
 
-	struct timeval start, end;
-	gettimeofday(&start, NULL);
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
 
-	/* solve! */
-	if (CPXmipopt(env,lp)) print_error("CPXmipopt() error");
+    /* solve! */
+    if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
 
-	/* store the optimal solution found by CPLEX */
-	int ncols = CPXgetnumcols(env, lp);
-	double* xstar = (double*) calloc(ncols, sizeof(double));
-	if (CPXgetx(env, lp, xstar, 0, ncols-1)) print_error("CPXgetx() error\n");
+    /* store the optimal solution found by CPLEX */
+    int ncols = CPXgetnumcols(env, lp);
+    double* xstar = (double*)calloc(ncols, sizeof(double));
+    if (CPXgetx(env, lp, xstar, 0, ncols - 1)) print_error("CPXgetx() error\n");
 
-	switch (model_type) {
-		case SYMMETRIC:
-		case SYMMETRIC_BENDERS_CALLBACK:
-			retreive_symmetric_solution(xstar, sol);
-			break;
+    switch (model_type) {
+        case NOSEC:
+        case BENDERS_CALLBACK:
+        case BENDERS_CALLBACK_CONCORDE:
+            get_symmsol(xstar, nedges, sol->edges, sol->link);
+            break;
 
-		case SYMMETRIC_BENDERS:
-			retreive_symmetric_solution(xstar, sol);
+        case BENDERS:
+            get_symmsol(xstar, nedges, sol->edges, sol->link);
 
-			while (!visitable(sol)) {
-				/* add the constraints */
-				add_BENDERS_sec(env, lp, sol);
+            while (!visitable(sol->link, nedges)) {
+                /* add the constraints */
+                add_BENDERS_sec(env, lp, sol);
 
-				/* some time has passed, updat the timelimit */
-				gettimeofday(&end, NULL);
-				CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit - (end.tv_sec - start.tv_sec));
+                /* some time has passed, updat the timelimit */
+                gettimeofday(&end, NULL);
+                /*if(inst->timetype == 0)
+                {*/
+	                int restime =
+                    	inst->params->timelimit - (end.tv_sec - start.tv_sec);
+                	CPXsetdblparam(env, CPX_PARAM_TILIM, restime);
+                /*}
+                else
+                {
+                	int restime =
+                    	inst->params->timelimit - (end.tv_sec - start.tv_sec)*TICKS_PER_SECOND;
+                	CPXsetdblparam(env, CPX_PARAM_DETTILIM, restime);
+                }*/
+                
 
-				/* solve! */
-				if (CPXmipopt(env,lp)) print_error("CPXmipopt() error");
+                /* solve! */
+                if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
 
-				/* store the optimal solution found by CPLEX */
-				int num_cols = CPXgetnumcols(env, lp);
-				double* xstar = (double*) calloc(num_cols, sizeof(double));
-				if (CPXgetx(env, lp, xstar, 0, num_cols-1)) print_error("CPXgetx() error\n");
+                /* store the optimal solution found by CPLEX */
+                int num_cols = CPXgetnumcols(env, lp);
 
-				/* retrive the solution */
-				retreive_symmetric_solution(xstar, sol);
-			}
+                memset(xstar, '\0', num_cols * sizeof(double));
+                if (CPXgetx(env, lp, xstar, 0, num_cols - 1))
+                    print_error("CPXgetx() error\n");
 
+                /* retrive the solution */
+                get_symmsol(xstar, nedges, sol->edges, sol->link);
+            }
 
-			/* save the complete model */
-			char* filename;
-			filename = (char*) calloc(100, sizeof(char));
-			if (inst->model_folder == TSPLIB)    sprintf(filename, "../data_tsplib/%s/%s.benders.lp", inst->model_name, inst->model_name);
-			if (inst->model_folder == GENERATED) sprintf(filename, "../data_generated/%s/%s.benders.lp", inst->model_name, inst->model_name);
-			CPXwriteprob(env, lp, filename, NULL);
-			free(filename);
+            /* save the complete model */
+            char* filename;
+            filename = (char*)calloc(100, sizeof(char));
+            if (inst->model_folder == TSPLIB)
+                snprintf(filename, 28 + 2 * strlen(inst->model_name),
+                         "../data_tsplib/%s/%s.benders.lp", inst->model_name,
+                         inst->model_name);
+            if (inst->model_folder == GENERATED)
+                snprintf(filename, 31 + 2 * strlen(inst->model_name),
+                         "../data_generated/%s/%s.benders.lp", inst->model_name,
+                         inst->model_name);
+            CPXwriteprob(env, lp, filename, NULL);
+            free(filename);
 
-			break;
+            break;
 
-		case ASYMMETRIC_MTZ:
-		case ASYMMETRIC_GG:
-			retreive_asymmetric_solution(xstar, sol);
-			break;
+        case HARD_FIXING:
+        	
+        	//int ncols = inst->nnodes * (inst->nnodes-1) / 2
+        	srand(0);
+        	int repeat = 20;
 
-		case OPTIMAL_TOUR:
-			assert(model_type != OPTIMAL_TOUR && "tried to solve an optimal tour instance");
-			break;
-	}
+			char bound = 'L';
+			double lb = 1;
+			int* pos = calloc(1, sizeof(int));
 
-	free(xstar);
+        	for(int i=0; i<repeat; i++)
+        	{
+        		lb = 1;
+        		//fix nodes
+        		for(int j=0; j<ncols; j++)
+        			if( rand() % 5 != 0 && xstar[j] == 1)
+        			{
+        				pos[0] = j;
+        				CPXchgbds(env, lp, 1, pos, &bound, &lb);
+        			}
 
-	CPXgetdettime(env,&sol->end);
+        		//if(inst->timetype == 0)
+    				CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit/repeat);
+    			/*else 
+    				CPXsetdblparam(env, CPX_PARAM_DETTILIM, inst->params->timelimit/repeat);*/
+
+    			CPXsetintparam(env, CPX_PARAM_NODELIM, 100);
+
+    			if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
+
+    			if (CPXgetx(env, lp, xstar, 0, ncols - 1)) print_error("CPXgetx() error\n");
+
+    			lb = 0;
+    			//free nodes: no check because most of the nodes are fixed    
+                if(i !=repeat-1)			
+        		for(int j=0; j<ncols; j++)        				
+        		{
+        			pos[0] = j;
+        			CPXchgbds(env, lp, 1, pos, &bound, &lb);
+        		}
+        	}
+
+        	free(pos);
+            get_symmsol(xstar, nedges, sol->edges, sol->link);
+
+            break;
+
+        case MTZ_STATIC:
+        case MTZ_LAZY:
+        case GGLIT_STATIC:
+        case GGFISH_STATIC:
+        case GG_LAZY:
+            get_asymmsol(xstar, nedges, sol->edges, sol->link);
+            break;
+
+        case OPTIMAL_TOUR:
+            assert(model_type != OPTIMAL_TOUR &&
+                   "tried to solve an optimal tour instance");
+            break;
+    }
+
+    free(xstar);
+
+    CPXgetdettime(env,&sol->end);
 
 	gettimeofday(&end, NULL);
-	sol->solve_time = end.tv_sec - start.tv_sec; //sec
-	//sol->solve_time = sol->end - sol->start; //ticks
 
-	CPXgetobjval(env, lp, &sol->zstar);
-	/*sol->zstar = zstar(inst, sol);*/
+	//if(inst->timetype == 0)
+		sol->solve_time = end.tv_sec - start.tv_sec; //sec
+	/*else
+		sol->solve_time = sol->end - sol->start; //ticks*/
 
-	/* add the solution to the pool associated with it's instance */
-	add_solution(inst, sol);
 
-	CPXfreeprob(env, &lp);
-	CPXcloseCPLEX(&env);
+    /* retreive the min cost */
+    CPXgetobjval(env, lp, &sol->zstar);
+    /*sol->zstar = zstar(inst, sol);*/
 
-	return sol;
+    /* assert single cycle */
+    /*print_solution(sol, 1);*/
+
+    assert_correctness(sol);
+
+    /* add the solution to the pool associated with it's instance */
+    add_solution(inst, sol);
+
+    CPXfreeprob(env, &lp);
+    CPXcloseCPLEX(&env);
+
+    return sol;
 }
 
-void retreive_symmetric_solution(double* xstar, solution sol) {
-	/* set up parent as linked list */
-	for (int i=0; i<sol->num_edges; i++) sol->parent[i] = i;
+void get_symmsol(double* xstar, int nedges, edge* edges, int* link) {
+    assert(link != NULL);
 
-	/* index over selected edges */
-	int k = 0;
+    /* set up parent as linked list, no check on size */
+    for (int i = 0; i < nedges; i++) link[i] = i;
 
-	/* check for edges j>i if is selected */
-	for (int i=0; i<sol->num_edges; i++) for (int j=i+1; j<sol->num_edges; j++) {
+    /* index over selected edges */
+    int k = 0;
 
-		if (xstar[xpos(i, j, sol->num_edges)] > 0.5) {
-			sol->edges[k++] = (edge) {i, j};
+    /* check for edges j>i if is selected */
+    for (int i = 0; i < nedges; i++) {
+        for (int j = i + 1; j < nedges; j++) {
+            if (xstar[xpos(i, j, nedges)] > 0.5) {
+                /* link is mandatory, edges is optional */
+                if (edges != NULL) edges[k] = (edge){i, j};
+                k++;
 
-			/* actually a shifted linked list */
-			if (!reachable(sol, i, j) && !reachable(sol, j, i)) swap(&sol->parent[i], &sol->parent[j]);
-		}
-	}
+                /* actually a shifted linked list */
+                if (!reachable(link, i, j) && !reachable(link, j, i))
+                    swap(&link[i], &link[j]);
+            }
+        }
+    }
 
-	assert(k == sol->num_edges && "not enought edges CPLEX solution");
+    /*assert(k == nedges && "not enought edges CPLEX solution");*/
 }
 
-void retreive_asymmetric_solution(double* xstar, solution sol) {
-	/* set up parent as linked list */
-	for (int i=0; i<sol->num_edges; i++) sol->parent[i] = i;
+void get_asymmsol(double* xstar, int nedges, edge* edges, int* link) {
+    assert(link != NULL);
 
-	/* index over selected edges */
-	int k = 0;
+    /* set up parent as linked list */
+    for (int i = 0; i < nedges; i++) link[i] = i;
 
-	/* check for all edges if is selected */
-	for (int i=0; i<sol->num_edges; i++) for (int j=0; j<sol->num_edges; j++) {
+    /* index over selected edges */
+    int k = 0;
 
-		if (xstar[xxpos(i, j, sol->num_edges)] > 0.5) {
-			sol->edges[k++] = (edge) {i, j};
-
-			/* actually a shifted linked list */
-			if (!reachable(sol, i, j)) swap(&sol->parent[i], &sol->parent[j]);
-		}
-	}
-
-	assert(k == sol->num_edges && "not enought edges CPLEX solution");
+    /* check for all edges if is selected */
+    for (int i = 0; i < nedges; i++) {
+        for (int j = 0; j < nedges; j++) {
+            if (xstar[xxpos(i, j, nedges)] > 0.5) {
+                /* link is mandatory, edges is optional */
+                if (edges != NULL) edges[k] = (edge){i, j};
+                k++;
+                /* actually a shifted linked list */
+                if (!reachable(link, i, j)) swap(&link[i], &link[j]);
+            }
+        }
+    }
+    /*assert(k == nedges && "not enought edges CPLEX solution");*/
 }
 
+void assert_correctness(solution sol) {
+    int visited = 0;
+    int act = 0;
+    do {
+        visited++;
+    } while ((act = sol->link[act]) != 0);
 
-void save_results(instance* insts, int num_instances) {
-	assert(insts != NULL);
-	assert(insts[0] != NULL);
+    assert(visited == sol->nedges);
+}
 
-	/* remove and create new fresh csv */
-	remove("../results/results.csv");
-	FILE* fp;
-	fp = fopen("../results/results.csv", "w");
-	assert(fp != NULL && "file not found while saving .csv");
+void save_results(instance* insts, int ninstances) {
+    assert(insts != NULL);
+    assert(insts[0] != NULL);
 
-	/* save the data */
-	int num_models = insts[0]->num_solutions;
-	fprintf(fp, "%d,", num_models);
+    /* remove and create new fresh csv */
+    remove("../results/results.csv");
+    FILE* fp;
+    fp = fopen("../results/results.csv", "w");
+    assert(fp != NULL && "file not found while saving .csv");
 
-	for (int i=0; i<num_models; i++) {
-		enum model_types model_type = insts[0]->sols[i]->model_type;
+    /* save the data */
+    int nmodels = insts[0]->nsols;
+    fprintf(fp, "%d,", nmodels);
 
-		switch (model_type) {
-			case SYMMETRIC:
-			case OPTIMAL_TOUR:
-				assert((model_type == SYMMETRIC || model_type == OPTIMAL_TOUR) &&
-						"cannot retreive time from this kind of models");
-				break;
+    for (int i = 0; i < nmodels; i++) {
+        enum model_types model_type = insts[0]->sols[i]->model_type;
+        assert(model_type != NOSEC && model_type != OPTIMAL_TOUR);
 
-			case ASYMMETRIC_MTZ:
-				fprintf(fp, "MTZ");
-				break;
+        char* model_name_str = model_type_tostring(model_type);
+        fprintf(fp, "%s", model_name_str);
+        free(model_name_str);
 
-			case ASYMMETRIC_GG:
-				fprintf(fp, "GG");
-				break;
+        if (i < nmodels - 1)
+            fprintf(fp, ",");
+        else
+            fprintf(fp, "\n");
+    }
 
-			case SYMMETRIC_BENDERS:
-				fprintf(fp, "BENDERS");
-				break;
+    for (int i = 0; i < ninstances; i++) {
+        instance inst = insts[i];
+        fprintf(fp, "%s,", inst->model_name);
 
-			case SYMMETRIC_BENDERS_CALLBACK: ;
-				fprintf(fp, "BENDERS_CALLBACK");
-				break;
-		}
+        assert(inst->nsols == nmodels && "missing some solutions");
 
-		if (i < num_models-1) fprintf(fp, ",");
-		else                  fprintf(fp, "\n");
-	}
+        for (int j = 0; j < nmodels; j++) {
+            assert(inst->sols[j]->model_type == insts[0]->sols[j]->model_type);
 
+            if (j < nmodels - 1)
+                fprintf(fp, "%lf,", inst->sols[j]->solve_time);
+            else
+                fprintf(fp, "%lf\n", inst->sols[j]->solve_time);
+        }
+    }
 
-	for (int i=0; i<num_instances; i++) {
-		instance inst = insts[i];
-		fprintf(fp, "%s,", inst->model_name);
+    fclose(fp);
 
-		assert(inst->num_solutions == num_models && "missing some solutions");
-
-		for (int j=0; j<num_models; j++) {
-			assert(inst->sols[j]->model_type == insts[0]->sols[j]->model_type);
-
-			if (j < num_models-1) fprintf(fp, "%lf,",  inst->sols[j]->solve_time);
-			else                  fprintf(fp, "%lf\n", inst->sols[j]->solve_time);
-		}
-
-	}
-
-	fclose(fp);
-
-	/* generate the plot */
-	//TODO: adjust timelimit
-	system("python ../results/perprof.py -D , -T 3600 -S 2 -M 20 ../results/results.csv ../results/pp.pdf -P 'model comparisons'");
+    /* generate the plot */
+    // TODO(lugot): adjust timelimit
+    system(
+        "python3 ../results/perprof.py -D , -T 3600 -S 2 -M 2 "
+        "../results/results.csv ../results/pp.pdf -P 'model comparisons'");
 }

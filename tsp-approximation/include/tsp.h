@@ -50,36 +50,48 @@ typedef struct instance_t {
 
     /* parameters */
 	cplex_params params;
+	//int timetype;
 
 	/* data */
 	enum weight_types weight_type;
-	int num_nodes;
+	int nnodes;
 	node* nodes;
 	double** adjmatrix;
 
 	/* solutions */
-	int num_solutions;
+	int nsols;
 	struct solution_t** sols;
 }
 *instance;
+typedef struct doit_fn_input_t {
+    int nedges;
+    CPXCALLBACKCONTEXTptr context;
+} doit_fn_input;
 
 
 enum model_types {
 	OPTIMAL_TOUR,
-	SYMMETRIC,
-	ASYMMETRIC_MTZ,
-	ASYMMETRIC_GG,
-	SYMMETRIC_BENDERS,
-	SYMMETRIC_BENDERS_CALLBACK
+	NOSEC,
+	MTZ_STATIC,
+	MTZ_LAZY,
+	GGLIT_STATIC,
+	GGFISH_STATIC,
+	GG_LAZY,
+	BENDERS,
+	BENDERS_CALLBACK,
+    BENDERS_CALLBACK_CONCORDE,
+    HARD_FIXING
 };
 typedef struct solution_t {
 	struct instance_t* inst;
 	enum model_types model_type;
 
 	double zstar;
-	int num_edges;
+	int nedges;
 	edge* edges;
-	int* parent;
+	int* link;
+
+	//int timetype;
 
 	double start;
 	double end;
@@ -87,6 +99,9 @@ typedef struct solution_t {
 	double build_time;
 	double solve_time;
 } *solution;
+
+/* cplex param manipulators */
+cplex_params create_params();
 
 /* instance manipulators */
 instance create_empty_instance();

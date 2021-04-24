@@ -7,10 +7,12 @@ OS := $(shell uname)
 
 setting = 1
 CPLEX_HOME = /opt/ibm/ILOG/CPLEX_Studio201/cplex
+CONCORDELIB = /opt/concorde
+CCDIR = /opt/concorde
 CC = gcc
 AR = ar rc
-LIBS = -L${CPLEX_HOME}/lib/x86-64_linux/static_pic -L. -lcplex -lm -lpthread -ldl
-INC = -I../include -I${CPLEX_HOME}/include/ilcplex
+LIBS = -L${CPLEX_HOME}/lib/x86-64_linux/static_pic -L. -lcplex -lm -lpthread -ldl ${CONCORDELIB}/libconcorde.a
+INC = -I../include -I${CPLEX_HOME}/include/ilcplex -I${CCDIR}
 
 
 # ---------------------------------------------------------------------

@@ -7,6 +7,7 @@ matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 import sys
 
+
 from optparse import OptionParser
 
 # parameters
@@ -21,6 +22,7 @@ dashes = ['-',  # solid line
 
 markers = ['+', 'x', 's', '^', 'o', 'd']
 colors = ['r', 'b', 'y', 'g', 'm', 'c']
+
 
 
 class CmdLineParser(object):
@@ -74,7 +76,7 @@ def readTable(fp, delimiter):
 def main():
 	parser = CmdLineParser()
 	opt = parser.parseArgs()
-	print(opt)
+	# print(opt)
 	# read data
 	rnames, cnames, data = readTable(open(opt.input, 'r'), opt.delimiter)
 	nrows, ncols = data.shape
