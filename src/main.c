@@ -35,20 +35,21 @@ int main(int argc, char** argv) {
     options->battery_test = maxi(1, options->battery_test);
     printf("generating %d instances\n", options->battery_test);
 
-    int nmodels = 2;
+    int nmodels = 8;
     enum model_types tests[] = {
-        /*GGLIT_STATIC,*/
-        /*GGFISH_STATIC,*/
-        /*MTZ_STATIC,*/
-        /*MTZ_LAZY,*/
-        /*BENDERS,*/
+        MTZ_STATIC,
+        MTZ_LAZY,
+        GGLIT_STATIC,
+        GGLECT_STATIC,
+        GGLIT_LAZY,
+        BENDERS,
         BENDERS_CALLBACK,
-        BENDERS_CALLBACK_CONCORDE,
+        HARD_FIXING
     };
 
-    int num_nodes = 40;
+    int num_nodes = 20;
     instance* insts =
-        generate_random_instances(options->battery_test, num_nodes, 20.0);
+    generate_random_instances(options->battery_test, num_nodes, 20.0);
     double zstar = 0.0;
 
     for (int i = 0; i < options->battery_test; i++) {

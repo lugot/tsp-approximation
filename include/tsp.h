@@ -1,94 +1,84 @@
-#ifndef _TSP_H_
-#define _TSP_H_
+#ifndef INCLUDE_TSP_H_
+#define INCLUDE_TSP_H_
 
 #include <cplex.h>
 
 struct solution_t;
 
-enum instance_types {
-	TSP,
-	TOUR,
-	UNHANDLED_INSTANCE_TYPE
-};
-enum costs {
-	INTEGER,
-	REAL
-};
+enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };
+enum costs { INTEGER, REAL };
 typedef struct cplex_params_t {
-	int randomseed;
-	int num_threads;
-	double timelimit;
-	int available_memory;
+    int randomseed;
+    int num_threads;
+    double timelimit;
+    int available_memory;
     enum costs cost;
+} * cplex_params;
 
-} *cplex_params;
-
-
-enum model_folders {
-	TSPLIB,
-	GENERATED
-};
-enum weight_types {
-	ATT,
-	EUC_2D,
-	GEO,
-	EXPLICIT,
-	UNHANDLED_WEIGHT_TYPE
-};
+enum model_folders { TSPLIB, GENERATED };
+enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };
 typedef struct node_t {
-	double x, y;
+    double x, y;
 } node;
 typedef struct edge_t {
-	int i, j;
+    int i, j;
 } edge;
 typedef struct instance_t {
-	/* model infos */
+    /* model infos */
     char* model_name;
     char* model_comment;
-	enum model_folders model_folder;
-	enum instance_types instance_type;
+    enum model_folders model_folder;
+    enum instance_types instance_type;
 
     /* parameters */
-	cplex_params params;
+    cplex_params params;
+    // int timetype;
 
-	/* data */
-	enum weight_types weight_type;
-	int nnodes;
-	node* nodes;
-	double** adjmatrix;
+    /* data */
+    enum weight_types weight_type;
+    int nnodes;
+    node* nodes;
+    double** adjmatrix;
 
-	/* solutions */
-	int nsols;
-	struct solution_t** sols;
-}
-*instance;
+    /* solutions */
+    int nsols;
+    struct solution_t** sols;
+} * instance;
 
+typedef struct doit_fn_input_t {
+    int nedges;
+    CPXCALLBACKCONTEXTptr context;
+} * doit_fn_input;
 
 enum model_types {
-	OPTIMAL_TOUR,
-	NOSEC,
-	MTZ_STATIC,
-	MTZ_LAZY,
-	GGLIT_STATIC,
-	GGFISH_STATIC,
-	GG_LAZY,
-	BENDERS,
-	BENDERS_CALLBACK,
-    BENDERS_CALLBACK_CONCORDE
+    OPTIMAL_TOUR,
+    NOSEC,
+    MTZ_STATIC,
+    MTZ_LAZY,
+    GGLIT_STATIC,
+    GGLECT_STATIC,
+    GGLIT_LAZY,
+    BENDERS,
+    BENDERS_CALLBACK,
+    HARD_FIXING
 };
 typedef struct solution_t {
-	struct instance_t* inst;
-	enum model_types model_type;
+    struct instance_t* inst;
+    enum model_types model_type;
 
-	double zstar;
-	int nedges;
-	edge* edges;
-	int* link;
+    double zstar;
+    int nedges;
+    edge* edges;
+    int* link;
 
-	double distance_time;
-	double build_time;
-	double solve_time;
-} *solution;
+    // int timetype;
+
+    double start;
+    double end;
+    double distance_time;
+    double build_time;
+    double solve_time;
+} * solution;
 
 /* cplex param manipulators */
 cplex_params create_params();
@@ -98,7 +88,8 @@ instance create_empty_instance();
 instance create_instance(cplex_params params);
 void add_params(instance inst, cplex_params params);
 instance generate_random_instance(int id, int num_nodes, int box_size);
-instance* generate_random_instances(int num_instances, int num_nodes, int box_size);
+instance* generate_random_instances(int num_instances, int num_nodes,
+                                    int box_size);
 instance clone_instance(instance inst);
 void free_instance();
 void add_solution(instance inst, solution sol);
@@ -110,4 +101,4 @@ void print_solution(solution sol, int print_data);
 void plot_solution_graphviz(solution sol);
 void plot_solutions_graphviz(solution* sols, int num_sols);
 
-#endif /* _TSP_H_ */
+#endif  // INCLUDE_TSP_H_

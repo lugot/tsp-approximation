@@ -1,7 +1,7 @@
-#ifndef _PARSERS_H_
-#define _PARSERS_H_
+#ifndef INCLUDE_PARSERS_H_
+#define INCLUDE_PARSERS_H_
 
-#include "tsp.h"
+#include "../include/tsp.h"
 
 typedef struct run_options_t {
     char* model_name;
@@ -15,4 +15,4 @@ void parse_command_line(int argc, char** argv, cplex_params params,
 instance parse_input_file(char* model_name, char* file_extension,
                           enum model_folders folder);
 
-#endif /* _PARSERS_H_*/
+#endif  // INCLUDE_PARSERS_H_

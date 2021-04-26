@@ -72,7 +72,7 @@ int ypos(int i, int j, int nnodes) {
     return n;
 }
 
-double zstar(instance inst, solution sol) {
+double compute_zstar(instance inst, solution sol) {
     assert(inst->adjmatrix != NULL && "distances not computed yet");
     int nedges = sol->nedges;
 
@@ -212,8 +212,8 @@ char* model_type_tostring(enum model_types model_type) {
         case GGLIT_STATIC:
             snprintf(ans, bufsize, "gglit_static");
             break;
-        case GGFISH_STATIC:
-            snprintf(ans, bufsize, "ggfish_static");
+        case GGLECT_STATIC:
+            snprintf(ans, bufsize, "gglect_static");
             break;
         case GG_LAZY:
             snprintf(ans, bufsize, "gg_lazy");
@@ -224,8 +224,8 @@ char* model_type_tostring(enum model_types model_type) {
         case BENDERS_CALLBACK:
             snprintf(ans, bufsize, "benders_callback");
             break;
-        case BENDERS_CALLBACK_CONCORDE:
-            snprintf(ans, bufsize, "benders_callback_concorde");
+        case HARD_FIXING:
+            snprintf(ans, bufsize, "hard_fixing");
             break;
     }
 

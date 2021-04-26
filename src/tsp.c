@@ -29,6 +29,8 @@ instance create_empty_instance() {
     inst->params->available_memory = 4096;
     inst->params->cost = REAL;
 
+    // inst->timetype = 1;
+
     return inst;
 }
 
@@ -50,6 +52,13 @@ instance generate_random_instance(int id, int nnodes, int box_size) {
     instance inst = create_empty_instance();
     srand(id);
 
+    // random pick from an uniforme distribution the number of nodes in range
+    // [9/10(nnodes), 11/10(nnodes)]
+    double random_fluctuation = (double)rand() / (double)RAND_MAX - 0.5;
+    random_fluctuation = random_fluctuation * nnodes / 5;
+    nnodes += (int)random_fluctuation;
+
+    printf("Number of nodes %d\n", nnodes);
     char* buf;
     int bufsize = 100;
     buf = (char*)calloc(bufsize, sizeof(char));
@@ -294,10 +303,10 @@ void print_solution(solution sol, int print_data) {
         case GGLIT_STATIC:
             printf("asymmetric, gg literature subtour elimination\n");
             break;
-        case GGFISH_STATIC:
-            printf("asymmetric, gg prof formulation subtour elimination\n");
+        case GGLECT_STATIC:
+            printf("asymmetric, gg lecture formulation subtour elimination\n");
             break;
-        case GG_LAZY:
+        case GGLIT_LAZY:
             printf("asymmetric, gg subtour elimination, lazy constraints\n");
             break;
         case BENDERS:
@@ -306,8 +315,8 @@ void print_solution(solution sol, int print_data) {
         case BENDERS_CALLBACK:
             printf("symmetric, benders loop method with callback\n");
             break;
-        case BENDERS_CALLBACK_CONCORDE:
-            printf("symmetric, benders loop method with concorde callback\n");
+        case HARD_FIXING:
+            printf("symmetric, hard fixing with callback\n");
             break;
     }
     printf("- zstar: %lf\n", sol->zstar);
@@ -350,7 +359,10 @@ void print_solution(solution sol, int print_data) {
     }
     printf("- distance time: %lf ms\n", sol->distance_time);
     printf("- build time: %lf ms\n", sol->build_time);
+    // if(sol->timetype == 0)
     printf("- solve time: %lf s\n", sol->solve_time / 1000.0);
+    /*else
+            printf("- solve time: %lf ticks\n", sol->solve_time);*/
 }
 
 void plot_solution_graphviz(solution sol) {

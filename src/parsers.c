@@ -176,8 +176,8 @@ instance parse_input_file(char* model_name, char* file_extension,
         }
 
         if (VERBOSE)
-            printf("[Verbose] parsing |%s| on |%s|, icolon: %d\n", section_name,
-                   section_param, icolon);
+            printf("[Verbose] parsing |%s| on |%s|\n", section_name,
+                   section_param);
 
         /* retrive section and inject parameter */
         switch (section_enumerator(section_name)) {

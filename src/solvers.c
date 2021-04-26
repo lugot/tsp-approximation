@@ -30,21 +30,42 @@ solution TSPopt(instance inst, enum model_types model_type) {
     sol->link = (int*)calloc(nedges, sizeof(int));
 
     sol->distance_time = compute_dist(inst);
+    /* sol->timetype = inst->timetype; */
 
     /* open CPLEX model */
     int error;
     CPXENVptr env = CPXopenCPLEX(&error);
     CPXLPptr lp = CPXcreateprob(env, &error, "TSP");
 
+    CPXgetdettime(env, &sol->start);
+
     /* set params:
-     * - timelimit
+     * - timelimit (timetype = 0 -> seconds, timetype = 1 -> ticks)
      * - EpInteger: CPLEX tollerance to declare a variable integer, important in
      * bigM
      * - EpRightHandSide: the less or equal satisfied up to this tollerance,
      * usually 1e-5, with bigM 1e-9 */
+
+    // if(inst->timetype == 0)
     CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit);
+    /*else
+        CPXsetdblparam(env, CPX_PARAM_DETTILIM, inst->params->timelimit);*/
+
+    // CPXsetintparam(env, CPX_PARAM_RANDOMSEED, seed); todo: add a seed to
+    // Cplexrun (Passed by TSP opt?)
     CPXsetdblparam(env, CPX_PARAM_EPINT, 0.0);
     CPXsetdblparam(env, CPX_PARAM_EPRHS, 1e-9);
+
+    char* logfile;
+    logfile = (char*)calloc(100, sizeof(char));
+    if (inst->model_folder == TSPLIB)
+        sprintf(logfile, "../data_tsplib/%s/%slog.txt", inst->model_name,
+                inst->model_name);
+    if (inst->model_folder == GENERATED)
+        sprintf(logfile, "../data_generated/%s/%slog.txt", inst->model_name,
+                inst->model_name);
+
+    CPXsetlogfilename(env, logfile, "w");
 
     /* populate enviorment with model data */
     sol->build_time = build_tsp_model(env, lp, inst, model_type);
@@ -58,11 +79,19 @@ solution TSPopt(instance inst, enum model_types model_type) {
             print_error("CPXcallbacksetfunc() error");
         }
     }
-    if (model_type == BENDERS_CALLBACK_CONCORDE) {
-        CPXLONG contextid =
-            CPX_CALLBACKCONTEXT_CANDIDATE;
+
+    if (model_type == HARD_FIXING) {
+        CPXsetintparam(env, CPX_PARAM_NODELIM, 10);
+
+        // if(inst->timetype == 0)
+        CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit / 10);
+        /*else
+                CPXsetdblparam(env, CPX_PARAM_DETTILIM,
+           inst->params->timelimit/10);*/
+
+        CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
         if (CPXcallbacksetfunc(env, lp, contextid,
-                               add_BENDERS_sec_callback_driver_concorde, sol)) {
+                               add_BENDERS_sec_callback_driver, sol)) {
             print_error("CPXcallbacksetfunc() error");
         }
     }
@@ -81,7 +110,6 @@ solution TSPopt(instance inst, enum model_types model_type) {
     switch (model_type) {
         case NOSEC:
         case BENDERS_CALLBACK:
-        case BENDERS_CALLBACK_CONCORDE:
             get_symmsol(xstar, nedges, sol->edges, sol->link);
             break;
 
@@ -94,9 +122,19 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
                 /* some time has passed, updat the timelimit */
                 gettimeofday(&end, NULL);
+                /*if(inst->timetype == 0)
+                {*/
                 int restime =
                     inst->params->timelimit - (end.tv_sec - start.tv_sec);
                 CPXsetdblparam(env, CPX_PARAM_TILIM, restime);
+                /*}
+                else
+                {
+                        int restime =
+                        inst->params->timelimit - (end.tv_sec -
+                start.tv_sec)*TICKS_PER_SECOND; CPXsetdblparam(env,
+                CPX_PARAM_DETTILIM, restime);
+                }*/
 
                 /* solve! */
                 if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
@@ -128,11 +166,58 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
             break;
 
+        case HARD_FIXING:
+
+            // int ncols = inst->nnodes * (inst->nnodes-1) / 2
+            srand(0);
+            int repeat = 20;
+
+            char bound = 'L';
+            double lb = 1;
+            int* pos = calloc(1, sizeof(int));
+
+            for (int i = 0; i < repeat; i++) {
+                lb = 1;
+                // fix nodes
+                for (int j = 0; j < ncols; j++)
+                    if (rand() % 5 != 0 && xstar[j] == 1) {
+                        pos[0] = j;
+                        CPXchgbds(env, lp, 1, pos, &bound, &lb);
+                    }
+
+                // if(inst->timetype == 0)
+                CPXsetdblparam(env, CPX_PARAM_TILIM,
+                               inst->params->timelimit / repeat);
+                /*else
+                        CPXsetdblparam(env, CPX_PARAM_DETTILIM,
+                   inst->params->timelimit/repeat);*/
+
+                CPXsetintparam(env, CPX_PARAM_NODELIM, 100);
+
+                if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
+
+                if (CPXgetx(env, lp, xstar, 0, ncols - 1))
+                    print_error("CPXgetx() error\n");
+
+                lb = 0;
+                // free nodes: no check because most of the nodes are fixed
+                if (i != repeat - 1)
+                    for (int j = 0; j < ncols; j++) {
+                        pos[0] = j;
+                        CPXchgbds(env, lp, 1, pos, &bound, &lb);
+                    }
+            }
+
+            free(pos);
+            get_symmsol(xstar, nedges, sol->edges, sol->link);
+
+            break;
+
         case MTZ_STATIC:
         case MTZ_LAZY:
         case GGLIT_STATIC:
-        case GGFISH_STATIC:
-        case GG_LAZY:
+        case GGLECT_STATIC:
+        case GGLIT_LAZY:
             get_asymmsol(xstar, nedges, sol->edges, sol->link);
             break;
 
@@ -144,15 +229,22 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
     free(xstar);
 
+    CPXgetdettime(env, &sol->end);
+
     gettimeofday(&end, NULL);
-    sol->solve_time = end.tv_sec - start.tv_sec;
+
+    // if(inst->timetype == 0)
+    sol->solve_time = end.tv_sec - start.tv_sec;  // sec
+    /*else
+            sol->solve_time = sol->end - sol->start; //ticks*/
 
     /* retreive the min cost */
     CPXgetobjval(env, lp, &sol->zstar);
-    /*sol->zstar = zstar(inst, sol);*/
+    /*sol->zstar = compute_zstar(inst, sol);*/
 
     /* assert single cycle */
     /*print_solution(sol, 1);*/
+
     assert_correctness(sol);
 
     /* add the solution to the pool associated with it's instance */
@@ -207,13 +299,11 @@ void get_asymmsol(double* xstar, int nedges, edge* edges, int* link) {
                 /* link is mandatory, edges is optional */
                 if (edges != NULL) edges[k] = (edge){i, j};
                 k++;
-
                 /* actually a shifted linked list */
                 if (!reachable(link, i, j)) swap(&link[i], &link[j]);
             }
         }
     }
-
     /*assert(k == nedges && "not enought edges CPLEX solution");*/
 }
 
@@ -276,6 +366,6 @@ void save_results(instance* insts, int ninstances) {
     /* generate the plot */
     // TODO(lugot): adjust timelimit
     system(
-        "python ../results/perprof.py -D , -T 3600 -S 2 -M 2 "
+        "python3 ../results/perprof.py -D , -T 3600 -S 2 -M 2 "
         "../results/results.csv ../results/pp.pdf -P 'model comparisons'");
 }
