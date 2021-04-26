@@ -215,8 +215,8 @@ char* model_type_tostring(enum model_types model_type) {
         case GGLECT_STATIC:
             snprintf(ans, bufsize, "gglect_static");
             break;
-        case GG_LAZY:
-            snprintf(ans, bufsize, "gg_lazy");
+        case GGLIT_LAZY:
+            snprintf(ans, bufsize, "gglit_lazy");
             break;
         case BENDERS:
             snprintf(ans, bufsize, "benders");

@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
         add_params(inst, params);
 
         print_instance(inst, 1);
-        solution sol = TSPopt(inst, GGLIT_STATIC);
+        solution sol = TSPopt(inst, GGLIT_LAZY);
         print_solution(sol, 1);
         plot_solution_graphviz(sol);
 

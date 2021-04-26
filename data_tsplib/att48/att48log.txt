@@ -1,0 +1,33 @@
+Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
+CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
+CPXPARAM_TimeLimit                               1e+20
+CPXPARAM_MIP_Tolerances_Integrality              0
+Lazy constraint(s) or lazy constraint/branch callback is present.
+    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
+    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
+Tried aggregator 1 time.
+MIP Presolve eliminated 0 rows and 48 columns.
+Reduced MIP has 96 rows, 4512 columns, and 4512 nonzeros.
+Reduced MIP has 2256 binaries, 2256 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.29 sec. (1.86 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 96 rows, 4512 columns, and 4512 nonzeros.
+Reduced MIP has 2256 binaries, 2256 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.04 sec. (1.83 ticks)
+Warning: Lazy constraints are present for the setting with smaller integrality
+    tolerance than feasibility tolerance.
+Probing time = 0.18 sec. (3.35 ticks)
+Clique table members: 96.
+Problem contains 2304 lazy constraints.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 6 threads.
+Root relaxation solution time = 1.22 sec. (1.52 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+      0     0    26566.2123     6                  26566.2123       39         
+      0     0    26566.2123    10                     Cuts: 2       41         
+      0     0    26566.2123     6                  MIRcuts: 1       43         
+      0     0    26833.7335    14                     Cuts: 2       45         

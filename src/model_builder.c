@@ -24,7 +24,7 @@ void add_asymm_constraints(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_MTZ_static_sec(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst);
-void add_GGfish_static_sec(CPXENVptr env, CPXLPptr lp, instance inst);
+void add_GGlect_static_sec(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst);
 
 int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,
@@ -73,7 +73,7 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
         case GGLECT_STATIC:
             add_asymm_variables(env, lp, inst);
             add_asymm_constraints(env, lp, inst);
-            add_GGfish_static_sec(env, lp, inst);
+            add_GGlect_static_sec(env, lp, inst);
             break;
         case GGLIT_LAZY:
             add_asymm_variables(env, lp, inst);
@@ -99,16 +99,16 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
     /* filename depend on model type */
     char* model_type_str = model_type_tostring(model_type);
     snprintf(filename + strlen(filename), bufsize, "%s.lp", model_type_str);
-    free(model_type_str);
-
-    CPXwriteprob(env, lp, filename, NULL);
-    free(filename);
+    CPXwriteprob(env, lp, filename, "LP");
 
     /* save build time */
     gettimeofday(&end, NULL);
     int64_t seconds = (end.tv_sec - start.tv_sec);
     int64_t micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
     return micros / 1000.0;
+
+    free(model_type_str);
+    free(filename);
 }
 
 void add_symm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {
@@ -128,7 +128,7 @@ void add_symm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {
         for (int j = i + 1; j < nnodes; j++) {
             /* write name of 1-indexed variable insede CPLEX
              * compute cost of var as distance x(i,j) */
-            snprintf(cname[0], strlen(cname[0]), "x(%d,%d)", i + 1, j + 1);
+            snprintf(cname[0], strlen(cname[0]), "x(%d-%d)", i + 1, j + 1);
             double obj = dist(i, j, inst);
 
             /* inject variable and test it's position (xpos) inside CPLEX */
@@ -168,7 +168,7 @@ void add_asymm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {
 
             /* write name of 1-indexed variable insede CPLEX
              * compute cost of var as distance x(i,j) */
-            snprintf(cname[0], strlen(cname[0]), "x(%d,%d)", i + 1, j + 1);
+            snprintf(cname[0], strlen(cname[0]), "x(%d-%d)", i + 1, j + 1);
             double obj = dist(i, j, inst);
 
             /* inject variable and test it's position (xxpos) inside CPLEX */
@@ -486,32 +486,38 @@ void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
 
     double rhs = 0.0;
     char sense = 'L';
-
-    /* linking constraint: y_ij <= (n-2) x_ij forall i,j in V \ {1}
-     * transformed in (2-n) x_ij + y_ij <= 0 */
+    /* linking constraint: y_ij <= (n-1) x_ij forall i,j in V
+     * transformed in (1-n) x_ij + y_ij <= 0 */
     for (int i = 0; i < nnodes; i++) {
-        for (int h = 0; h < nnodes; h++) {
-            if (i == h) continue;
+        for (int j = 0; j < nnodes; j++) {
+            if (i == j) continue;
+
+            /* tighten constraint */
+            int x_coeff;
+            if (i != 0)
+                x_coeff = 2 - nnodes;
+            else
+                x_coeff = 1 - nnodes;
 
             /* fetch last row position in current model (better: the new one)
              * in CPLEX row == constraint */
             int lastrow = CPXgetnumrows(env, lp);
-            snprintf(cname[0], bufsize, "xy(%d)(%d)", i + 1, h + 1);
+            snprintf(cname[0], bufsize, "xy(%d)(%d)", i + 1, j + 1);
 
             /* add the new constraint and change coeff from zero to 1 and 1-m */
             if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
                 print_error("wrong CPXnewrows [degree]");
             }
-            if (CPXchgcoef(env, lp, lastrow, xxpos(i, h, nnodes), 1 - nnodes)) {
+            if (CPXchgcoef(env, lp, lastrow, xxpos(i, j, nnodes), x_coeff)) {
                 print_error("wrong CPXchgcoef [degree]");
             }
-            if (CPXchgcoef(env, lp, lastrow, ypos(i, h, nnodes), 1.0)) {
+            if (CPXchgcoef(env, lp, lastrow, ypos(i, j, nnodes), 1.0)) {
                 print_error("wrong CPXchgcoef [degree]");
             }
         }
     }
 
-    /* sum i in V \ {1} y_i1 = n - 1 */
+    /* sum j in V \ {1} y_1j = n - 1 */
     rhs = nnodes - 1;
     sense = 'E';
     int lastrow = CPXgetnumrows(env, lp);
@@ -521,14 +527,14 @@ void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
     if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
         print_error("wrong CPXnewrows [degree]");
     }
-    for (int h = 1; h < nnodes; h++) {
-        if (CPXchgcoef(env, lp, lastrow, ypos(0, h, nnodes), 1.0)) {
+    for (int j = 1; j < nnodes; j++) {
+        if (CPXchgcoef(env, lp, lastrow, ypos(0, j, nnodes), 1.0)) {
             print_error("wrong CPXchgcoef [degree]");
         }
     }
 
     /* flow control:
-     * sum i != j  y_ij - sum h != j y_jh = 1 forall j in V \ {1}*/
+     * sum i != j  y_ij - sum k != j y_jk = 1 forall j in V \ {1} */
     rhs = 1.0;
     sense = 'E';
     for (int j = 1; j < nnodes; j++) {
@@ -540,7 +546,7 @@ void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
             print_error("wrong CPXnewrows [degree]");
         }
 
-        /* and change the coefficent if node i is adiacent to h */
+        /* and change the coefficent if node i is adiacent to j */
         for (int i = 0; i < nnodes; i++) {
             /* the graph is complete so we only skip self loops */
             if (i == j) continue;
@@ -551,13 +557,13 @@ void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
             }
         }
 
-        /* and change the coefficent if node i is adiacent to h */
-        for (int h = 0; h < nnodes; h++) {
+        /* and change the coefficent if node j is adiacent to h */
+        for (int k = 0; k < nnodes; k++) {
             /* the graph is complete so we only skip self loops */
-            if (h == j) continue;
+            if (k == j) continue;
 
             /* change the coefficent from 0 to 1.0 */
-            if (CPXchgcoef(env, lp, lastrow, ypos(j, h, nnodes), -1.0)) {
+            if (CPXchgcoef(env, lp, lastrow, ypos(j, k, nnodes), -1.0)) {
                 print_error("wrong CPXchgcoef [degree]");
             }
         }
@@ -567,7 +573,7 @@ void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
     free(cname);
 }
 
-void add_GGfish_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
+void add_GGlect_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
     int nnodes = inst->nnodes;
     /* new integer variables
      * upper bound equal to m-1 */
@@ -743,17 +749,18 @@ void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
     double ub = nnodes - 1;
 
     /* ColumnNAME: array of array used to inject variables in CPLEX */
-    char** cname = (char**)calloc(1, sizeof(char*));
-    cname[0] = (char*)calloc(100, sizeof(char));
+    char** cname = (char**)malloc(sizeof(char*));
+    int bufsize = 100;
+    cname[0] = (char*)calloc(bufsize, sizeof(char));
 
     /* add a single flux variable y(i,j) forall i,j */
-    for (int i = 0; i < nnodes; i++)
+    for (int i = 0; i < nnodes; i++) {
         for (int j = 0; j < nnodes; j++) {
             if (i == j) continue;
 
             /* cost is zero for new variables, they matter for new constraints
              * only */
-            snprintf(cname[0], strlen(cname[0]), "y(%d)(%d)", i + 1, j + 1);
+            snprintf(cname[0], bufsize, "y(%d)(%d)", i + 1, j + 1);
             double obj = 0;
 
             /* inject variable and test it's position (upos) inside CPLEX */
@@ -764,78 +771,91 @@ void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
                 print_error(" wrong position for x var.s");
             }
         }
+    }
 
+    int izero = 0;
+    int index[2 * nnodes - 2];
+    double value[2 * nnodes - 2];
     double rhs = 0.0;
     char sense = 'L';
+    int nnz = 2;
 
-    for (int i = 0; i < nnodes; i++)
-        for (int h = 0; h < nnodes; h++) {
-            if (i == h) continue;
-
-            /* fetch last row position in current model (better: the new one)
-             * in CPLEX row == constraint */
-            int lastrow = CPXgetnumrows(env, lp);
-            snprintf(cname[0], strlen(cname[0]), "xy(%d)(%d)", i + 1, h + 1);
-
-            /* add the new constraint and change coeff from zero to 1 and 1-m */
-            if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-                print_error("wrong CPXnewrows [degree]");
-            }
-            if (CPXchgcoef(env, lp, lastrow, xxpos(i, h, nnodes), 1 - nnodes)) {
-                print_error("wrong CPXchgcoef [degree]");
-            }
-            if (CPXchgcoef(env, lp, lastrow, ypos(i, h, nnodes), 1.0)) {
-                print_error("wrong CPXchgcoef [degree]");
-            }
-        }
-
-    rhs = nnodes - 1;
-    sense = 'E';
-    int lastrow = CPXgetnumrows(env, lp);
-    snprintf(cname[0], strlen(cname[0]), "y1j");
-
-    /* add the new constraint (with coefficent zero, null lhs) */
-    if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-        print_error("wrong CPXnewrows [degree]");
-    }
-
-    for (int h = 1; h < nnodes; h++) {
-        if (CPXchgcoef(env, lp, lastrow, ypos(0, h, nnodes), 1.0)) {
-            print_error("wrong CPXchgcoef [degree]");
-        }
-    }
-
-    rhs = 1;
-    sense = 'E';
-    for (int j = 1; j < nnodes; j++) {
-        lastrow = CPXgetnumrows(env, lp);
-        snprintf(cname[0], strlen(cname[0]), "y(%d)", j + 1);
-
-        /* add the new constraint (with coefficent zero, null lhs) */
-        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-            print_error("wrong CPXnewrows [degree]");
-        }
-
-        /* and change the coefficent if node i is adiacent to h */
-        for (int i = 0; i < nnodes; i++) {
-            /* the graph is complete so we only skip self loops */
+    /* linking constraint: y_ij <= (n-1) x_ij forall i,j in V
+     * transformed in (1-n) x_ij + y_ij <= 0 */
+    for (int i = 0; i < nnodes; i++) {
+        for (int j = 0; j < nnodes; j++) {
             if (i == j) continue;
 
-            /* change the coefficent from 0 to 1.0 */
-            if (CPXchgcoef(env, lp, lastrow, ypos(i, j, nnodes), 1.0)) {
-                print_error("wrong CPXchgcoef [degree]");
+            /* tighten constraint */
+            int x_coeff;
+            if (i != 0)
+                x_coeff = 2 - nnodes;
+            else
+                x_coeff = 1 - nnodes;
+
+            snprintf(cname[0], bufsize, "xy(%d)(%d)", i + 1, j + 1);
+
+            /* build constraint equation */
+            index[0] = xxpos(i, j, nnodes);
+            value[0] = x_coeff;
+            index[1] = ypos(i, j, nnodes);
+            value[1] = 1.0;
+
+            if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero,
+                                      index, value, cname)) {
+                print_error("wrong CPXlazyconstraints() for linking-GGlit");
             }
         }
+    }
 
-        /* and change the coefficent if node i is adiacent to h */
-        for (int h = 0; h < nnodes; h++) {
-            /* the graph is complete so we only skip self loops */
-            if (h == j) continue;
+    /* sum j in V \ {1} y_1j = n - 1 */
+    rhs = nnodes - 1;
+    sense = 'E';
+    nnz = nnodes - 1;
+    izero = 0; /* index and value are setted starting from 1 */
 
-            /* change the coefficent from 0 to 1.0 */
-            if (CPXchgcoef(env, lp, lastrow, ypos(j, h, nnodes), -1.0)) {
-                print_error("wrong CPXchgcoef [degree]");
-            }
+    snprintf(cname[0], bufsize, "y1j");
+
+    for (int j = 1; j < nnodes; j++) {
+        index[j - 1] = ypos(0, j, nnodes);
+        value[j - 1] = 1.0; /* this can be faster memsetted */
+    }
+    if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero, index,
+                              value, cname)) {
+        print_error("wrong CPXlazyconstraints() for linking-GGlit");
+    }
+
+    /* flow control:
+     * sum i != j  y_ij - sum k != j y_jk = 1 forall j in V \ {1} */
+    rhs = 1.0;
+    sense = 'E';
+    nnz = 2 * nnodes - 2;
+    izero = 0;
+    for (int j = 1; j < nnodes; j++) {
+        snprintf(cname[0], bufsize, "y(%d)", j + 1);
+        int u = 0;
+
+        /* and change the coefficent if node i is adiacent to j */
+        for (int i = 0; i < nnodes; i++) {
+            if (i == j) continue;
+
+            index[u] = ypos(i, j, nnodes);
+            value[u] = 1.0;
+            u++;
+        }
+
+        /* and change the coefficent if node j is adiacent to h */
+        for (int k = 0; k < nnodes; k++) {
+            if (k == j) continue;
+
+            index[u] = ypos(j, k, nnodes);
+            value[u] = -1.0;
+            u++;
+        }
+
+        if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero, index,
+                                  value, cname)) {
+            print_error("wrong CPXlazyconstraints() for flow control");
         }
     }
 

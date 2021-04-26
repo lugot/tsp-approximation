@@ -158,7 +158,7 @@ instance parse_input_file(char* model_name, char* file_extension,
         line[strlen(line) - 1] = 0; /* get rid of linefeed */
 
         int icolon = 0;
-        while (icolon < len && line[icolon] != ':') icolon++;
+        while (icolon < strlen(line) && line[icolon] != ':') icolon++;
         if (icolon == len) {
             /* parsing NODE_COORD_SECTION or similar, no param */
             section_name = line;
