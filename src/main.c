@@ -35,19 +35,19 @@ int main(int argc, char** argv) {
     options->battery_test = maxi(1, options->battery_test);
     printf("generating %d instances\n", options->battery_test);
 
-    int nmodels = 1;
+    int nmodels = 2;
     enum model_types tests[] = {
-        MTZ_STATIC,
-        MTZ_LAZY,
-        GGLIT_STATIC,
-        GGLECT_STATIC,
-        GGLIT_LAZY,
-        BENDERS,
+        /*MTZ_STATIC,*/
+        /*MTZ_LAZY,*/
+        /*GGLIT_STATIC,*/
+        /*GGLECT_STATIC,*/
+        /*GGLIT_LAZY,*/
+        /*BENDERS,*/
         BENDERS_CALLBACK,
         HARD_FIXING
     };
 
-    int num_nodes = 20;
+    int num_nodes = 200;
     instance* insts =
     generate_random_instances(options->battery_test, num_nodes, 20.0);
     double zstar = 0.0;
@@ -65,7 +65,8 @@ int main(int argc, char** argv) {
             free(model_type_str);
 
             solution sol = TSPopt(inst, tests[j]);
-            printf("%lf\n", sol->zstar);
+            printf("%lf, ", sol->zstar);
+            printf("%lf\n", sol->solve_time);
 
             if (zstar == 0.0) zstar = sol->zstar;
             assert(fabs(zstar - sol->zstar) < EPSILON);

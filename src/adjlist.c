@@ -1,6 +1,7 @@
 #include "../include/adjlist.h"
 
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 adjlist adjlist_create(int N) {
@@ -39,6 +40,14 @@ void adjlist_add_arc(adjlist l, int i, int j) {
         pairs[j]->b = i;
     }
 }
+void adjlist_print(adjlist l) {
+    int N = l->npairs;
+    pair* pairs = l->pairs;
+
+    for (int i = 0; i < N; i++) {
+        printf("pair %d, %d\n", pairs[i]->a + 1, pairs[i]->b + 1);
+    }
+}
 
 pair* adjlist_loose_ends(adjlist l, int* npairs) {
     int N = l->npairs;
@@ -52,20 +61,31 @@ pair* adjlist_loose_ends(adjlist l, int* npairs) {
     int* visited = (int*)calloc(N, sizeof(int));
     for (int i = 0; i < N; i++) q[i] = -1;
 
-    for (int i = 0; i < N; i++) {
-        if (visited[i]) continue;
+    for (int k = 0; k < N; k++) {
+        if (visited[k]) continue;
 
         front = back = 0;
-        q[++back] = i;
+        q[back++] = k;
+        visited[k] = 1;
 
         pair p = (pair)calloc(1, sizeof(struct pair_t));
         p->a = p->b = -1;
 
+        int skip = 0;
+
         while (front < back) {
             int act = q[front++];
+            int i, j;
+            i = pairs[act]->a;
+            j = pairs[act]->b;
+
+            if (i == -1 && j == -1) {
+                skip = 1;
+                break;
+            }
 
             /* add to the solution */
-            if (pairs[act]->a == -1 || pairs[act]->b == -1) {
+            if (i == -1 || j == -1) {
                 if (p->a == -1) {
                     p->a = act;
                 } else {
@@ -74,20 +94,18 @@ pair* adjlist_loose_ends(adjlist l, int* npairs) {
             }
 
             /* add to the queue */
-            if (pairs[act]->a != -1 && !visited[act]) {
-                visited[act] = 1;
-                q[++back] = pairs[act]->b;
+            if (i != -1 && !visited[i]) {
+                visited[i] = 1;
+                q[back++] = i;
             }
-            if (pairs[act]->b != -1 && !visited[act]) {
-                visited[act] = 1;
-                q[++back] = pairs[act]->b;
+            if (j != -1 && !visited[j]) {
+                visited[j] = 1;
+                q[back++] = j;
             }
         }
 
         /* add to the solution */
-        ans[*npairs] = p;
-        (*npairs)++;
-        free(p);
+        if (!skip) ans[(*npairs)++] = p;
     }
     free(q);
     free(visited);

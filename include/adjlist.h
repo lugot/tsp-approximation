@@ -12,7 +12,9 @@ typedef struct adjlist_t {
 
 adjlist adjlist_create(int N);
 void adjlist_free(adjlist l);
-void add_arc(adjlist l, int a, int b);
+void adjlist_add_arc(adjlist l, int i, int j);
+void adjlist_print(adjlist l);
+pair* adjlist_loose_ends(adjlist l, int* npairs);
 
 
 #endif  // INCLUDE_ADJLIST_H_

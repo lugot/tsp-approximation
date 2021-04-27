@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/time.h>
 
+#include "../include/adjlist.h"
 #include "../include/globals.h"
 #include "../include/model_builder.h"
 #include "../include/tsp.h"
@@ -177,14 +178,40 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
             for (int i = 0; i < repeat; i++) {
                 lb = 1;
+
+                adjlist l = adjlist_create(nedges);
+                pair* pairs;
+                int npairs;
+
                 /* fix nodes */
-                for (int j = 0; j < ncols; j++) {
-                    if (rand_r(&seedp) % 5 != 0 && xstar[j] > 1 - EPSILON) {
-                        if (VERBOSE) printf("[Verbose] fixed %d\n", j);
-                        pos[0] = j;
-                        CPXchgbds(env, lp, 1, pos, &bound, &lb);
+                for (int i = 0; i < nedges; i++) {
+                    for (int j = i + 1; j < nedges; j++) {
+                        if (rand_r(&seedp) % 5 > 2 &&
+                            xstar[xpos(i, j, nedges)] == 1.0) {
+                            if (VERBOSE)
+                                printf("selected: %d %d\n", i + 1, j + 1);
+
+                            pos[0] = xpos(i, j, nedges);
+                            CPXchgbds(env, lp, 1, pos, &bound, &lb);
+
+                            adjlist_add_arc(l, i, j);
+                        }
                     }
                 }
+
+                lb = 0;
+                pairs = adjlist_loose_ends(l, &npairs);
+                for (int k = 0; k < npairs; k++) {
+                    int i, j;
+                    i = pairs[k]->a;
+                    j = pairs[k]->b;
+
+                    pos[0] = xpos(i, j, nedges);
+                    CPXchgbds(env, lp, 1, pos, &bound, &lb);
+                }
+                for (int k = 0; k < npairs; k++) free(pairs[k]);
+                free(pairs);
+                adjlist_free(l);
 
                 // if(inst->timetype == 0)
                 CPXsetdblparam(env, CPX_PARAM_TILIM,

@@ -35,41 +35,4 @@ Root relaxation solution time = 0.00 sec. (0.83 ticks)
 *     0+    0                        33607.6823    33464.7048             0.43%
 *     0+    0                        33523.7085    33464.7048             0.18%
       0     0        cutoff          33523.7085    33523.7085      111    0.00%
-Elapsed time = 0.09 sec. (53.23 ticks, tree = 0.01 MB, solutions = 2)
-
-Cover cuts applied:  5
-Zero-half cuts applied:  11
-Gomory fractional cuts applied:  1
-User cuts applied:  10
-
-Root node processing (before b&c):
-  Real time             =    0.09 sec. (53.27 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.09 sec. (53.27 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-Warning:  No solution found from 2 MIP starts.
-Retaining values of one MIP start for possible repair.
-Row 'c1' infeasible, all entries at implied bounds.
-Presolve time = 0.00 sec. (0.13 ticks)
-
-Root node processing (before b&c):
-  Real time             =    0.00 sec. (0.52 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.00 sec. (0.52 ticks)
-CPLEX Error  1217: No solution exists.
+Elapsed time = 0.11 sec. (53.23 ticks, tree = 0.01 MB, solutions = 2)
