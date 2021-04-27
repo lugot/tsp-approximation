@@ -42,12 +42,12 @@ int main(int argc, char** argv) {
         /*GGLIT_STATIC,*/
         /*GGLECT_STATIC,*/
         /*GGLIT_LAZY,*/
-        /*BENDERS,*/
-        BENDERS_CALLBACK,
+        BENDERS,
+        /*BENDERS_CALLBACK,*/
         HARD_FIXING
     };
 
-    int num_nodes = 200;
+    int num_nodes = 20;
     instance* insts =
     generate_random_instances(options->battery_test, num_nodes, 20.0);
     double zstar = 0.0;

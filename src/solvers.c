@@ -15,6 +15,11 @@
 #include "../include/utils.h"
 
 void assert_correctness(solution sol);
+void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, solution sol,
+                     int nedges, struct timeval start, struct timeval end,
+                     double* xstar);
+void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
+                         int ncols, double* xstar);
 
 solution TSPopt(instance inst, enum model_types model_type) {
     assert(inst != NULL);
@@ -99,6 +104,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
     struct timeval start, end;
     gettimeofday(&start, NULL);
+    gettimeofday(&end, NULL); /* warning supperssor: avoid uninitialized var */
 
     /* solve! */
     if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
@@ -116,129 +122,14 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
         case BENDERS:
             get_symmsol(xstar, nedges, sol->edges, sol->link);
-
-            while (!visitable(sol->link, nedges)) {
-                /* add the constraints */
-                add_BENDERS_sec(env, lp, sol);
-
-                /* some time has passed, updat the timelimit */
-                gettimeofday(&end, NULL);
-                /*if(inst->timetype == 0)
-                {*/
-                int restime =
-                    inst->params->timelimit - (end.tv_sec - start.tv_sec);
-                CPXsetdblparam(env, CPX_PARAM_TILIM, restime);
-                /*}
-                else
-                {
-                        int restime =
-                        inst->params->timelimit - (end.tv_sec -
-                start.tv_sec)*TICKS_PER_SECOND; CPXsetdblparam(env,
-                CPX_PARAM_DETTILIM, restime);
-                }*/
-
-                /* solve! */
-                if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
-
-                /* store the optimal solution found by CPLEX */
-                int num_cols = CPXgetnumcols(env, lp);
-
-                memset(xstar, '\0', num_cols * sizeof(double));
-                if (CPXgetx(env, lp, xstar, 0, num_cols - 1))
-                    print_error("CPXgetx() error\n");
-
-                /* retrive the solution */
-                get_symmsol(xstar, nedges, sol->edges, sol->link);
-            }
-
-            /* save the complete model */
-            char* filename;
-            filename = (char*)calloc(100, sizeof(char));
-            if (inst->model_folder == TSPLIB)
-                snprintf(filename, 28 + 2 * strlen(inst->model_name),
-                         "../data_tsplib/%s/%s.benders.lp", inst->model_name,
-                         inst->model_name);
-            if (inst->model_folder == GENERATED)
-                snprintf(filename, 31 + 2 * strlen(inst->model_name),
-                         "../data_generated/%s/%s.benders.lp", inst->model_name,
-                         inst->model_name);
-            CPXwriteprob(env, lp, filename, NULL);
-            free(filename);
-
+            perform_BENDERS(env, lp, inst, sol, nedges, start, end, xstar);
+            /*get_symmsol(xstar, nedges, sol->edges, sol->link); useless */
             break;
 
         case HARD_FIXING:
-            srand(0);
-            unsigned int seedp;
-            int repeat = 20;
 
-            char bound = 'L';
-            double lb;
-            int pos[1];
-
-            for (int i = 0; i < repeat; i++) {
-                lb = 1;
-
-                adjlist l = adjlist_create(nedges);
-                pair* pairs;
-                int npairs;
-
-                /* fix nodes */
-                for (int i = 0; i < nedges; i++) {
-                    for (int j = i + 1; j < nedges; j++) {
-                        if (rand_r(&seedp) % 5 > 2 &&
-                            xstar[xpos(i, j, nedges)] == 1.0) {
-                            if (VERBOSE)
-                                printf("selected: %d %d\n", i + 1, j + 1);
-
-                            pos[0] = xpos(i, j, nedges);
-                            CPXchgbds(env, lp, 1, pos, &bound, &lb);
-
-                            adjlist_add_arc(l, i, j);
-                        }
-                    }
-                }
-
-                lb = 0;
-                pairs = adjlist_loose_ends(l, &npairs);
-                for (int k = 0; k < npairs; k++) {
-                    int i, j;
-                    i = pairs[k]->a;
-                    j = pairs[k]->b;
-
-                    pos[0] = xpos(i, j, nedges);
-                    CPXchgbds(env, lp, 1, pos, &bound, &lb);
-                }
-                for (int k = 0; k < npairs; k++) free(pairs[k]);
-                free(pairs);
-                adjlist_free(l);
-
-                // if(inst->timetype == 0)
-                CPXsetdblparam(env, CPX_PARAM_TILIM,
-                               inst->params->timelimit / repeat);
-                /*else
-                        CPXsetdblparam(env, CPX_PARAM_DETTILIM,
-                   inst->params->timelimit/repeat);*/
-
-                CPXsetintparam(env, CPX_PARAM_NODELIM, 100);
-
-                if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
-
-                if (CPXgetx(env, lp, xstar, 0, ncols - 1))
-                    print_error("CPXgetx() error\n");
-
-                lb = 0;
-                // free nodes: no check because most of the nodes are fixed
-                if (i != repeat - 1) {
-                    for (int j = 0; j < ncols; j++) {
-                        pos[0] = j;
-                        CPXchgbds(env, lp, 1, pos, &bound, &lb);
-                    }
-                }
-            }
-
+            perform_HARD_FIXING(env, lp, inst, nedges, ncols, xstar);
             get_symmsol(xstar, nedges, sol->edges, sol->link);
-
             break;
 
         case MTZ_STATIC:
@@ -282,6 +173,127 @@ solution TSPopt(instance inst, enum model_types model_type) {
     CPXcloseCPLEX(&env);
 
     return sol;
+}
+
+void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, solution sol,
+                     int nedges, struct timeval start, struct timeval end,
+                     double* xstar) {
+    while (!visitable(sol->link, nedges)) {
+        /* add the constraints */
+        add_BENDERS_sec(env, lp, sol);
+
+        /* some time has passed, updat the timelimit */
+        gettimeofday(&end, NULL);
+        /*if(inst->timetype == 0)
+        {*/
+        int restime = inst->params->timelimit - (end.tv_sec - start.tv_sec);
+        CPXsetdblparam(env, CPX_PARAM_TILIM, restime);
+        /*}
+        else
+        {
+                int restime =
+                inst->params->timelimit - (end.tv_sec -
+        start.tv_sec)*TICKS_PER_SECOND; CPXsetdblparam(env,
+        CPX_PARAM_DETTILIM, restime);
+        }*/
+
+        /* solve! */
+        if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
+
+        /* store the optimal solution found by CPLEX */
+        int num_cols = CPXgetnumcols(env, lp);
+
+        memset(xstar, '\0', num_cols * sizeof(double));
+        if (CPXgetx(env, lp, xstar, 0, num_cols - 1))
+            print_error("CPXgetx() error\n");
+
+        /* retrive the solution */
+        get_symmsol(xstar, nedges, sol->edges, sol->link);
+    }
+
+    /* save the complete model */
+    char* filename;
+    filename = (char*)calloc(100, sizeof(char));
+    if (inst->model_folder == TSPLIB)
+        snprintf(filename, 28 + 2 * strlen(inst->model_name),
+                 "../data_tsplib/%s/%s.benders.lp", inst->model_name,
+                 inst->model_name);
+    if (inst->model_folder == GENERATED)
+        snprintf(filename, 31 + 2 * strlen(inst->model_name),
+                 "../data_generated/%s/%s.benders.lp", inst->model_name,
+                 inst->model_name);
+    CPXwriteprob(env, lp, filename, NULL);
+    free(filename);
+}
+
+void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
+                         int ncols, double* xstar) {
+    srand(0);
+    unsigned int seedp;
+    int repeat = 20;
+
+    char bound = 'L';
+    double lb;
+    int pos[1];
+
+    for (int iter = 0; iter < repeat; iter++) {
+        lb = 1;
+
+        adjlist l = adjlist_create(nedges);
+        pair* pairs;
+        int npairs;
+
+        /* fix nodes */
+        for (int i = 0; i < nedges; i++) {
+            for (int j = i + 1; j < nedges; j++) {
+                if (rand_r(&seedp) % 5 > 2 &&
+                    xstar[xpos(i, j, nedges)] == 1.0) {
+                    if (VERBOSE) printf("selected: %d %d\n", i + 1, j + 1);
+
+                    pos[0] = xpos(i, j, nedges);
+                    CPXchgbds(env, lp, 1, pos, &bound, &lb);
+
+                    adjlist_add_arc(l, i, j);
+                }
+            }
+        }
+
+        lb = 0;
+        pairs = adjlist_loose_ends(l, &npairs);
+        for (int k = 0; k < npairs; k++) {
+            int i, j;
+            i = pairs[k]->a;
+            j = pairs[k]->b;
+
+            pos[0] = xpos(i, j, nedges);
+            CPXchgbds(env, lp, 1, pos, &bound, &lb);
+        }
+        for (int k = 0; k < npairs; k++) free(pairs[k]);
+        free(pairs);
+        adjlist_free(l);
+
+        // if(inst->timetype == 0)
+        CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit / repeat);
+        /*else
+                CPXsetdblparam(env, CPX_PARAM_DETTILIM,
+           inst->params->timelimit/repeat);*/
+
+        CPXsetintparam(env, CPX_PARAM_NODELIM, 100);
+
+        if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
+
+        if (CPXgetx(env, lp, xstar, 0, ncols - 1))
+            print_error("CPXgetx() error\n");
+
+        lb = 0;
+        // free nodes: no check because most of the nodes are fixed
+        if (iter != repeat - 1) {
+            for (int j = 0; j < ncols; j++) {
+                pos[0] = j;
+                CPXchgbds(env, lp, 1, pos, &bound, &lb);
+            }
+        }
+    }
 }
 
 void get_symmsol(double* xstar, int nedges, edge* edges, int* link) {
