@@ -167,23 +167,24 @@ solution TSPopt(instance inst, enum model_types model_type) {
             break;
 
         case HARD_FIXING:
-
-            // int ncols = inst->nnodes * (inst->nnodes-1) / 2
             srand(0);
+            unsigned int seedp;
             int repeat = 20;
 
             char bound = 'L';
-            double lb = 1;
-            int* pos = calloc(1, sizeof(int));
+            double lb;
+            int pos[1];
 
             for (int i = 0; i < repeat; i++) {
                 lb = 1;
-                // fix nodes
-                for (int j = 0; j < ncols; j++)
-                    if (rand() % 5 != 0 && xstar[j] == 1) {
+                /* fix nodes */
+                for (int j = 0; j < ncols; j++) {
+                    if (rand_r(&seedp) % 5 != 0 && xstar[j] > 1 - EPSILON) {
+                        if (VERBOSE) printf("[Verbose] fixed %d\n", j);
                         pos[0] = j;
                         CPXchgbds(env, lp, 1, pos, &bound, &lb);
                     }
+                }
 
                 // if(inst->timetype == 0)
                 CPXsetdblparam(env, CPX_PARAM_TILIM,
@@ -201,14 +202,14 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
                 lb = 0;
                 // free nodes: no check because most of the nodes are fixed
-                if (i != repeat - 1)
+                if (i != repeat - 1) {
                     for (int j = 0; j < ncols; j++) {
                         pos[0] = j;
                         CPXchgbds(env, lp, 1, pos, &bound, &lb);
                     }
+                }
             }
 
-            free(pos);
             get_symmsol(xstar, nedges, sol->edges, sol->link);
 
             break;

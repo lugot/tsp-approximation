@@ -145,7 +145,6 @@ instance parse_input_file(char* model_name, char* file_extension,
 
     FILE* fp;
     fp = fopen(fname, "r");
-    printf("filename: %s\n", fname);
     assert(fp != NULL && "file not found while parsing");
 
     char* line = "";
@@ -159,10 +158,10 @@ instance parse_input_file(char* model_name, char* file_extension,
 
         int icolon = 0;
         while (icolon < strlen(line) && line[icolon] != ':') icolon++;
-        if (icolon == len) {
+        if (icolon == strlen(line)) {
             /* parsing NODE_COORD_SECTION or similar, no param */
             section_name = line;
-            section_param = NULL;
+            section_param = (char*)calloc(1, sizeof(char));
         } else if (line[icolon - 1] == ' ') {
             /* parsing att48-like tsp files */
             section_name = strtok_r(line, " : ", &saveptr);
@@ -175,9 +174,9 @@ instance parse_input_file(char* model_name, char* file_extension,
             section_param += 1;
         }
 
-        if (VERBOSE)
-            printf("[Verbose] parsing |%s| on |%s|\n", section_name,
-                   section_param);
+        if (VERBOSE) {
+            printf("[Verbose] parsing %s, %s\n", section_name, section_param);
+        }
 
         /* retrive section and inject parameter */
         switch (section_enumerator(section_name)) {
@@ -361,7 +360,6 @@ enum sections section_enumerator(char* section_name) {
     return UNHANDLED_SECTION;
 }
 enum instance_types instance_type_enumerator(char* section_param) {
-    printf("sectiona paramas%s\n", section_param);
     char* instance_types[] = {
         "TSP",
         "TOUR",

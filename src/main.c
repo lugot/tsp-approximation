@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
         add_params(inst, params);
 
         print_instance(inst, 1);
-        solution sol = TSPopt(inst, GGLIT_LAZY);
+        solution sol = TSPopt(inst, HARD_FIXING);
         print_solution(sol, 1);
         plot_solution_graphviz(sol);
 
@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     options->battery_test = maxi(1, options->battery_test);
     printf("generating %d instances\n", options->battery_test);
 
-    int nmodels = 8;
+    int nmodels = 1;
     enum model_types tests[] = {
         MTZ_STATIC,
         MTZ_LAZY,
