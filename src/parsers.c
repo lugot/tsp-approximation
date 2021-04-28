@@ -57,6 +57,7 @@ void print_usage() {
         "  --memory <integer>        Max memory in MB used by CPLEX "
         "computation\n");
     printf("  --integer_costs           Consider integer costs only\n");
+    // TODO(lugot): ADAPT
 }
 
 void parse_command_line(int argc, char** argv, cplex_params params,
@@ -67,7 +68,8 @@ void parse_command_line(int argc, char** argv, cplex_params params,
     static struct option long_options[] = {
         {"verbose", no_argument, NULL, 'v'},
         {"model_name", required_argument, NULL, 'm'},
-        {"battery test", required_argument, NULL, 'b'},
+        {"generate", required_argument, NULL, 'g'},
+        {"load_directory", required_argument, NULL, 'l'},
         {"time_limit", required_argument, NULL, 't'},
         {"cplex_seed", required_argument, NULL, 's'},
         {"threads", required_argument, NULL, 'T'},
@@ -78,21 +80,33 @@ void parse_command_line(int argc, char** argv, cplex_params params,
 
     int long_index, opt;
     long_index = opt = 0;
-    while ((opt = getopt_long(argc, argv, "vm:b:t:s:T:M:i:h", long_options,
+    while ((opt = getopt_long(argc, argv, "vm:g:l:b:t:s:T:M:i:h", long_options,
                               &long_index)) != -1) {
         switch (opt) {
             case 'v':
                 VERBOSE = 1;
                 break;
             case 'm':
+                options->mode = SINGLE_MODEL;
                 options->model_name =
                     (char*)calloc(1 + strlen(optarg), sizeof(char));
                 snprintf(options->model_name, 1 + strlen(optarg), "%s", optarg);
                 break;
-            case 'b':
+            case 'g':
+                options->mode = GENERATE;
                 options->battery_test = atoi(optarg);
                 break;
             case 'l':
+                options->mode = LOAD_DIR;
+                if (!strcmp(optarg, "tsplib"))
+                    options->folder = TSPLIB;
+                else if (!strcmp(optarg, "generated"))
+                    options->folder = GENERATED;
+                else
+                    print_error("wrong folder");
+
+                break;
+            case 't':
                 params->timelimit = atof(optarg);
                 break;
             case 's':
@@ -109,6 +123,7 @@ void parse_command_line(int argc, char** argv, cplex_params params,
                 break;
             case '?':
                 print_usage();
+                printf("opt: %c, optarg: %s\n", opt, optarg);
                 assert(opt != '?' && "unknown option");
         }
     }
@@ -216,7 +231,7 @@ instance parse_input_file(char* model_name, char* file_extension,
                 break;
 
             case EDGE_WEIGHT_FORMAT:
-                assert(strcmp(section_param, "LOWER_DIAG_ROW") == 0 &&
+                assert(strcmp(section_param, "LOWER_DIAG_ROW") != 0 &&
                        "edge weight format unhandled");
                 break;
 
@@ -310,6 +325,7 @@ instance parse_input_file(char* model_name, char* file_extension,
                     for (int j = 0; j <= i; j++)
                         inst->adjmatrix[i][j] = weights[k++];
                 }
+                free(weights);
 
                 break;
             }
@@ -328,6 +344,44 @@ instance parse_input_file(char* model_name, char* file_extension,
     free(fname);
 
     return inst;
+}
+
+instance* parse_input_dir(enum model_folders folder, char* file_extension,
+                          int* ninstances, int nodes_lb, int nodes_ub) {
+    assert(nodes_lb >= 0);
+    assert(nodes_ub > 0);
+    assert(nodes_lb < nodes_ub);
+    char** model_names = list_files(folder, ninstances);
+
+    instance* insts = (instance*)calloc(*ninstances, sizeof(struct instance_t));
+
+
+    int nmodels = *ninstances;
+    *ninstances = 0;
+    for (int i = 0; i < nmodels; i++) {
+        instance inst =
+            parse_input_file(model_names[i], file_extension, folder);
+
+        if (nodes_lb <= inst->nnodes && inst->nnodes < nodes_ub) {
+            insts[(*ninstances)++] = inst;
+        }
+
+        free(model_names[i]);
+    }
+    free(model_names);
+
+    instance* tmp =
+        (instance*)realloc(insts, (*ninstances) * sizeof(struct instance_t));
+    if (tmp == NULL) {
+        free(insts);
+        assert(tmp != NULL);
+        /* now you can die pacefully */
+
+    } else {
+        insts = tmp;
+    }
+
+    return insts;
 }
 
 enum sections section_enumerator(char* section_name) {

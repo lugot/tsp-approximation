@@ -259,21 +259,26 @@ char** list_files(enum model_folders folder, int* nmodels) {
     }
 
     /* first count nfiles */
-    DIR* dp =  opendir(path);
+    DIR* dp = opendir(path);
     assert(dp != NULL);
 
+    *nmodels = 0;
     struct dirent* ep;
     while ((ep = readdir(dp))) (*nmodels)++;
     closedir(dp);
+    *(nmodels) -= 2;
 
     char** model_names = (char**)calloc(*nmodels, sizeof(char*));
 
     /* then grab em */
-    dp =  opendir(path);
+    dp = opendir(path);
     assert(dp != NULL);
 
     int i = 0;
     while ((ep = readdir(dp))) {
+        if (!strcmp(ep->d_name, ".")) continue;
+        if (!strcmp(ep->d_name, "..")) continue;
+
         model_names[i] = (char*)calloc(1 + strlen(ep->d_name), sizeof(char));
         snprintf(model_names[i], 1 + strlen(ep->d_name), "%s", ep->d_name);
 
