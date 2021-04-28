@@ -11,6 +11,14 @@
 #include "../include/utils.h"
 
 int main(int argc, char** argv) {
+    int nmodels;
+    char** model_names = list_files(TSPLIB, &nmodels);
+
+    for (int i = 0; i < nmodels; i++) {
+        printf("%s\n", model_names[i]);
+    }
+    return 0;
+
     cplex_params params = create_params();
     run_options options = create_options();
     parse_command_line(argc, argv, params, options);
@@ -30,26 +38,23 @@ int main(int argc, char** argv) {
         return EXIT_SUCCESS;
     }
 
-
     /* execute battery test */
     options->battery_test = maxi(1, options->battery_test);
     printf("generating %d instances\n", options->battery_test);
 
-    int nmodels = 2;
-    enum model_types tests[] = {
-        /*MTZ_STATIC,*/
-        /*MTZ_LAZY,*/
-        /*GGLIT_STATIC,*/
-        /*GGLECT_STATIC,*/
-        /*GGLIT_LAZY,*/
-        BENDERS,
-        /*BENDERS_CALLBACK,*/
-        HARD_FIXING
-    };
+    int ntests = 2;
+    enum model_types tests[] = {/*MTZ_STATIC,*/
+                                /*MTZ_LAZY,*/
+                                /*GGLIT_STATIC,*/
+                                /*GGLECT_STATIC,*/
+                                /*GGLIT_LAZY,*/
+                                BENDERS,
+                                /*BENDERS_CALLBACK,*/
+                                HARD_FIXING};
 
     int num_nodes = 20;
     instance* insts =
-    generate_random_instances(options->battery_test, num_nodes, 20.0);
+        generate_random_instances(options->battery_test, num_nodes, 20.0);
     double zstar = 0.0;
 
     for (int i = 0; i < options->battery_test; i++) {
@@ -58,7 +63,7 @@ int main(int argc, char** argv) {
         instance inst = insts[i];
         add_params(inst, params);
 
-        for (int j = 0; j < nmodels; j++) {
+        for (int j = 0; j < ntests; j++) {
             char* model_type_str = model_type_tostring(tests[j]);
             printf("\tsolving %s on instance %s: ", model_type_str,
                    inst->model_name);

@@ -484,6 +484,7 @@ void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
         }
     }
 
+
     double rhs = 0.0;
     char sense = 'L';
     /* linking constraint: y_ij <= (n-1) x_ij forall i,j in V

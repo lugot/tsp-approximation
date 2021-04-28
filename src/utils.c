@@ -1,6 +1,7 @@
 #include "../include/utils.h"
 
 #include <assert.h>
+#include <dirent.h>
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -244,4 +245,41 @@ void swap(int* x, int* y) {
     temp = *y;
     *y = *x;
     *x = temp;
+}
+
+char** list_files(enum model_folders folder, int* nmodels) {
+    char* path;
+    switch (folder) {
+        case TSPLIB:
+            path = "../data_tsplib";
+            break;
+        case GENERATED:
+            path = "../data_generated";
+            break;
+    }
+
+    /* first count nfiles */
+    DIR* dp =  opendir(path);
+    assert(dp != NULL);
+
+    struct dirent* ep;
+    while ((ep = readdir(dp))) (*nmodels)++;
+    closedir(dp);
+
+    char** model_names = (char**)calloc(*nmodels, sizeof(char*));
+
+    /* then grab em */
+    dp =  opendir(path);
+    assert(dp != NULL);
+
+    int i = 0;
+    while ((ep = readdir(dp))) {
+        model_names[i] = (char*)calloc(1 + strlen(ep->d_name), sizeof(char));
+        snprintf(model_names[i], 1 + strlen(ep->d_name), "%s", ep->d_name);
+
+        i++;
+    }
+    closedir(dp);
+
+    return model_names;
 }

@@ -1,0 +1,3 @@
+*.o
+src/tsp_approx
+src/.cache/*
