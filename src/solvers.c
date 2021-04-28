@@ -127,7 +127,6 @@ solution TSPopt(instance inst, enum model_types model_type) {
             break;
 
         case HARD_FIXING:
-
             perform_HARD_FIXING(env, lp, inst, nedges, ncols, xstar);
             get_symmsol(xstar, nedges, sol->edges, sol->link);
             break;
@@ -153,7 +152,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
     gettimeofday(&end, NULL);
 
     // if(inst->timetype == 0)
-    sol->solve_time = end.tv_sec - start.tv_sec;  // sec
+    sol->solve_time = (end.tv_sec - start.tv_sec);  // sec
     /*else
             sol->solve_time = sol->end - sol->start; //ticks*/
 
@@ -230,48 +229,44 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
                          int ncols, double* xstar) {
     srand(0);
     unsigned int seedp;
-    int repeat = 20;
+    int repeat = 40;
 
-    char bound = 'L';
-    double lb;
-    int pos[1];
+    char lbc, ubc;
+    lbc = 'L';
+    ubc = 'U';
+    int pos;
+    double one = 1.0;
+    double zero = 0.0;
 
     for (int iter = 0; iter < repeat; iter++) {
-        lb = 1;
-
         adjlist l = adjlist_create(nedges);
-        pair* pairs;
-        int npairs;
 
         /* fix nodes */
         for (int i = 0; i < nedges; i++) {
             for (int j = i + 1; j < nedges; j++) {
-                if (rand_r(&seedp) % 5 > 2 &&
-                    xstar[xpos(i, j, nedges)] == 1.0) {
-                    if (VERBOSE) printf("selected: %d %d\n", i + 1, j + 1);
+                if (rand_r(&seedp) % 10 > 5 &&
+                    xstar[xpos(i, j, nedges)] > 1.0 - 1e-9) {
+                    if (VERBOSE)
+                        printf("[Verbose] fixing (%d,%d)\n", i + 1, j + 1);
 
-                    pos[0] = xpos(i, j, nedges);
-                    CPXchgbds(env, lp, 1, pos, &bound, &lb);
+                    pos = xpos(i, j, nedges);
+                    CPXchgbds(env, lp, 1, &pos, &lbc, &one);
 
                     adjlist_add_arc(l, i, j);
                 }
             }
         }
 
-        lb = 0;
-        pairs = adjlist_loose_ends(l, &npairs);
-        for (int k = 0; k < npairs; k++) {
-            int i, j;
-            i = pairs[k]->a;
-            j = pairs[k]->b;
+        int i, j;
+        while (adjlist_loose_ends(l, &i, &j)) {
+            if (VERBOSE) printf("[Verbose] removing (%d,%d)\n", i + 1, j + 1);
 
-            pos[0] = xpos(i, j, nedges);
-            CPXchgbds(env, lp, 1, pos, &bound, &lb);
+            pos = xpos(i, j, nedges);
+            CPXchgbds(env, lp, 1, &pos, &ubc, &zero);
         }
-        for (int k = 0; k < npairs; k++) free(pairs[k]);
-        free(pairs);
         adjlist_free(l);
 
+        CPXwriteprob(env, lp, "./wow", "LP");
         // if(inst->timetype == 0)
         CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit / repeat);
         /*else
@@ -285,12 +280,11 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
         if (CPXgetx(env, lp, xstar, 0, ncols - 1))
             print_error("CPXgetx() error\n");
 
-        lb = 0;
-        // free nodes: no check because most of the nodes are fixed
+        /* free nodes: no check because most of the nodes are fixed */
         if (iter != repeat - 1) {
             for (int j = 0; j < ncols; j++) {
-                pos[0] = j;
-                CPXchgbds(env, lp, 1, pos, &bound, &lb);
+                CPXchgbds(env, lp, 1, &j, &lbc, &zero);
+                CPXchgbds(env, lp, 1, &j, &ubc, &one);
             }
         }
     }
@@ -402,6 +396,7 @@ void save_results(instance* insts, int ninstances) {
     }
 
     fclose(fp);
+    printf("file closed\n");
 
     /* generate the plot */
     // TODO(lugot): adjust timelimit

@@ -17,8 +17,8 @@ int main(int argc, char** argv) {
                                 /*GGLIT_STATIC,*/
                                 /*GGLECT_STATIC,*/
                                 /*GGLIT_LAZY,*/
-                                BENDERS,
-                                /*BENDERS_CALLBACK,*/
+                                /* BENDERS, */
+                                BENDERS_CALLBACK,
                                 HARD_FIXING};
 
     cplex_params params = create_params();
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
             options->battery_test = maxi(1, options->battery_test);
             printf("generating %d instances\n", options->battery_test);
 
-            int num_nodes = 20;
+            int num_nodes = 10;
             instance* insts = generate_random_instances(options->battery_test,
                                                         num_nodes, 20.0);
             double zstar = 0.0;
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 
             int ninstances;
             instance* insts =
-                parse_input_dir(options->folder, "tsp", &ninstances, 0, 30);
+                parse_input_dir(options->folder, "tsp", &ninstances, 0, 40);
             double zstar = 0.0;
 
             for (int i = 0; i < ninstances; i++) {
@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
                     assert(fabs(zstar - sol->zstar) < EPSILON);
                 }
             }
-            save_results(insts, options->battery_test);
+            save_results(insts, ninstances);
 
             break;
         }
