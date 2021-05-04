@@ -37,8 +37,6 @@ int main(int argc, char** argv) {
             print_instance(inst, 1);
             solution sol = TSPopt(inst, HARD_FIXING);
             print_solution(sol, 1);
-            plot_solution_graphviz(sol);
-
             break;
         }
         case GENERATE: {

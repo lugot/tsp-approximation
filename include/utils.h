@@ -17,6 +17,7 @@ int reachable(int* link, int i, int j);
 int visitable(int* link, int nnodes);
 
 char* model_type_tostring(enum model_types model_type);
+char* model_folder_tostring(enum model_folders folder);
 
 void print_error(const char* err, ...);
 

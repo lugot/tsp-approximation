@@ -135,6 +135,7 @@ void free_instance(instance inst) {
 
     // TODO(lugot): free sols?
     /*for (int i=0; i<nnodes; i++) free(inst->adjmatrix[i]);*/
+    for (int i = 0; i < inst->nsols; i++) free_solution(inst->sols[i]);
     free(inst->sols);
 }
 
@@ -145,7 +146,26 @@ void save_instance(instance inst) {
     snprintf(filename, bufsize, "../data_generated/%s/%s.tsp", inst->model_name,
              inst->model_name);
 
+    // TODO(lugot): IMPLEMENT
     free(filename);
+}
+
+solution create_solution(instance inst, enum model_types model_type,
+                         int nedges) {
+    solution sol = (solution)calloc(1, sizeof(struct solution_t));
+
+    sol->model_type = model_type;
+    sol->nedges = nedges;
+    sol->edges = (edge*)calloc(nedges, sizeof(struct edge_t));
+    sol->link = (int*)calloc(nedges, sizeof(int));
+
+    return sol;
+}
+void free_solution(solution sol) {
+    free(sol->edges);
+    free(sol->link);
+
+    free(sol);
 }
 
 void add_solution(instance inst, solution sol) {
@@ -365,10 +385,77 @@ void print_solution(solution sol, int print_data) {
             printf("- solve time: %lf ticks\n", sol->solve_time);*/
 }
 
-void plot_solution_graphviz(solution sol) {
-    plot_solutions_graphviz((solution[]){sol}, 1);
+void plot_solution_graphviz(solution sol, int* edgecolors, int version) {
+    double box_size = 20.0;
+    double max_coord = 0.0;
+
+    instance inst = sol->inst;
+    assert(inst != NULL && "no instance associated with solution");
+    assert(inst->nodes != NULL);
+    int nnodes = inst->nnodes;
+
+    for (int i = 0; i < nnodes && inst->nodes != NULL; i++) {
+        max_coord = max(max_coord, fabs(inst->nodes[i].x));
+        max_coord = max(max_coord, fabs(inst->nodes[i].y));
+    }
+
+    char* fname;
+    int bsize = 100;
+    fname = (char*)calloc(bsize, sizeof(char));
+    char* folder = model_folder_tostring(inst->model_folder);
+
+    snprintf(fname, bsize, "../data_%s/%s/%s.%d.dot", folder, inst->model_name,
+             inst->model_name, version);
+
+    free(folder);
+
+    FILE* fp;
+    fp = fopen(fname, "w");
+    assert(fp != NULL && "file not found while saving .dot");
+
+    fprintf(fp, "graph %s {\n", inst->model_name);
+    fprintf(fp, "\tnode [shape=circle fillcolor=white]\n");
+    for (int i = 0; i < nnodes && inst->nodes != NULL; i++) {
+        double plot_posx = inst->nodes[i].x / max_coord * box_size;
+        double plot_posy = inst->nodes[i].y / max_coord * box_size;
+
+        fprintf(fp, "\t%d [ pos = \"%lf,%lf!\"]\n", i + 1, plot_posx,
+                plot_posy);
+    }
+    fprintf(fp, "\n");
+
+    int ncolors = 5;
+    char* colors[] = {"black", "red", "green", "blue", "purple"};
+
+    for (int k = 0; k < sol->nedges; k++) {
+        fprintf(fp, "\t%d -- %d", sol->edges[k].i + 1, sol->edges[k].j + 1);
+
+        if (sol->model_type == OPTIMAL_TOUR) {
+            fprintf(fp, " [color = red]");
+        } else if (edgecolors != NULL) {
+            fprintf(fp, " [color = %s]", colors[edgecolors[k] % ncolors]);
+        }
+        fprintf(fp, "\n");
+    }
+    fprintf(fp, "}");
+
+    /* TODO(lugot): FIX */
+    /* bsize = 200; */
+    /* char* command = (char*)calloc(bsize, sizeof(char)); */
+    /* snprintf(command, bsize, */
+    /*          "(cd ../data_%s/%s && dot -Kneato %s.%d.dot -Tpng > %s.%d.png)", */
+    /*          model_folder_tostring(inst->model_folder), inst->model_name, */
+    /*          inst->model_name, version, inst->model_name, version); */
+
+    /* printf("command: |%s|\n", command); */
+    /* system(command); */
+    /* free(command); */
+
+    fclose(fp);
+    free(fname);
 }
 
+// TODO(lugot): DEPRECATED
 void plot_solutions_graphviz(solution* sols, int num_sols) {
     // TODO(lugot): make proportional to the number of nodes
     double box_size = 20.0;
@@ -384,14 +471,14 @@ void plot_solutions_graphviz(solution* sols, int num_sols) {
     }
 
     char* fname;
-    int bufsize = 100;
-    fname = (char*)calloc(bufsize, sizeof(char));
+    int bsize = 100;
+    fname = (char*)calloc(bsize, sizeof(char));
     if (inst->model_folder == TSPLIB)
-        snprintf(fname, bufsize, "../data_tsplib/%s/%s.dot", inst->model_name,
+        snprintf(fname, bsize, "../data_tsplib/%s/%s.dot", inst->model_name,
                  inst->model_name);
     if (inst->model_folder == GENERATED)
-        snprintf(fname, bufsize, "../data_generated/%s/%s.dot",
-                 inst->model_name, inst->model_name);
+        snprintf(fname, bsize, "../data_generated/%s/%s.dot", inst->model_name,
+                 inst->model_name);
 
     FILE* fp;
     fp = fopen(fname, "w");
@@ -421,5 +508,76 @@ void plot_solutions_graphviz(solution* sols, int num_sols) {
     fprintf(fp, "}");
 
     fclose(fp);
+
+    bsize = 200;
+    char* command = (char*)calloc(bsize, sizeof(char));
+    if (inst->model_folder == TSPLIB) {
+        snprintf(command, bsize,
+                 "(cd ../data_tsplib/%s && dot -Kneato %s -Tpng > %s.png)",
+                 inst->model_name, fname, fname);
+    }
+    if (inst->model_folder == GENERATED) {
+        snprintf(command, bsize,
+                 "(cd ../data_generated/%s &&  dot -Kneato %s -Tpng > %s.png)",
+                 inst->model_name, fname, fname);
+    }
+
+    printf("command: %s\n", command);
+    system(command);
+    free(command);
     free(fname);
+}
+
+void save_results(instance* insts, int ninstances) {
+    assert(insts != NULL);
+    assert(insts[0] != NULL);
+
+    /* remove and create new fresh csv */
+    remove("../results/results.csv");
+    FILE* fp;
+    fp = fopen("../results/results.csv", "w");
+    assert(fp != NULL && "file not found while saving .csv");
+
+    /* save the data */
+    int nmodels = insts[0]->nsols;
+    fprintf(fp, "%d,", nmodels);
+
+    for (int i = 0; i < nmodels; i++) {
+        enum model_types model_type = insts[0]->sols[i]->model_type;
+        assert(model_type != NOSEC && model_type != OPTIMAL_TOUR);
+
+        char* model_name_str = model_type_tostring(model_type);
+        fprintf(fp, "%s", model_name_str);
+        free(model_name_str);
+
+        if (i < nmodels - 1)
+            fprintf(fp, ",");
+        else
+            fprintf(fp, "\n");
+    }
+
+    for (int i = 0; i < ninstances; i++) {
+        instance inst = insts[i];
+        fprintf(fp, "%s,", inst->model_name);
+
+        assert(inst->nsols == nmodels && "missing some solutions");
+
+        for (int j = 0; j < nmodels; j++) {
+            assert(inst->sols[j]->model_type == insts[0]->sols[j]->model_type);
+
+            if (j < nmodels - 1)
+                fprintf(fp, "%lf,", inst->sols[j]->solve_time);
+            else
+                fprintf(fp, "%lf\n", inst->sols[j]->solve_time);
+        }
+    }
+
+    fclose(fp);
+    printf("file closed\n");
+
+    /* generate the plot */
+    // TODO(lugot): adjust timelimit
+    system(
+        "python3 ../results/perprof.py -D , -T 3600 -S 2 -M 2 "
+        "../results/results.csv ../results/pp.pdf -P 'model comparisons'");
 }

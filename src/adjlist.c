@@ -8,81 +8,110 @@
 adjlist adjlist_create(int N) {
     adjlist l = (adjlist)calloc(1, sizeof(struct adjlist_t));
 
-    l->pairs = (pair*)calloc(N, sizeof(struct pair_t));
+    l->neigh = (int**)calloc(N, sizeof(int*));
     for (int i = 0; i < N; i++) {
-        l->pairs[i] = (pair)calloc(1, sizeof(struct pair_t));
-        l->pairs[i]->a = l->pairs[i]->b = -1;
+        l->neigh[i] = (int*)calloc(2, sizeof(int));
+        l->neigh[i][0] = l->neigh[i][1] = -1;
     }
 
-    l->npairs = N;
+    l->N = N;
 
     l->visited = (int*)calloc(N, sizeof(int));
     l->i = 0;
+    l->bit = 0;
 
     return l;
 }
 void adjlist_free(adjlist l) {
-    for (int i = 0; i < l->npairs; i++) free(l->pairs[i]);
+    for (int i = 0; i < l->N; i++) free(l->neigh[i]);
+    free(l->visited);
+
     free(l);
 }
 
 void adjlist_add_arc(adjlist l, int i, int j) {
-    pair* pairs = l->pairs;
+    int** neigh = l->neigh;
 
-    assert(pairs[i]->a == -1 || pairs[i]->b == -1);
-    assert(pairs[j]->a == -1 || pairs[j]->b == -1);
+    assert(neigh[i][0] == -1 || neigh[i][1] == -1);
+    assert(neigh[j][1] == -1 || neigh[j][1] == -1);
 
-    if (pairs[i]->a == -1) {
-        pairs[i]->a = j;
+    if (neigh[i][0] == -1) {
+        neigh[i][0] = j;
     } else {
-        pairs[i]->b = j;
+        neigh[i][1] = j;
     }
 
-    if (pairs[j]->a == -1) {
-        pairs[j]->a = i;
+    if (neigh[j][0] == -1) {
+        neigh[j][0] = i;
     } else {
-        pairs[j]->b = i;
+        neigh[j][1] = i;
     }
 }
 void adjlist_print(adjlist l) {
-    int N = l->npairs;
-    pair* pairs = l->pairs;
+    int** neigh = l->neigh;
+    int N = l->N;
 
     for (int i = 0; i < N; i++) {
-        printf("pair %d, %d\n", pairs[i]->a + 1, pairs[i]->b + 1);
+        printf("%d: pair %d, %d\n", i + 1, neigh[i][0] + 1, neigh[i][1] + 1);
     }
 }
 void adjlist_reset(adjlist l) {
-    l->visited = (int*)memset(l->visited, 0, l->npairs * sizeof(int));
+    l->visited = (int*)memset(l->visited, 0, l->N * sizeof(int));
     l->i = 0;
+    l->bit = 0;
+}
+
+int adjlist_get_arc(adjlist l, int* u, int* v) {
+    /* writing l-> is so boring.. */
+    int** neigh = l->neigh;
+    int N = l->N;
+    int arc_found = 0;
+
+    do {
+        while (l->i < N && (neigh[l->i][0] == -1)) l->i++;
+        if (l->i == N) return 0;
+
+        if (neigh[l->i][l->bit] != -1) {
+            *u = l->i;
+            *v = neigh[l->i][l->bit];
+
+            if (*u < *v) arc_found = 1;
+        }
+        l->bit = (l->bit + 1) % 2;
+        if (l->bit == 0) l->i++;
+
+    } while (!arc_found);
+
+    return 1;
 }
 
 int adjlist_loose_ends(adjlist l, int* end1, int* end2) {
-    int N = l->npairs;
-    pair* pairs = l->pairs;
+    /* writing l-> is so boring.. */
+    int** neigh = l->neigh;
+    int N = l->N;
+    int* visited = l->visited;
 
     int front, back;
     int* q = (int*)malloc(N * sizeof(int));
     q = (int*)memset(q, -1, N * sizeof(int));
 
-    while (l->i < N &&
-           (l->visited[l->i] || (l->pairs[l->i]->a == l->pairs[l->i]->b)))
+    while (l->i < N && (visited[l->i] || (neigh[l->i][0] == neigh[l->i][1])))
         l->i++;
     if (l->i == N) return 0;
 
     front = back = 0;
     q[back++] = l->i;
-    l->visited[l->i] = 1;
+    visited[l->i] = 1;
 
     *end1 = *end2 = -1;
     while (front < back) {
         int act = q[front++];
-        int i, j;
-        i = pairs[act]->a;
-        j = pairs[act]->b;
+        int u, v;
+        u = neigh[act][0];
+        v = neigh[act][1];
 
         /* add to the solution */
-        if (i == -1 || j == -1) {
+        if (u == -1 || v == -1) {
             if (*end1 == -1) {
                 *end1 = act;
             } else {
@@ -91,13 +120,13 @@ int adjlist_loose_ends(adjlist l, int* end1, int* end2) {
         }
 
         /* add to the queue */
-        if (i != -1 && !l->visited[i]) {
-            l->visited[i] = 1;
-            q[back++] = i;
+        if (u != -1 && !visited[u]) {
+            visited[u] = 1;
+            q[back++] = u;
         }
-        if (j != -1 && !l->visited[j]) {
-            l->visited[j] = 1;
-            q[back++] = j;
+        if (v != -1 && !visited[v]) {
+            visited[v] = 1;
+            q[back++] = v;
         }
     }
     free(q);
@@ -105,12 +134,12 @@ int adjlist_loose_ends(adjlist l, int* end1, int* end2) {
     return 1;
 }
 
-/* pair* adjlist_loose_ends(adjlist l, int* npairs) { */
-/*     int N = l->npairs; */
-/*     pair* pairs = l->pairs; */
+/* pair* adjlist_loose_ends(adjlist l, int* nneigh) { */
+/*     int N = l->nneigh; */
+/*     pair* neigh = l->pairs; */
 
 /*     pair* ans = (pair*)calloc(N, sizeof(struct pair_t)); */
-/*     *npairs = 0; */
+/*     *nneigh = 0; */
 
 /*     int front, back; */
 /*     int* q = (int*)malloc(N * sizeof(int)); */
@@ -125,15 +154,15 @@ int adjlist_loose_ends(adjlist l, int* end1, int* end2) {
 /*         visited[k] = 1; */
 
 /*         pair p = (pair)calloc(1, sizeof(struct pair_t)); */
-/*         p->a = p->b = -1; */
+/*         p[0] = p[1] = -1; */
 
 /*         int skip = 0; */
 
 /*         while (front < back) { */
 /*             int act = q[front++]; */
 /*             int i, j; */
-/*             i = pairs[act]->a; */
-/*             j = pairs[act]->b; */
+/*             i = neigh[act][0]; */
+/*             j = neigh[act][1]; */
 /*             printf("act: %d, i: %d, j: %d\n", act + 1, i + 1, j + 1); */
 
 /*             if (i == -1 && j == -1) { */
@@ -143,10 +172,10 @@ int adjlist_loose_ends(adjlist l, int* end1, int* end2) {
 
 /*             /1* add to the solution *1/ */
 /*             if (i == -1 || j == -1) { */
-/*                 if (p->a == -1) { */
-/*                     p->a = act; */
+/*                 if (p[0] == -1) { */
+/*                     p[0] = act; */
 /*                 } else { */
-/*                     p->b = act; */
+/*                     p[1] = act; */
 /*                 } */
 /*             } */
 
@@ -162,7 +191,7 @@ int adjlist_loose_ends(adjlist l, int* end1, int* end2) {
 /*         } */
 
 /*         /1* add to the solution *1/ */
-/*         if (!skip) ans[(*npairs)++] = p; */
+/*         if (!skip) ans[(*nneigh)++] = p; */
 /*     } */
 /*     free(q); */
 /*     free(visited); */

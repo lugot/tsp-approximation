@@ -92,13 +92,18 @@ instance* generate_random_instances(int num_instances, int num_nodes,
                                     int box_size);
 instance clone_instance(instance inst);
 void free_instance();
+
+/* solution manipulators */
+solution create_solution(instance inst, enum model_types model_type, int nedges);
 void add_solution(instance inst, solution sol);
+void free_solution(solution sol);
 
 /* printers */
 void print_instance(instance inst, int print_data);
 void print_cplex_params(cplex_params params);
 void print_solution(solution sol, int print_data);
-void plot_solution_graphviz(solution sol);
+void plot_solution_graphviz(solution sol, int* edgecolors, int version);
 void plot_solutions_graphviz(solution* sols, int num_sols);
+void save_results(instance* insts, int ninstances);
 
 #endif  // INCLUDE_TSP_H_

@@ -27,14 +27,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
     assert(inst->instance_type == TSP && "need TSP instance");
 
     /* create and populate solution */
-    solution sol = (solution)calloc(1, sizeof(struct solution_t));
-    sol->model_type = model_type;
-
-    int nedges;
-    nedges = sol->nedges = inst->nnodes;
-    sol->edges = (edge*)calloc(nedges, sizeof(struct edge_t));
-    sol->link = (int*)calloc(nedges, sizeof(int));
-
+    solution sol = create_solution(inst, model_type, inst->nnodes);
+    int nedges = sol->nedges;
     sol->distance_time = compute_dist(inst);
     /* sol->timetype = inst->timetype; */
 
@@ -229,7 +223,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
                          int ncols, double* xstar) {
     srand(0);
     unsigned int seedp;
-    int repeat = 40;
+    int repeat = 10;
 
     char lbc, ubc;
     lbc = 'L';
@@ -237,6 +231,9 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
     int pos;
     double one = 1.0;
     double zero = 0.0;
+
+    int bsize = 100;
+    char* version = (char*)calloc(bsize, sizeof(char));
 
     for (int iter = 0; iter < repeat; iter++) {
         adjlist l = adjlist_create(nedges);
@@ -262,9 +259,8 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             if (VERBOSE) printf("[Verbose] removing (%d,%d)\n", i + 1, j + 1);
 
             pos = xpos(i, j, nedges);
-            CPXchgbds(env, lp, 1, &pos, &ubc, &zero);
+            /* CPXchgbds(env, lp, 1, &pos, &ubc, &zero); */
         }
-        adjlist_free(l);
 
         CPXwriteprob(env, lp, "./wow", "LP");
         // if(inst->timetype == 0)
@@ -277,8 +273,33 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
 
         if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
 
-        if (CPXgetx(env, lp, xstar, 0, ncols - 1))
+        if (CPXgetx(env, lp, xstar, 0, ncols - 1)) {
             print_error("CPXgetx() error\n");
+        }
+
+        /* create a solution for the plot */
+        solution sol = create_solution(inst, HARD_FIXING, nedges);
+        sol->inst = inst;
+        get_symmsol(xstar, nedges, sol->edges, sol->link);
+
+        /* track which edges we fixed */
+        int* edgecolors = (int*)calloc(nedges, sizeof(int));
+        int u, v;
+        adjlist_reset(l);
+        while (adjlist_get_arc(l, &u, &v)) {
+            for (int i = 0; i < nedges; i++) {
+                if (sol->edges[i].i == u && sol->edges[i].j == v) {
+                    edgecolors[i] = 1;
+                    break;
+                }
+            }
+        }
+
+        /* save the plot */
+        printf("diocane%d\n", iter);
+        if (iter == 1) plot_solution_graphviz(sol, edgecolors, iter);
+
+        adjlist_free(l);
 
         /* free nodes: no check because most of the nodes are fixed */
         if (iter != repeat - 1) {
@@ -288,6 +309,8 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             }
         }
     }
+
+    free(version);
 }
 
 void get_symmsol(double* xstar, int nedges, edge* edges, int* link) {
@@ -349,58 +372,4 @@ void assert_correctness(solution sol) {
     } while ((act = sol->link[act]) != 0);
 
     assert(visited == sol->nedges);
-}
-
-void save_results(instance* insts, int ninstances) {
-    assert(insts != NULL);
-    assert(insts[0] != NULL);
-
-    /* remove and create new fresh csv */
-    remove("../results/results.csv");
-    FILE* fp;
-    fp = fopen("../results/results.csv", "w");
-    assert(fp != NULL && "file not found while saving .csv");
-
-    /* save the data */
-    int nmodels = insts[0]->nsols;
-    fprintf(fp, "%d,", nmodels);
-
-    for (int i = 0; i < nmodels; i++) {
-        enum model_types model_type = insts[0]->sols[i]->model_type;
-        assert(model_type != NOSEC && model_type != OPTIMAL_TOUR);
-
-        char* model_name_str = model_type_tostring(model_type);
-        fprintf(fp, "%s", model_name_str);
-        free(model_name_str);
-
-        if (i < nmodels - 1)
-            fprintf(fp, ",");
-        else
-            fprintf(fp, "\n");
-    }
-
-    for (int i = 0; i < ninstances; i++) {
-        instance inst = insts[i];
-        fprintf(fp, "%s,", inst->model_name);
-
-        assert(inst->nsols == nmodels && "missing some solutions");
-
-        for (int j = 0; j < nmodels; j++) {
-            assert(inst->sols[j]->model_type == insts[0]->sols[j]->model_type);
-
-            if (j < nmodels - 1)
-                fprintf(fp, "%lf,", inst->sols[j]->solve_time);
-            else
-                fprintf(fp, "%lf\n", inst->sols[j]->solve_time);
-        }
-    }
-
-    fclose(fp);
-    printf("file closed\n");
-
-    /* generate the plot */
-    // TODO(lugot): adjust timelimit
-    system(
-        "python3 ../results/perprof.py -D , -T 3600 -S 2 -M 2 "
-        "../results/results.csv ../results/pp.pdf -P 'model comparisons'");
 }

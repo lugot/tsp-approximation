@@ -232,6 +232,21 @@ char* model_type_tostring(enum model_types model_type) {
 
     return ans;
 }
+char* model_folder_tostring(enum model_folders folder) {
+    int bufsize = 100;
+    char* ans = (char*)calloc(bufsize, sizeof(char));
+
+    switch (folder) {
+        case TSPLIB:
+            snprintf(ans, bufsize, "tsplib");
+            break;
+        case GENERATED:
+            snprintf(ans, bufsize, "generated");
+            break;
+    }
+
+    return ans;
+}
 
 /* random utils */
 double max(double a, double b) { return a > b ? a : b; }

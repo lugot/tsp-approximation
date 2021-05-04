@@ -20,7 +20,7 @@ Probing time = 0.00 sec. (0.18 ticks)
 MIP emphasis: balance optimality and feasibility.
 MIP search method: dynamic search.
 Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.83 ticks)
+Root relaxation solution time = 0.01 sec. (0.83 ticks)
 
         Nodes                                         Cuts/
    Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
@@ -35,7 +35,7 @@ Root relaxation solution time = 0.00 sec. (0.83 ticks)
 *     0+    0                        33607.6823    33464.7048             0.43%
 *     0+    0                        33523.7085    33464.7048             0.18%
       0     0        cutoff          33523.7085    33523.7085      111    0.00%
-Elapsed time = 0.08 sec. (53.23 ticks, tree = 0.01 MB, solutions = 2)
+Elapsed time = 0.13 sec. (53.23 ticks, tree = 0.01 MB, solutions = 2)
 
 Cover cuts applied:  5
 Zero-half cuts applied:  11
@@ -43,69 +43,17 @@ Gomory fractional cuts applied:  1
 User cuts applied:  10
 
 Root node processing (before b&c):
-  Real time             =    0.08 sec. (53.27 ticks)
+  Real time             =    0.13 sec. (53.27 ticks)
 Parallel b&c, 6 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.08 sec. (53.27 ticks)
+Total (root+branch&cut) =    0.13 sec. (53.27 ticks)
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
 CPXPARAM_MIP_Limits_Nodes                        100
 CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-2 of 2 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 4 rows and 182 columns.
-Reduced MIP has 44 rows, 946 columns, and 1892 nonzeros.
-Reduced MIP has 946 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.88 ticks)
-Probing time = 0.00 sec. (0.99 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 44 rows, 946 columns, and 1892 nonzeros.
-Reduced MIP has 946 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.81 ticks)
-Probing time = 0.00 sec. (0.99 ticks)
-Clique table members: 8.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.55 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085     6364.4512            81.02%
-      0     0    32530.8063     6    33523.7085    32530.8063       62    2.96%
-      0     0    33345.0448     6    33523.7085       Cuts: 4       64    0.53%
-      0     0    33509.0819    18    33523.7085       Cuts: 8       73    0.04%
-      0     0        cutoff          33523.7085    33523.7085       73    0.00%
-Elapsed time = 0.03 sec. (17.56 ticks, tree = 0.01 MB, solutions = 2)
-
-Clique cuts applied:  3
-Cover cuts applied:  2
-Zero-half cuts applied:  3
-Gomory fractional cuts applied:  2
-User cuts applied:  11
-
-Root node processing (before b&c):
-  Real time             =    0.03 sec. (17.59 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.03 sec. (17.59 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
+CPXPARAM_TimeLimit                               1e+19
 CPXPARAM_MIP_Tolerances_Integrality              0
 Generic callback                                 0x20
 Lazy constraint(s) or lazy constraint/branch callback is present.
@@ -114,612 +62,17 @@ Lazy constraint(s) or lazy constraint/branch callback is present.
 1 of 2 MIP starts provided solutions.
 MIP start 'm1' defined initial solution with objective 33523.7085.
 Tried aggregator 1 time.
-MIP Presolve eliminated 8 rows and 348 columns.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.81 ticks)
-Probing time = 0.00 sec. (0.81 ticks)
+MIP Presolve eliminated 8 rows and 353 columns.
+Reduced MIP has 40 rows, 775 columns, and 1550 nonzeros.
+Reduced MIP has 775 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.82 ticks)
+Probing time = 0.00 sec. (1.49 ticks)
 Tried aggregator 1 time.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.69 ticks)
-Probing time = 0.00 sec. (0.81 ticks)
-Clique table members: 8.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.47 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085     8123.6174            75.77%
-      0     0    31888.3886     6    33523.7085    31888.3886       54    4.88%
-      0     0    32349.7028     6    33523.7085       Cuts: 5       66    3.50%
-      0     0    32509.4557    12    33523.7085       Cuts: 6       73    3.03%
-
-Repeating presolve.
-Tried aggregator 2 times.
-MIP Presolve eliminated 1 rows and 623 columns.
-Aggregator did 2 substitutions.
-Reduced MIP has 37 rows, 155 columns, and 310 nonzeros.
-Reduced MIP has 155 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.33 ticks)
-Probing time = 0.00 sec. (0.06 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 37 rows, 155 columns, and 310 nonzeros.
-Reduced MIP has 155 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.11 ticks)
-Represolve time = 0.00 sec. (0.83 ticks)
-Probing time = 0.00 sec. (0.06 ticks)
-Clique table members: 21.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.37 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085    32735.4824             2.35%
-      0     0    32796.2892    12    33523.7085    32796.2892      140    2.17%
-      0     0        cutoff          33523.7085                    145    0.00%
-Elapsed time = 0.04 sec. (17.24 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  2
-Zero-half cuts applied:  6
-Lift and project cuts applied:  2
-Gomory fractional cuts applied:  6
-User cuts applied:  8
-
-Root node processing (before b&c):
-  Real time             =    0.04 sec. (17.27 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.04 sec. (17.27 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 8 rows and 348 columns.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.81 ticks)
-Probing time = 0.00 sec. (0.97 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.70 ticks)
-Probing time = 0.00 sec. (0.97 ticks)
-Clique table members: 10.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.46 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085     8537.0053            74.53%
-      0     0    31875.0242     8    33523.7085    31875.0242       50    4.92%
-      0     0    32170.0316    19    33523.7085       Cuts: 5       56    4.04%
-      0     0    33261.5338    25    33523.7085       Cuts: 8       60    0.78%
-      0     0        cutoff          33523.7085    33523.7085       60    0.00%
-Elapsed time = 0.03 sec. (14.92 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  1
-Zero-half cuts applied:  4
-Gomory fractional cuts applied:  4
-User cuts applied:  8
-
-Root node processing (before b&c):
-  Real time             =    0.03 sec. (14.95 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.03 sec. (14.95 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 7 rows and 308 columns.
-Reduced MIP has 41 rows, 820 columns, and 1640 nonzeros.
-Reduced MIP has 820 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.83 ticks)
-Probing time = 0.00 sec. (1.02 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 41 rows, 820 columns, and 1640 nonzeros.
-Reduced MIP has 820 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.73 ticks)
-Probing time = 0.00 sec. (1.02 ticks)
-Clique table members: 10.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.01 sec. (0.45 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085     7007.0981            79.10%
-      0     0    32232.2586    14    33523.7085    32232.2586       48    3.85%
-      0     0        cutoff          33523.7085                     55    0.00%
-Elapsed time = 0.03 sec. (11.78 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  1
-Zero-half cuts applied:  4
-Gomory fractional cuts applied:  3
-User cuts applied:  15
-
-Root node processing (before b&c):
-  Real time             =    0.03 sec. (11.81 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.03 sec. (11.81 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 12 rows and 498 columns.
-Reduced MIP has 36 rows, 630 columns, and 1260 nonzeros.
-Reduced MIP has 630 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.75 ticks)
-Probing time = 0.00 sec. (0.89 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 36 rows, 630 columns, and 1260 nonzeros.
-Reduced MIP has 630 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.60 ticks)
-Probing time = 0.00 sec. (0.89 ticks)
-Clique table members: 12.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.37 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085     9861.0145            70.58%
-      0     0    32963.2109     6    33523.7085    32963.2109       46    1.67%
-      0     0        cutoff          33523.7085                     48    0.00%
-Elapsed time = 0.03 sec. (8.54 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  1
-Zero-half cuts applied:  2
-Gomory fractional cuts applied:  2
-User cuts applied:  7
-
-Root node processing (before b&c):
-  Real time             =    0.03 sec. (8.57 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.03 sec. (8.57 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 13 rows and 533 columns.
-Reduced MIP has 35 rows, 595 columns, and 1190 nonzeros.
-Reduced MIP has 595 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.74 ticks)
-Probing time = 0.00 sec. (0.84 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 35 rows, 595 columns, and 1190 nonzeros.
-Reduced MIP has 595 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.58 ticks)
-Probing time = 0.00 sec. (0.84 ticks)
-Clique table members: 12.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.40 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085    12700.9438            62.11%
-      0     0    32913.8311     6    33523.7085    32913.8311       51    1.82%
-      0     0    33514.3906    19    33523.7085       Cuts: 5       59    0.03%
-      0     0        cutoff          33523.7085                     59    0.00%
-Elapsed time = 0.02 sec. (12.77 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  1
-Zero-half cuts applied:  2
-Gomory fractional cuts applied:  2
-User cuts applied:  4
-
-Root node processing (before b&c):
-  Real time             =    0.02 sec. (12.80 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.02 sec. (12.80 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 8 rows and 348 columns.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.81 ticks)
-Probing time = 0.00 sec. (0.97 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.70 ticks)
-Probing time = 0.00 sec. (0.97 ticks)
-Clique table members: 10.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.43 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085     9703.7163            71.05%
-      0     0    32376.4073    12    33523.7085    32376.4073       51    3.42%
-      0     0    33194.3865     6    33523.7085       Cuts: 9       65    0.98%
-      0     0        cutoff          33523.7085                     71    0.00%
-Elapsed time = 0.03 sec. (14.51 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  2
-Zero-half cuts applied:  5
-Gomory fractional cuts applied:  3
-User cuts applied:  5
-
-Root node processing (before b&c):
-  Real time             =    0.03 sec. (14.54 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.03 sec. (14.54 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 8 rows and 348 columns.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.81 ticks)
-Probing time = 0.00 sec. (0.97 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.70 ticks)
-Probing time = 0.00 sec. (0.97 ticks)
-Clique table members: 10.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.51 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085     6589.9894            80.34%
-      0     0    32307.8873    14    33523.7085    32307.8873       56    3.63%
-      0     0    32701.1357     6    33523.7085       Cuts: 9       64    2.45%
-      0     0    32852.2979    14    33523.7085       Cuts: 6       68    2.00%
-
-Repeating presolve.
-Tried aggregator 2 times.
-MIP Presolve eliminated 1 rows and 682 columns.
-Aggregator did 5 substitutions.
-Reduced MIP has 34 rows, 93 columns, and 186 nonzeros.
-Reduced MIP has 93 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.32 ticks)
-Probing time = 0.00 sec. (0.04 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 34 rows, 93 columns, and 186 nonzeros.
-Reduced MIP has 93 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.07 ticks)
-Represolve time = 0.00 sec. (0.73 ticks)
-Probing time = 0.00 sec. (0.04 ticks)
-Clique table members: 32.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.29 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085    33045.2484             1.43%
-      0     0    33175.0893    19    33523.7085    33175.0893      120    1.04%
-      0     0        cutoff          33523.7085                    124    0.00%
-Elapsed time = 0.05 sec. (18.75 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  1
-Zero-half cuts applied:  6
-Lift and project cuts applied:  2
-Gomory fractional cuts applied:  9
-User cuts applied:  5
-
-Root node processing (before b&c):
-  Real time             =    0.05 sec. (18.77 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.05 sec. (18.77 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 8 rows and 348 columns.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.81 ticks)
-Probing time = 0.00 sec. (1.26 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.70 ticks)
-Probing time = 0.00 sec. (1.26 ticks)
-Clique table members: 14.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.53 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085    10102.3917            69.86%
-      0     0    32749.3727     6    33523.7085    32749.3727       60    2.31%
-      0     0    33373.2709     6    33523.7085       Cuts: 5       62    0.45%
-      0     0        cutoff          33523.7085    33373.2709       64    0.45%
-Elapsed time = 0.02 sec. (11.41 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  1
-Zero-half cuts applied:  2
-Gomory fractional cuts applied:  2
-User cuts applied:  5
-
-Root node processing (before b&c):
-  Real time             =    0.02 sec. (11.44 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.01 sec. (0.26 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.03 sec. (11.70 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 3 rows and 138 columns.
-Reduced MIP has 45 rows, 990 columns, and 1980 nonzeros.
-Reduced MIP has 990 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.89 ticks)
-Probing time = 0.00 sec. (0.83 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 45 rows, 990 columns, and 1980 nonzeros.
-Reduced MIP has 990 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.84 ticks)
-Probing time = 0.00 sec. (0.83 ticks)
-Clique table members: 6.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.61 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085     5312.0643            84.15%
-      0     0    32095.7271    12    33523.7085    32095.7271       62    4.26%
-      0     0    33117.3062     8    33523.7085       Cuts: 9       69    1.21%
-      0     0        cutoff          33523.7085                     72    0.00%
-Elapsed time = 0.03 sec. (17.54 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  2
-Zero-half cuts applied:  6
-Gomory fractional cuts applied:  4
-User cuts applied:  11
-
-Root node processing (before b&c):
-  Real time             =    0.03 sec. (17.57 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.03 sec. (17.57 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 13 rows and 533 columns.
-Reduced MIP has 35 rows, 595 columns, and 1190 nonzeros.
-Reduced MIP has 595 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.75 ticks)
-Probing time = 0.00 sec. (1.05 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 35 rows, 595 columns, and 1190 nonzeros.
-Reduced MIP has 595 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.59 ticks)
-Probing time = 0.00 sec. (1.05 ticks)
-Clique table members: 16.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.31 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085    15030.0952            55.17%
-      0     0        cutoff          33523.7085                     36    0.00%
-
-Root node processing (before b&c):
-  Real time             =    0.01 sec. (4.81 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.01 sec. (4.81 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 12 rows and 498 columns.
-Reduced MIP has 36 rows, 630 columns, and 1260 nonzeros.
-Reduced MIP has 630 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.75 ticks)
-Probing time = 0.00 sec. (0.89 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 36 rows, 630 columns, and 1260 nonzeros.
-Reduced MIP has 630 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.60 ticks)
-Probing time = 0.00 sec. (0.89 ticks)
-Clique table members: 12.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.37 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085    11968.8643            64.30%
-      0     0    33165.7252     6    33523.7085    33165.7252       43    1.07%
-      0     0        cutoff          33523.7085                     50    0.00%
-Elapsed time = 0.05 sec. (8.29 ticks, tree = 0.01 MB, solutions = 1)
-
-Cover cuts applied:  1
-Zero-half cuts applied:  2
-Gomory fractional cuts applied:  2
-
-Root node processing (before b&c):
-  Real time             =    0.05 sec. (8.31 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.05 sec. (8.31 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 10 rows and 425 columns.
-Reduced MIP has 38 rows, 703 columns, and 1406 nonzeros.
-Reduced MIP has 703 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.77 ticks)
-Probing time = 0.00 sec. (0.73 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 38 rows, 703 columns, and 1406 nonzeros.
-Reduced MIP has 703 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.64 ticks)
-Probing time = 0.00 sec. (0.73 ticks)
-Clique table members: 8.
+Reduced MIP has 40 rows, 775 columns, and 1550 nonzeros.
+Reduced MIP has 775 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.71 ticks)
+Probing time = 0.00 sec. (1.49 ticks)
+Clique table members: 18.
 MIP emphasis: balance optimality and feasibility.
 MIP search method: dynamic search.
 Parallel mode: deterministic, using up to 6 threads.
@@ -728,28 +81,28 @@ Root relaxation solution time = 0.00 sec. (0.45 ticks)
         Nodes                                         Cuts/
    Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
 
-*     0+    0                        33523.7085     7100.3407            78.82%
-      0     0    32354.3857     8    33523.7085    32354.3857       56    3.49%
-      0     0        cutoff          33523.7085                     59    0.00%
-Elapsed time = 0.02 sec. (8.86 ticks, tree = 0.01 MB, solutions = 1)
+*     0+    0                        33523.7085    14163.2283            57.75%
+      0     0    32283.2184    12    33523.7085    32283.2184       50    3.70%
+      0     0        cutoff          33523.7085                     54    0.00%
+Elapsed time = 0.03 sec. (11.74 ticks, tree = 0.01 MB, solutions = 1)
 
 Cover cuts applied:  1
-Zero-half cuts applied:  2
-Gomory fractional cuts applied:  1
-User cuts applied:  8
+Zero-half cuts applied:  4
+Gomory fractional cuts applied:  4
+User cuts applied:  7
 
 Root node processing (before b&c):
-  Real time             =    0.02 sec. (8.89 ticks)
+  Real time             =    0.03 sec. (11.77 ticks)
 Parallel b&c, 6 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.02 sec. (8.89 ticks)
+Total (root+branch&cut) =    0.03 sec. (11.77 ticks)
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
 CPXPARAM_MIP_Limits_Nodes                        100
 CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
+CPXPARAM_TimeLimit                               1e+19
 CPXPARAM_MIP_Tolerances_Integrality              0
 Generic callback                                 0x20
 Lazy constraint(s) or lazy constraint/branch callback is present.
@@ -758,17 +111,206 @@ Lazy constraint(s) or lazy constraint/branch callback is present.
 1 of 1 MIP starts provided solutions.
 MIP start 'm1' defined initial solution with objective 33523.7085.
 Tried aggregator 1 time.
-MIP Presolve eliminated 10 rows and 425 columns.
-Reduced MIP has 38 rows, 703 columns, and 1406 nonzeros.
-Reduced MIP has 703 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.79 ticks)
-Probing time = 0.00 sec. (1.00 ticks)
+MIP Presolve eliminated 11 rows and 468 columns.
+Reduced MIP has 37 rows, 660 columns, and 1320 nonzeros.
+Reduced MIP has 660 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.81 ticks)
+Probing time = 0.00 sec. (1.55 ticks)
 Tried aggregator 1 time.
-Reduced MIP has 38 rows, 703 columns, and 1406 nonzeros.
-Reduced MIP has 703 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.66 ticks)
-Probing time = 0.00 sec. (1.00 ticks)
-Clique table members: 12.
+Reduced MIP has 37 rows, 660 columns, and 1320 nonzeros.
+Reduced MIP has 660 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.67 ticks)
+Probing time = 0.00 sec. (1.55 ticks)
+Clique table members: 24.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 6 threads.
+Root relaxation solution time = 0.00 sec. (0.37 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        33523.7085    18052.9806            46.15%
+      0     0    33411.4160     0    33523.7085    32923.9695       37    1.79%
+
+User cuts applied:  4
+
+Root node processing (before b&c):
+  Real time             =    0.01 sec. (6.41 ticks)
+Parallel b&c, 6 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    0.01 sec. (6.41 ticks)
+Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
+CPXPARAM_MIP_Limits_Nodes                        100
+CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
+CPXPARAM_TimeLimit                               1e+19
+CPXPARAM_MIP_Tolerances_Integrality              0
+Generic callback                                 0x20
+Lazy constraint(s) or lazy constraint/branch callback is present.
+    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
+    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 33523.7085.
+Tried aggregator 1 time.
+MIP Presolve eliminated 10 rows and 429 columns.
+Reduced MIP has 38 rows, 699 columns, and 1398 nonzeros.
+Reduced MIP has 699 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.82 ticks)
+Probing time = 0.00 sec. (1.55 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 38 rows, 699 columns, and 1398 nonzeros.
+Reduced MIP has 699 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.69 ticks)
+Probing time = 0.00 sec. (1.55 ticks)
+Clique table members: 22.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 6 threads.
+Root relaxation solution time = 0.00 sec. (0.38 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        33523.7085    15253.5461            54.50%
+      0     0    33197.5115     6    33523.7085    33197.5115       41    0.97%
+      0     0        cutoff          33523.7085    33523.7085       43    0.00%
+Elapsed time = 0.02 sec. (7.51 ticks, tree = 0.01 MB, solutions = 1)
+
+User cuts applied:  3
+
+Root node processing (before b&c):
+  Real time             =    0.02 sec. (7.53 ticks)
+Parallel b&c, 6 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    0.02 sec. (7.53 ticks)
+Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
+CPXPARAM_MIP_Limits_Nodes                        100
+CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
+CPXPARAM_TimeLimit                               1e+19
+CPXPARAM_MIP_Tolerances_Integrality              0
+Generic callback                                 0x20
+Lazy constraint(s) or lazy constraint/branch callback is present.
+    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
+    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 33523.7085.
+Tried aggregator 1 time.
+MIP Presolve eliminated 12 rows and 502 columns.
+Reduced MIP has 36 rows, 626 columns, and 1252 nonzeros.
+Reduced MIP has 626 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.78 ticks)
+Probing time = 0.00 sec. (1.19 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 36 rows, 626 columns, and 1252 nonzeros.
+Reduced MIP has 626 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.63 ticks)
+Probing time = 0.00 sec. (1.19 ticks)
+Clique table members: 18.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 6 threads.
+Root relaxation solution time = 0.00 sec. (0.35 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        33523.7085    16900.8968            49.59%
+      0     0    33028.4287     6    33523.7085    33028.4287       42    1.48%
+      0     0    33507.2814     6    33523.7085       Cuts: 5       45    0.05%
+      0     0        cutoff          33523.7085                     45    0.00%
+Elapsed time = 0.03 sec. (9.13 ticks, tree = 0.01 MB, solutions = 1)
+
+Cover cuts applied:  1
+Zero-half cuts applied:  2
+Gomory fractional cuts applied:  2
+User cuts applied:  2
+
+Root node processing (before b&c):
+  Real time             =    0.03 sec. (9.16 ticks)
+Parallel b&c, 6 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    0.03 sec. (9.16 ticks)
+Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
+CPXPARAM_MIP_Limits_Nodes                        100
+CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
+CPXPARAM_TimeLimit                               1e+19
+CPXPARAM_MIP_Tolerances_Integrality              0
+Generic callback                                 0x20
+Lazy constraint(s) or lazy constraint/branch callback is present.
+    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
+    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 33523.7085.
+Tried aggregator 1 time.
+MIP Presolve eliminated 7 rows and 313 columns.
+Reduced MIP has 41 rows, 815 columns, and 1630 nonzeros.
+Reduced MIP has 815 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.84 ticks)
+Probing time = 0.00 sec. (1.58 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 41 rows, 815 columns, and 1630 nonzeros.
+Reduced MIP has 815 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.74 ticks)
+Probing time = 0.00 sec. (1.58 ticks)
+Clique table members: 18.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 6 threads.
+Root relaxation solution time = 0.00 sec. (0.41 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        33523.7085    13938.6499            58.42%
+      0     0    32472.3216     6    33523.7085    32472.3216       42    3.14%
+      0     0        cutoff          33523.7085                     45    0.00%
+Elapsed time = 0.02 sec. (11.72 ticks, tree = 0.01 MB, solutions = 1)
+
+Cover cuts applied:  1
+Zero-half cuts applied:  2
+Gomory fractional cuts applied:  1
+User cuts applied:  7
+
+Root node processing (before b&c):
+  Real time             =    0.02 sec. (11.75 ticks)
+Parallel b&c, 6 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    0.02 sec. (11.75 ticks)
+Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
+CPXPARAM_MIP_Limits_Nodes                        100
+CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
+CPXPARAM_TimeLimit                               1e+19
+CPXPARAM_MIP_Tolerances_Integrality              0
+Generic callback                                 0x20
+Lazy constraint(s) or lazy constraint/branch callback is present.
+    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
+    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 33523.7085.
+Tried aggregator 1 time.
+MIP Presolve eliminated 8 rows and 356 columns.
+Reduced MIP has 40 rows, 772 columns, and 1544 nonzeros.
+Reduced MIP has 772 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.89 ticks)
+Probing time = 0.00 sec. (1.94 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 40 rows, 772 columns, and 1544 nonzeros.
+Reduced MIP has 772 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.77 ticks)
+Probing time = 0.00 sec. (1.94 ticks)
+Clique table members: 26.
 MIP emphasis: balance optimality and feasibility.
 MIP search method: dynamic search.
 Parallel mode: deterministic, using up to 6 threads.
@@ -777,28 +319,25 @@ Root relaxation solution time = 0.00 sec. (0.42 ticks)
         Nodes                                         Cuts/
    Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
 
-*     0+    0                        33523.7085    11906.8220            64.48%
-      0     0    32586.7473    12    33523.7085    32586.7473       50    2.79%
-      0     0        cutoff          33523.7085                     53    0.00%
-Elapsed time = 0.03 sec. (10.02 ticks, tree = 0.01 MB, solutions = 1)
+*     0+    0                        33523.7085    17753.4389            47.04%
+      0     0    33362.1487     6    33523.7085    33362.1487       42    0.48%
+      0     0        cutoff          33523.7085    33404.0786       45    0.36%
+Elapsed time = 0.02 sec. (8.64 ticks, tree = 0.01 MB, solutions = 1)
 
-Cover cuts applied:  1
-Zero-half cuts applied:  4
-Gomory fractional cuts applied:  4
-User cuts applied:  7
+User cuts applied:  2
 
 Root node processing (before b&c):
-  Real time             =    0.03 sec. (10.05 ticks)
+  Real time             =    0.02 sec. (8.67 ticks)
 Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
+  Real time             =    0.01 sec. (0.26 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.03 sec. (10.05 ticks)
+Total (root+branch&cut) =    0.03 sec. (8.93 ticks)
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
 CPXPARAM_MIP_Limits_Nodes                        100
 CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
+CPXPARAM_TimeLimit                               1e+19
 CPXPARAM_MIP_Tolerances_Integrality              0
 Generic callback                                 0x20
 Lazy constraint(s) or lazy constraint/branch callback is present.
@@ -807,202 +346,48 @@ Lazy constraint(s) or lazy constraint/branch callback is present.
 1 of 1 MIP starts provided solutions.
 MIP start 'm1' defined initial solution with objective 33523.7085.
 Tried aggregator 1 time.
-MIP Presolve eliminated 9 rows and 387 columns.
-Reduced MIP has 39 rows, 741 columns, and 1482 nonzeros.
-Reduced MIP has 741 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.80 ticks)
-Probing time = 0.00 sec. (1.06 ticks)
+MIP Presolve eliminated 4 rows and 189 columns.
+Reduced MIP has 44 rows, 939 columns, and 1878 nonzeros.
+Reduced MIP has 939 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.92 ticks)
+Probing time = 0.00 sec. (2.14 ticks)
 Tried aggregator 1 time.
-Reduced MIP has 39 rows, 741 columns, and 1482 nonzeros.
-Reduced MIP has 741 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.67 ticks)
-Probing time = 0.00 sec. (1.06 ticks)
-Clique table members: 12.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.44 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085    10209.1454            69.55%
-      0     0    32034.7713     6    33523.7085    32034.7713       52    4.44%
-      0     0    33411.5089    10    33523.7085      Cuts: 10       54    0.33%
-      0     0        cutoff          33523.7085    33523.7085       54    0.00%
-Elapsed time = 0.05 sec. (14.34 ticks, tree = 0.01 MB, solutions = 1)
-
-Clique cuts applied:  4
-Cover cuts applied:  2
-Zero-half cuts applied:  4
-Gomory fractional cuts applied:  4
-User cuts applied:  8
-
-Root node processing (before b&c):
-  Real time             =    0.05 sec. (14.37 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.05 sec. (14.37 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 6 rows and 267 columns.
-Reduced MIP has 42 rows, 861 columns, and 1722 nonzeros.
-Reduced MIP has 861 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Reduced MIP has 44 rows, 939 columns, and 1878 nonzeros.
+Reduced MIP has 939 binaries, 0 generals, 0 SOSs, and 0 indicators.
 Presolve time = 0.00 sec. (0.84 ticks)
-Probing time = 0.00 sec. (0.90 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 42 rows, 861 columns, and 1722 nonzeros.
-Reduced MIP has 861 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.75 ticks)
-Probing time = 0.00 sec. (0.90 ticks)
-Clique table members: 8.
+Probing time = 0.00 sec. (2.14 ticks)
+Clique table members: 22.
 MIP emphasis: balance optimality and feasibility.
 MIP search method: dynamic search.
 Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.55 ticks)
+Root relaxation solution time = 0.00 sec. (0.61 ticks)
 
         Nodes                                         Cuts/
    Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
 
-*     0+    0                        33523.7085     8255.1016            75.38%
-      0     0    31808.7411     6    33523.7085    31808.7411       60    5.12%
-      0     0    33475.3664     6    33523.7085       Cuts: 5       63    0.14%
-      0     0        cutoff          33523.7085    33523.7085       64    0.00%
-Elapsed time = 0.04 sec. (12.72 ticks, tree = 0.01 MB, solutions = 1)
+*     0+    0                        33523.7085    10166.5943            69.67%
+      0     0    32900.6190     6    33523.7085    32900.6190       62    1.86%
+      0     0        cutoff          33523.7085                     72    0.00%
+Elapsed time = 0.03 sec. (13.50 ticks, tree = 0.01 MB, solutions = 1)
 
+Clique cuts applied:  1
 Cover cuts applied:  1
 Zero-half cuts applied:  1
 Gomory fractional cuts applied:  2
-User cuts applied:  12
-
-Root node processing (before b&c):
-  Real time             =    0.04 sec. (12.75 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.04 sec. (12.75 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 9 rows and 387 columns.
-Reduced MIP has 39 rows, 741 columns, and 1482 nonzeros.
-Reduced MIP has 741 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.81 ticks)
-Probing time = 0.00 sec. (1.06 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 39 rows, 741 columns, and 1482 nonzeros.
-Reduced MIP has 741 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.68 ticks)
-Probing time = 0.00 sec. (1.06 ticks)
-Clique table members: 12.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.46 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085    10048.3248            70.03%
-      0     0    32634.5103     6    33523.7085    32634.5103       50    2.65%
-      0     0    33411.5089    10    33523.7085       Cuts: 6       51    0.33%
-      0     0        cutoff          33523.7085                     53    0.00%
-Elapsed time = 0.04 sec. (14.05 ticks, tree = 0.01 MB, solutions = 1)
-
-Clique cuts applied:  1
-Cover cuts applied:  2
-Zero-half cuts applied:  4
-Gomory fractional cuts applied:  4
-User cuts applied:  9
-
-Root node processing (before b&c):
-  Real time             =    0.04 sec. (14.08 ticks)
-Parallel b&c, 6 threads:
-  Real time             =    0.00 sec. (0.00 ticks)
-  Sync time (average)   =    0.00 sec.
-  Wait time (average)   =    0.00 sec.
-                          ------------
-Total (root+branch&cut) =    0.04 sec. (14.08 ticks)
-Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-CPXPARAM_MIP_Limits_Nodes                        100
-CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
-CPXPARAM_MIP_Tolerances_Integrality              0
-Generic callback                                 0x20
-Lazy constraint(s) or lazy constraint/branch callback is present.
-    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
-    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
-1 of 1 MIP starts provided solutions.
-MIP start 'm1' defined initial solution with objective 33523.7085.
-Tried aggregator 1 time.
-MIP Presolve eliminated 8 rows and 348 columns.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.81 ticks)
-Probing time = 0.00 sec. (0.97 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 40 rows, 780 columns, and 1560 nonzeros.
-Reduced MIP has 780 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.70 ticks)
-Probing time = 0.00 sec. (0.97 ticks)
-Clique table members: 10.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.45 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                        33523.7085     8655.0947            74.18%
-      0     0    32275.1730    14    33523.7085    32275.1730       50    3.72%
-      0     0    32821.3220    19    33523.7085       Cuts: 9       63    2.10%
-      0     0    32885.2346     3    33523.7085      Cuts: 10       65    1.90%
-      0     0        cutoff          33523.7085    33523.7085       65    0.00%
-Elapsed time = 0.04 sec. (16.90 ticks, tree = 0.01 MB, solutions = 1)
-
-Clique cuts applied:  1
-Cover cuts applied:  3
-Zero-half cuts applied:  8
-Gomory fractional cuts applied:  7
 User cuts applied:  3
 
 Root node processing (before b&c):
-  Real time             =    0.04 sec. (16.93 ticks)
+  Real time             =    0.04 sec. (13.53 ticks)
 Parallel b&c, 6 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.04 sec. (16.93 ticks)
+Total (root+branch&cut) =    0.04 sec. (13.53 ticks)
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
 CPXPARAM_MIP_Limits_Nodes                        100
 CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
+CPXPARAM_TimeLimit                               1e+19
 CPXPARAM_MIP_Tolerances_Integrality              0
 Generic callback                                 0x20
 Lazy constraint(s) or lazy constraint/branch callback is present.
@@ -1011,17 +396,17 @@ Lazy constraint(s) or lazy constraint/branch callback is present.
 1 of 1 MIP starts provided solutions.
 MIP start 'm1' defined initial solution with objective 33523.7085.
 Tried aggregator 1 time.
-MIP Presolve eliminated 7 rows and 308 columns.
-Reduced MIP has 41 rows, 820 columns, and 1640 nonzeros.
-Reduced MIP has 820 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.82 ticks)
-Probing time = 0.00 sec. (0.86 ticks)
+MIP Presolve eliminated 6 rows and 275 columns.
+Reduced MIP has 42 rows, 853 columns, and 1706 nonzeros.
+Reduced MIP has 853 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.91 ticks)
+Probing time = 0.00 sec. (2.17 ticks)
 Tried aggregator 1 time.
-Reduced MIP has 41 rows, 820 columns, and 1640 nonzeros.
-Reduced MIP has 820 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.72 ticks)
-Probing time = 0.00 sec. (0.86 ticks)
-Clique table members: 8.
+Reduced MIP has 42 rows, 853 columns, and 1706 nonzeros.
+Reduced MIP has 853 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.82 ticks)
+Probing time = 0.00 sec. (2.17 ticks)
+Clique table members: 26.
 MIP emphasis: balance optimality and feasibility.
 MIP search method: dynamic search.
 Parallel mode: deterministic, using up to 6 threads.
@@ -1030,28 +415,57 @@ Root relaxation solution time = 0.00 sec. (0.49 ticks)
         Nodes                                         Cuts/
    Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
 
-*     0+    0                        33523.7085     7502.4432            77.62%
-      0     0    32374.6060     6    33523.7085    32374.6060       57    3.43%
-      0     0        cutoff          33523.7085                     58    0.00%
-Elapsed time = 0.02 sec. (10.36 ticks, tree = 0.01 MB, solutions = 1)
+*     0+    0                        33523.7085    12623.1996            62.35%
+      0     0    32920.4972     6    33523.7085    32920.4972       47    1.80%
 
-Cover cuts applied:  1
-Zero-half cuts applied:  2
-Gomory fractional cuts applied:  2
-User cuts applied:  17
+Repeating presolve.
+Tried aggregator 3 times.
+MIP Presolve eliminated 20 rows and 822 columns.
+Aggregator did 13 substitutions.
+Reduced MIP has 9 rows, 18 columns, and 34 nonzeros.
+Reduced MIP has 18 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.45 ticks)
+Probing fixed 1 vars, tightened 0 bounds.
+Probing time = 0.00 sec. (0.01 ticks)
+Tried aggregator 2 times.
+MIP Presolve eliminated 1 rows and 2 columns.
+Aggregator did 1 substitutions.
+Reduced MIP has 7 rows, 15 columns, and 25 nonzeros.
+Reduced MIP has 15 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.03 ticks)
+Probing time = 0.00 sec. (0.01 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 7 rows, 15 columns, and 25 nonzeros.
+Reduced MIP has 15 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.01 ticks)
+Represolve time = 0.00 sec. (0.80 ticks)
+Probing time = 0.00 sec. (0.01 ticks)
+Clique table members: 24.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 6 threads.
+Root relaxation solution time = 0.00 sec. (0.02 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        33523.7085    33395.4544             0.38%
+      0     0    33484.2144     0    33523.7085    33484.2144       51    0.12%
+
+User cuts applied:  5
 
 Root node processing (before b&c):
-  Real time             =    0.02 sec. (10.39 ticks)
+  Real time             =    0.03 sec. (12.01 ticks)
 Parallel b&c, 6 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.02 sec. (10.39 ticks)
+Total (root+branch&cut) =    0.03 sec. (12.01 ticks)
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
 CPXPARAM_MIP_Limits_Nodes                        100
 CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
-CPXPARAM_TimeLimit                               5e+18
+CPXPARAM_TimeLimit                               1e+19
 CPXPARAM_MIP_Tolerances_Integrality              0
 Generic callback                                 0x20
 Lazy constraint(s) or lazy constraint/branch callback is present.
@@ -1060,41 +474,91 @@ Lazy constraint(s) or lazy constraint/branch callback is present.
 1 of 1 MIP starts provided solutions.
 MIP start 'm1' defined initial solution with objective 33523.7085.
 Tried aggregator 1 time.
-MIP Presolve eliminated 7 rows and 308 columns.
-Reduced MIP has 41 rows, 820 columns, and 1640 nonzeros.
-Reduced MIP has 820 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.84 ticks)
-Probing time = 0.00 sec. (1.18 ticks)
+MIP Presolve eliminated 7 rows and 311 columns.
+Reduced MIP has 41 rows, 817 columns, and 1634 nonzeros.
+Reduced MIP has 817 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.85 ticks)
+Probing time = 0.00 sec. (1.45 ticks)
 Tried aggregator 1 time.
-Reduced MIP has 41 rows, 820 columns, and 1640 nonzeros.
-Reduced MIP has 820 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Reduced MIP has 41 rows, 817 columns, and 1634 nonzeros.
+Reduced MIP has 817 binaries, 0 generals, 0 SOSs, and 0 indicators.
 Presolve time = 0.00 sec. (0.74 ticks)
-Probing time = 0.00 sec. (1.18 ticks)
-Clique table members: 12.
+Probing time = 0.00 sec. (1.45 ticks)
+Clique table members: 16.
 MIP emphasis: balance optimality and feasibility.
 MIP search method: dynamic search.
 Parallel mode: deterministic, using up to 6 threads.
-Root relaxation solution time = 0.00 sec. (0.53 ticks)
+Root relaxation solution time = 0.00 sec. (0.47 ticks)
 
         Nodes                                         Cuts/
    Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
 
-*     0+    0                        33523.7085     8791.2741            73.78%
-      0     0    32078.3663    14    33523.7085    32078.3663       62    4.31%
-      0     0    33469.6824    10    33523.7085       Cuts: 9       72    0.16%
-      0     0        cutoff          33523.7085    33521.8530       75    0.01%
-Elapsed time = 0.04 sec. (13.07 ticks, tree = 0.01 MB, solutions = 1)
+*     0+    0                        33523.7085     8848.4376            73.61%
+      0     0    32227.5021     6    33523.7085    32227.5021       51    3.87%
+      0     0    32867.9282     6    33523.7085       Cuts: 5       55    1.96%
+      0     0        cutoff          33523.7085                     58    0.00%
+Elapsed time = 0.03 sec. (15.75 ticks, tree = 0.01 MB, solutions = 1)
 
 Cover cuts applied:  1
-Zero-half cuts applied:  2
-Gomory fractional cuts applied:  2
-User cuts applied:  7
+Zero-half cuts applied:  3
+Gomory fractional cuts applied:  4
+User cuts applied:  10
 
 Root node processing (before b&c):
-  Real time             =    0.04 sec. (13.10 ticks)
+  Real time             =    0.03 sec. (15.78 ticks)
 Parallel b&c, 6 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.04 sec. (13.10 ticks)
+Total (root+branch&cut) =    0.03 sec. (15.78 ticks)
+Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
+CPXPARAM_MIP_Limits_Nodes                        100
+CPXPARAM_Simplex_Tolerances_Feasibility          1.0000000000000001e-09
+CPXPARAM_TimeLimit                               1e+19
+CPXPARAM_MIP_Tolerances_Integrality              0
+Generic callback                                 0x20
+Lazy constraint(s) or lazy constraint/branch callback is present.
+    Disabling dual reductions (CPX_PARAM_REDUCE) in presolve.
+    Disabling presolve reductions that prevent crushing forms (CPX_PARAM_PREREFORM).
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 33523.7085.
+Tried aggregator 1 time.
+MIP Presolve eliminated 5 rows and 237 columns.
+Reduced MIP has 43 rows, 891 columns, and 1782 nonzeros.
+Reduced MIP has 891 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.94 ticks)
+Probing time = 0.00 sec. (2.53 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 43 rows, 891 columns, and 1782 nonzeros.
+Reduced MIP has 891 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.85 ticks)
+Probing time = 0.00 sec. (2.53 ticks)
+Clique table members: 34.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 6 threads.
+Root relaxation solution time = 0.00 sec. (0.46 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        33523.7085    15236.8283            54.55%
+      0     0    31816.9520    12    33523.7085    31816.9520       45    5.09%
+      0     0        cutoff          33523.7085                     51    0.00%
+Elapsed time = 0.04 sec. (15.10 ticks, tree = 0.01 MB, solutions = 1)
+
+Clique cuts applied:  2
+Cover cuts applied:  1
+Zero-half cuts applied:  4
+Gomory fractional cuts applied:  4
+User cuts applied:  8
+
+Root node processing (before b&c):
+  Real time             =    0.04 sec. (15.13 ticks)
+Parallel b&c, 6 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    0.04 sec. (15.13 ticks)
