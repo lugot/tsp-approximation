@@ -19,7 +19,7 @@ void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, solution sol,
                      int nedges, struct timeval start, struct timeval end,
                      double* xstar);
 void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
-                         int ncols, double* xstar);
+                         int ncols, double* xstar, int perc);
 
 solution TSPopt(instance inst, enum model_types model_type) {
     assert(inst != NULL);
@@ -121,7 +121,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
             break;
 
         case HARD_FIXING:
-            perform_HARD_FIXING(env, lp, inst, nedges, ncols, xstar);
+            perform_HARD_FIXING(env, lp, inst, nedges, ncols, xstar, 80);
             get_symmsol(xstar, nedges, sol->edges, sol->link);
             break;
 
@@ -220,97 +220,117 @@ void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, solution sol,
 }
 
 void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
-                         int ncols, double* xstar) {
+                         int ncols, double* xstar, int perc) {
+    assert(perc >= 0 && perc < 100);
+
+    /* TODO(lugot): FIX */
     srand(0);
     unsigned int seedp;
-    int repeat = 10;
 
-    char lbc, ubc;
-    lbc = 'L';
-    ubc = 'U';
-    int pos;
-    double one = 1.0;
-    double zero = 0.0;
+    /* preparing some constants to quickly fix bounds */
+    const char lbc = 'L';
+    const char ubc = 'U';
+    const double one = 1.0;
+    const double zero = 0.0;
 
-    int bsize = 100;
-    char* version = (char*)calloc(bsize, sizeof(char));
-
-    for (int iter = 0; iter < repeat; iter++) {
+    /* perform HARD FIXING:
+     * for each iteration fix randomly some edges, solve the model and release
+     * the nodes fixed in order to warm start the next iteration */
+    int iterations = 10;
+    for (int iter = 0; iter < iterations; iter++) {
         adjlist l = adjlist_create(nedges);
 
-        /* fix nodes */
+        /* iterate over edges to randomly fix them
+         * not a single for cause of arc tracking */
         for (int i = 0; i < nedges; i++) {
             for (int j = i + 1; j < nedges; j++) {
-                if (rand_r(&seedp) % 10 > 5 &&
-                    xstar[xpos(i, j, nedges)] > 1.0 - 1e-9) {
-                    if (VERBOSE)
-                        printf("[Verbose] fixing (%d,%d)\n", i + 1, j + 1);
+                int pos = xpos(i, j, nedges);
 
-                    pos = xpos(i, j, nedges);
+                /* check if the edge is an actual edge and select it */
+                if (xstar[pos] > 0.5 && rand_r(&seedp) % 100 < perc) {
+                    if (VERBOSE) {
+                        printf("[VERBOSE] fixing arc (%d,%d)\n", i + 1, j + 1);
+                    }
+
+                    /* fix the edge by moving the lower bound to one */
                     CPXchgbds(env, lp, 1, &pos, &lbc, &one);
 
+                    /* track which edges has been selected */
                     adjlist_add_arc(l, i, j);
                 }
             }
         }
 
+        /* iterate over tracked edges to retreive the loose ends:
+         * let's create a simple SEC by fix that edge to zero */
         int i, j;
         while (adjlist_loose_ends(l, &i, &j)) {
-            if (VERBOSE) printf("[Verbose] removing (%d,%d)\n", i + 1, j + 1);
+            int pos = xpos(i, j, nedges);
 
-            pos = xpos(i, j, nedges);
-            /* CPXchgbds(env, lp, 1, &pos, &ubc, &zero); */
+            /* check if the edge is not part of a path (alone): in that case we
+             * have to keep the lower bound to one to maintain consistency */
+            double lb;
+            CPXgetlb(env, lp, &lb, pos, pos);
+            /* if lb is 1.0 means that we previously fix it -> skip */
+            if (lb == 1.0) continue;
+
+            if (VERBOSE) printf("[VERBOSE] removing (%d,%d)\n", i + 1, j + 1);
+            CPXchgbds(env, lp, 1, &pos, &ubc, &zero);
         }
 
-        CPXwriteprob(env, lp, "./wow", "LP");
-        // if(inst->timetype == 0)
-        CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit / repeat);
+        if (EXTRA) CPXwriteprob(env, lp, "./wow", "LP");
+
+        // TODO(any): fix time
+        CPXsetdblparam(env, CPX_PARAM_TILIM,
+                       inst->params->timelimit / iterations);
         /*else
                 CPXsetdblparam(env, CPX_PARAM_DETTILIM,
            inst->params->timelimit/repeat);*/
 
         CPXsetintparam(env, CPX_PARAM_NODELIM, 100);
 
+        /* solve! and get solution */
         if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
-
         if (CPXgetx(env, lp, xstar, 0, ncols - 1)) {
             print_error("CPXgetx() error\n");
         }
 
-        /* create a solution for the plot */
-        solution sol = create_solution(inst, HARD_FIXING, nedges);
-        sol->inst = inst;
-        get_symmsol(xstar, nedges, sol->edges, sol->link);
+        if (EXTRA) {
+            /* create a solution for the plot */
+            solution sol = create_solution(inst, HARD_FIXING, nedges);
+            sol->inst = inst;
+            get_symmsol(xstar, nedges, sol->edges, sol->link);
 
-        /* track which edges we fixed */
-        int* edgecolors = (int*)calloc(nedges, sizeof(int));
-        int u, v;
-        adjlist_reset(l);
-        while (adjlist_get_arc(l, &u, &v)) {
-            for (int i = 0; i < nedges; i++) {
-                if (sol->edges[i].i == u && sol->edges[i].j == v) {
-                    edgecolors[i] = 1;
-                    break;
+            /* track which edges we fixed */
+            int* edgecolors = (int*)calloc(nedges, sizeof(int));
+            int u, v;
+            adjlist_reset(l);
+            while (adjlist_get_arc(l, &u, &v)) {
+                for (int i = 0; i < nedges; i++) {
+                    if (sol->edges[i].i == u && sol->edges[i].j == v) {
+                        edgecolors[i] = 1;
+                        break;
+                    }
                 }
             }
+
+            /* save the plot */
+            plot_solution_graphviz(sol, edgecolors, iter);
         }
 
-        /* save the plot */
-        printf("diocane%d\n", iter);
-        if (iter == 1) plot_solution_graphviz(sol, edgecolors, iter);
-
+        /* free the adjlist, do it not for additional plot option */
         adjlist_free(l);
 
-        /* free nodes: no check because most of the nodes are fixed */
-        if (iter != repeat - 1) {
+        /* relax the fixing: no need to check because most of the nodes are
+         * fixed. Just checking if this is not the last iteration to provide a
+         * coeherent model */
+        if (iter != iterations - 1) {
             for (int j = 0; j < ncols; j++) {
                 CPXchgbds(env, lp, 1, &j, &lbc, &zero);
                 CPXchgbds(env, lp, 1, &j, &ubc, &one);
             }
         }
     }
-
-    free(version);
 }
 
 void get_symmsol(double* xstar, int nedges, edge* edges, int* link) {
