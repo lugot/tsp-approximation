@@ -157,13 +157,11 @@ solution create_solution(instance inst, enum model_types model_type,
     sol->model_type = model_type;
     sol->nedges = nedges;
     sol->edges = (edge*)calloc(nedges, sizeof(struct edge_t));
-    sol->link = (int*)calloc(nedges, sizeof(int));
 
     return sol;
 }
 void free_solution(solution sol) {
     free(sol->edges);
-    free(sol->link);
 
     free(sol);
 }
@@ -338,6 +336,9 @@ void print_solution(solution sol, int print_data) {
         case HARD_FIXING:
             printf("symmetric, hard fixing with callback\n");
             break;
+        case SOFT_FIXING:
+            printf("symmetric, soft fixing with callback\n");
+            break;
     }
     printf("- zstar: %lf\n", sol->zstar);
     printf("- num edges: %d\n", nedges);
@@ -360,22 +361,6 @@ void print_solution(solution sol, int print_data) {
             free(buf);
         }
         printf("- parent:\n");
-        if (sol->link != NULL) {
-            int column_width = 2 + (int)log10(nedges);
-            char* buf = (char*)calloc(column_width, sizeof(char));
-
-            for (int i = 0; i < nedges; i++) {
-                snprintf(buf, column_width, "%d", i + 1);
-                printf("%*s", column_width + 1, buf);
-            }
-            printf("\n");
-            for (int i = 0; i < nedges; i++) {
-                snprintf(buf, column_width, "%d", sol->link[i] + 1);
-                printf("%*s", column_width + 1, buf);
-            }
-            printf("\n");
-            free(buf);
-        }
     }
     printf("- distance time: %lf ms\n", sol->distance_time);
     printf("- build time: %lf ms\n", sol->build_time);

@@ -60,7 +60,8 @@ enum model_types {
     GGLIT_LAZY,
     BENDERS,
     BENDERS_CALLBACK,
-    HARD_FIXING
+    HARD_FIXING,
+    SOFT_FIXING
 };
 typedef struct solution_t {
     struct instance_t* inst;
@@ -69,7 +70,6 @@ typedef struct solution_t {
     double zstar;
     int nedges;
     edge* edges;
-    int* link;
 
     // int timetype;
 

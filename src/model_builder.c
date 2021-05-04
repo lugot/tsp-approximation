@@ -9,6 +9,7 @@
 #include <sys/time.h>
 #include <time.h>
 
+#include "../include/adjlist.h"
 #include "../include/globals.h"
 #include "../include/solvers.h"
 #include "../include/tsp.h"
@@ -52,6 +53,10 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
             add_symm_constraints(env, lp, inst);
             break;
         case HARD_FIXING:
+            add_symm_variables(env, lp, inst);
+            add_symm_constraints(env, lp, inst);
+            break;
+        case SOFT_FIXING:
             add_symm_variables(env, lp, inst);
             add_symm_constraints(env, lp, inst);
             break;
@@ -484,7 +489,6 @@ void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
         }
     }
 
-
     double rhs = 0.0;
     char sense = 'L';
     /* linking constraint: y_ij <= (n-1) x_ij forall i,j in V
@@ -864,61 +868,56 @@ void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
     free(cname);
 }
 
-void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, solution sol) {
-    int nedges = sol->nedges;
-    int* visited = (int*)calloc(nedges, sizeof(int));
+void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {
+    /* add
+     * sum i in V, j in V x_ij <= |V| - 1 for each V subtour of actual solution
+     * to the model
+     */
+    int nnodes = l->N;
 
-    /* ColumnNAME: array of array used to inject variables in CPLEX */
     char** cname = (char**)calloc(1, sizeof(char*));
     cname[0] = (char*)calloc(100, sizeof(char));
 
+    /* iterate over all possible subtour nodes present in the solution and, for
+     * a single subtour, add a SEC so no subtour will form during next
+     * iterations */
+    int* subtour;
+    int subsize;
     int nsubtours = 0;
-    for (int i = 0; i < nedges; i++) {
-        /* i could be part of a subtour already visited */
-        if (visited[i]) continue;
+    while ((subtour = adjlist_get_subtour(l, &subsize)) != NULL) {
         nsubtours++;
 
-        /* compute the rhs: number of nodes in a subtour, unknown a priori */
-        int* subtour = (int*)calloc(nedges, sizeof(int));
-        int subtour_size = 0;
+        /* rhs of constraint is nodes in subtour -1, because of the other "one
+         * edge entering and one exiting" for each node constrain, in a subset
+         * of N nodes will be present N edges. Imposing N-1 fix this issue, at
+         * least one edge has to exit the subset */
+        const char sense = 'L';
+        double rhs = (double)subsize - 1;
 
-        /* travel the subtour */
-        int j = i;
-        while ((j = sol->link[j]) != i) subtour[subtour_size++] = j;
-        subtour[subtour_size++] = i;
-
-        double rhs = (double)subtour_size - 1;
-        char sense = 'L';
-
-        /* fetch last row position in current model (better: the new one)
-         * write the constraint name inside CPLEX */
+        /* fetch new row .. */
         int lastrow = CPXgetnumrows(env, lp);
-        snprintf(cname[0], strlen(cname[0]), "benders_sec(%d)", i + 1);
-
-        /* add the new constraint (with coefficent zero, null lhs) */
+        snprintf(cname[0], strlen(cname[0]), "benders_sec(%d)", subtour[0] + 1);
+        /* .. and fix the sense and rhs */
         if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
             print_error("wrong CPXnewrows [degree]");
         }
 
-        /* travel the subtour by vector */
-        for (j = 0; j < subtour_size; j++)
-            for (int k = j + 1; k < subtour_size; k++) {
-                /* change the coefficent from 0 to 1.0 */
+        /* iterate over all possible ordered pair (symmetric model) of the
+         * subtour and prevent that edge from forming*/
+        for (int i = 0; i < subsize; i++) {
+            for (int j = i + 1; j < subsize; j++) {
                 if (CPXchgcoef(env, lp, lastrow,
-                               xpos(subtour[j], subtour[k], nedges), 1.0)) {
+                               xpos(subtour[i], subtour[j], nnodes), 1.0)) {
                     print_error("wrong CPXchgcoef [degree]");
                 }
             }
-
-        /* visit all the nodes in the set */
-        j = i;
-        while ((j = sol->link[j]) != i) visited[j] = 1;
+        }
 
         free(subtour);
     }
-    if (VERBOSE) printf("[Verbose] num subtour BENDERS %d\n", nsubtours);
 
-    free(visited);
+    if (VERBOSE) printf("[VERBOSE] num subtour BENDERS %d\n", nsubtours);
+
     free(cname[0]);
     free(cname);
 }
@@ -939,12 +938,11 @@ int CPXPUBLIC add_BENDERS_sec_callback_driver(CPXCALLBACKCONTEXTptr context,
 
 int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,
                                                  solution sol) {
-    int nedges = sol->nedges;
-
     /* number of columns is n chooses 2 */
+    int nedges = sol->nedges;
     int ncols = nedges * (nedges - 1) / 2;
 
-    /* get node informations */
+    /* retreive actual solution */
     double* xstar = (double*)calloc(ncols, sizeof(double));
     double objval = CPX_INFBOUND;
     if (CPXcallbackgetcandidatepoint(context, xstar, 0, ncols - 1, &objval)) {
@@ -968,46 +966,49 @@ int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,
         printf("- incumbent: %lf\n", incumbent);
     }
 
-    /* retreive sol and fill sol's internal parent vector */
-    int* visited = (int*)calloc(nedges, sizeof(int));
-    int* link = (int*)calloc(nedges, sizeof(int));
-    get_symmsol(xstar, nedges, NULL, link);
-    free(xstar);
-
-    int nsubtours = 0;
+    /* create an adjacency list to track the edges .. */
+    adjlist l = adjlist_create(nedges);
+    /* .. and first fill it with the first solution found (with possible
+     * subtours) */
     for (int i = 0; i < nedges; i++) {
-        /* i could be part of a subtour already visited */
-        if (visited[i]) continue;
+        for (int j = i + 1; j < nedges; j++) {
+            if (xstar[xpos(i, j, nedges)] > 0.5) {
+                adjlist_add_edge(l, i, j);
+            }
+        }
+    }
+
+    /* iterate over all possible subtour nodes present in the solution and, for
+     * a single subtour, add a SEC so no subtour will form during next
+     * iterations */
+    int* subtour;
+    int subsize;
+    int nsubtours = 0;
+    while ((subtour = adjlist_get_subtour(l, &subsize)) != NULL) {
         nsubtours++;
 
-        /* compute the rhs: number of nodes in a subtour, unknown a priori
-         * TODO(lugot): simplify */
-        int* subtour = (int*)calloc(nedges, sizeof(int));
-        int subtour_size = 0;
+        /* rhs of constraint is nodes in subtour -1, because of the other "one
+         * edge entering and one exiting" for each node constrain, in a subset
+         * of N nodes will be present N edges. Imposing N-1 fix this issue, at
+         * least one edge has to exit the subset */
+        const char sense = 'L';
+        double rhs = (double)subsize - 1;
 
-        /* travel the subtour */
-        int j = i;
-        while ((j = link[j]) != i) subtour[subtour_size++] = j;
-        subtour[subtour_size++] = i;
-
+        /* better to store indexes and positions of constraint's edges in
+         * additional structures */
         int nnz = 0;
-        int izero = 0;
-        double rhs = (double)subtour_size - 1;
-        char sense = 'L';
-        int* index = (int*)calloc(ncols, sizeof(int));
-        double* value = (double*)calloc(ncols, sizeof(double));
+        const int izero = 0;
+        int* index = (int*)malloc(ncols * sizeof(int));
+        double* value = (double*)malloc(ncols * sizeof(double));
 
-        /* travel the subtour by vector */
-        for (j = 0; j < subtour_size; j++)
-            for (int k = j + 1; k < subtour_size; k++) {
-                /* change the coefficent from 0 to 1.0 */
-                index[nnz] = xpos(subtour[j], subtour[k], nedges);
+        /* iterate over all possible ordered pair (symmetric model) of the
+         * subtour and prevent that edge from forming*/
+        for (int i = 0; i < subsize; i++) {
+            for (int j = i + 1; j < subsize; j++) {
+                index[nnz] = xpos(subtour[i], subtour[j], nedges);
                 value[nnz++] = 1.0;
             }
-
-        /* visit all the nodes in the set */
-        j = i;
-        while ((j = link[j]) != i) visited[j] = 1;
+        }
 
         /* finally set the callback for rejecte the incumbent */
         if (rhs != nedges - 1) {
@@ -1021,10 +1022,10 @@ int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,
         free(value);
         free(subtour);
     }
-    if (VERBOSE) printf("[Verbose] num subtour BENDERS %d\n", nsubtours);
 
-    free(visited);
-    free(link);
+    if (VERBOSE) {
+        printf("[Verbose] num subtour BENDERS (callback) %d\n", nsubtours);
+    }
 
     return 0;
 }

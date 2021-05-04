@@ -20,6 +20,8 @@ void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, solution sol,
                      double* xstar);
 void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
                          int ncols, double* xstar, int perc);
+void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
+                         int ncols, double* xstar);
 
 solution TSPopt(instance inst, enum model_types model_type) {
     assert(inst != NULL);
@@ -70,30 +72,38 @@ solution TSPopt(instance inst, enum model_types model_type) {
     /* populate enviorment with model data */
     sol->build_time = build_tsp_model(env, lp, inst, model_type);
 
-    /* add callback if required */
-    if (model_type == BENDERS_CALLBACK) {
-        CPXLONG contextid =
-            CPX_CALLBACKCONTEXT_CANDIDATE | CPX_CALLBACKCONTEXT_RELAXATION;
-        if (CPXcallbacksetfunc(env, lp, contextid,
-                               add_BENDERS_sec_callback_driver, sol)) {
-            print_error("CPXcallbacksetfunc() error");
+    /* model preprocessing: add some callbacks or set params before execution */
+    switch (model_type) {
+        case BENDERS_CALLBACK: {
+            CPXLONG contextid =
+                CPX_CALLBACKCONTEXT_CANDIDATE | CPX_CALLBACKCONTEXT_RELAXATION;
+            if (CPXcallbacksetfunc(env, lp, contextid,
+                                   add_BENDERS_sec_callback_driver, sol)) {
+                print_error("CPXcallbacksetfunc() error");
+            }
+            break;
         }
-    }
 
-    if (model_type == HARD_FIXING) {
-        CPXsetintparam(env, CPX_PARAM_NODELIM, 10);
+        case HARD_FIXING: {
+            CPXsetintparam(env, CPX_PARAM_NODELIM, 10);
 
-        // if(inst->timetype == 0)
-        CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit / 10);
-        /*else
-                CPXsetdblparam(env, CPX_PARAM_DETTILIM,
-           inst->params->timelimit/10);*/
+            // if(inst->timetype == 0)
+            CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit / 10);
+            /*else
+                    CPXsetdblparam(env, CPX_PARAM_DETTILIM,
+               inst->params->timelimit/10);*/
 
-        CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
-        if (CPXcallbacksetfunc(env, lp, contextid,
-                               add_BENDERS_sec_callback_driver, sol)) {
-            print_error("CPXcallbacksetfunc() error");
+            CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
+            if (CPXcallbacksetfunc(env, lp, contextid,
+                                   add_BENDERS_sec_callback_driver, sol)) {
+                print_error("CPXcallbacksetfunc() error");
+            }
+            break;
         }
+
+        default:
+            /* no preprocessing steps */
+            break;
     }
 
     struct timeval start, end;
@@ -108,21 +118,26 @@ solution TSPopt(instance inst, enum model_types model_type) {
     double* xstar = (double*)calloc(ncols, sizeof(double));
     if (CPXgetx(env, lp, xstar, 0, ncols - 1)) print_error("CPXgetx() error\n");
 
+    /* retreive solution or perform future steps */
     switch (model_type) {
         case NOSEC:
         case BENDERS_CALLBACK:
-            get_symmsol(xstar, nedges, sol->edges, sol->link);
+            get_symmsol(xstar, sol);
             break;
 
         case BENDERS:
-            get_symmsol(xstar, nedges, sol->edges, sol->link);
             perform_BENDERS(env, lp, inst, sol, nedges, start, end, xstar);
-            /*get_symmsol(xstar, nedges, sol->edges, sol->link); useless */
+            get_symmsol(xstar, sol);
             break;
 
         case HARD_FIXING:
             perform_HARD_FIXING(env, lp, inst, nedges, ncols, xstar, 80);
-            get_symmsol(xstar, nedges, sol->edges, sol->link);
+            get_symmsol(xstar, sol);
+            break;
+
+        case SOFT_FIXING:
+            perform_SOFT_FIXING(env, lp, inst, nedges, ncols, xstar);
+            get_symmsol(xstar, sol);
             break;
 
         case MTZ_STATIC:
@@ -130,7 +145,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
         case GGLIT_STATIC:
         case GGLECT_STATIC:
         case GGLIT_LAZY:
-            get_asymmsol(xstar, nedges, sol->edges, sol->link);
+            get_asymmsol(xstar, sol);
             break;
 
         case OPTIMAL_TOUR:
@@ -154,10 +169,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
     CPXgetobjval(env, lp, &sol->zstar);
     /*sol->zstar = compute_zstar(inst, sol);*/
 
-    /* assert single cycle */
-    /*print_solution(sol, 1);*/
-
-    assert_correctness(sol);
+    /* assert_correctness(sol); // TODO(any): waiting for rewriting */
 
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
@@ -171,10 +183,24 @@ solution TSPopt(instance inst, enum model_types model_type) {
 void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, solution sol,
                      int nedges, struct timeval start, struct timeval end,
                      double* xstar) {
-    while (!visitable(sol->link, nedges)) {
-        /* add the constraints */
-        add_BENDERS_sec(env, lp, sol);
+    /* create an adjacency list to track the edges .. */
+    adjlist l = adjlist_create(nedges);
+    /* .. and first fill it with the first solution found (with possible
+     * subtours) */
+    for (int i = 0; i < nedges; i++) {
+        for (int j = i + 1; j < nedges; j++) {
+            if (xstar[xpos(i, j, nedges)] > 0.5) {
+                adjlist_add_edge(l, i, j);
+            }
+        }
+    }
 
+    /* iterate and add SEC until we obtain a singe tour */
+    while (!adjlist_single_tour(l)) {
+        /* add the constraints */
+        add_BENDERS_sec(env, lp, l);
+
+        // TODO(any): time management
         /* some time has passed, updat the timelimit */
         gettimeofday(&end, NULL);
         /*if(inst->timetype == 0)
@@ -190,22 +216,28 @@ void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, solution sol,
         CPX_PARAM_DETTILIM, restime);
         }*/
 
-        /* solve! */
+        /* solve again! */
         if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
 
         /* store the optimal solution found by CPLEX */
-        int num_cols = CPXgetnumcols(env, lp);
-
-        memset(xstar, '\0', num_cols * sizeof(double));
-        if (CPXgetx(env, lp, xstar, 0, num_cols - 1))
+        if (CPXgetx(env, lp, xstar, 0, CPXgetnumcols(env, lp) - 1)) {
             print_error("CPXgetx() error\n");
+        }
 
-        /* retrive the solution */
-        get_symmsol(xstar, nedges, sol->edges, sol->link);
+        /* completely reset the adjacency list without recreating the object and
+         * fill it with the found solution */
+        adjlist_hard_reset(l);
+        for (int i = 0; i < nedges; i++) {
+            for (int j = i + 1; j < nedges; j++) {
+                if (xstar[xpos(i, j, nedges)] > 0.5) {
+                    adjlist_add_edge(l, i, j);
+                }
+            }
+        }
     }
 
-    /* save the complete model */
-    char* filename;
+    /* save the now complete model */
+    char* filename; //TODO (any): rewrite
     filename = (char*)calloc(100, sizeof(char));
     if (inst->model_folder == TSPLIB)
         snprintf(filename, 28 + 2 * strlen(inst->model_name),
@@ -225,7 +257,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
 
     /* TODO(lugot): FIX */
     srand(0);
-    unsigned int seedp;
+    unsigned int seedp = 0L;
 
     /* preparing some constants to quickly fix bounds */
     const char lbc = 'L';
@@ -238,6 +270,12 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
      * the nodes fixed in order to warm start the next iteration */
     int iterations = 10;
     for (int iter = 0; iter < iterations; iter++) {
+        if (VERBOSE) {
+            printf("[VERBOSE] hard fixing iter %d out of %d\n", iter,
+                   iterations);
+        }
+
+        /* create an adjacency to track the fixed edges */
         adjlist l = adjlist_create(nedges);
 
         /* iterate over edges to randomly fix them
@@ -256,7 +294,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
                     CPXchgbds(env, lp, 1, &pos, &lbc, &one);
 
                     /* track which edges has been selected */
-                    adjlist_add_arc(l, i, j);
+                    adjlist_add_edge(l, i, j);
                 }
             }
         }
@@ -264,7 +302,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
         /* iterate over tracked edges to retreive the loose ends:
          * let's create a simple SEC by fix that edge to zero */
         int i, j;
-        while (adjlist_loose_ends(l, &i, &j)) {
+        while (adjlist_get_loose_ends(l, &i, &j)) {
             int pos = xpos(i, j, nedges);
 
             /* check if the edge is not part of a path (alone): in that case we
@@ -278,7 +316,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             CPXchgbds(env, lp, 1, &pos, &ubc, &zero);
         }
 
-        if (EXTRA) CPXwriteprob(env, lp, "./wow", "LP");
+        if (EXTRA) CPXwriteprob(env, lp, "./hard_fixing", "LP");
 
         // TODO(any): fix time
         CPXsetdblparam(env, CPX_PARAM_TILIM,
@@ -299,13 +337,13 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             /* create a solution for the plot */
             solution sol = create_solution(inst, HARD_FIXING, nedges);
             sol->inst = inst;
-            get_symmsol(xstar, nedges, sol->edges, sol->link);
+            get_symmsol(xstar, sol);
 
             /* track which edges we fixed */
             int* edgecolors = (int*)calloc(nedges, sizeof(int));
             int u, v;
             adjlist_reset(l);
-            while (adjlist_get_arc(l, &u, &v)) {
+            while (adjlist_get_edge(l, &u, &v)) {
                 for (int i = 0; i < nedges; i++) {
                     if (sol->edges[i].i == u && sol->edges[i].j == v) {
                         edgecolors[i] = 1;
@@ -315,7 +353,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             }
 
             /* save the plot */
-            plot_solution_graphviz(sol, edgecolors, iter);
+            /* plot_solution_graphviz(sol, edgecolors, iter); TODO */
         }
 
         /* free the adjlist, do it not for additional plot option */
@@ -325,71 +363,134 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
          * fixed. Just checking if this is not the last iteration to provide a
          * coeherent model */
         if (iter != iterations - 1) {
-            for (int j = 0; j < ncols; j++) {
-                CPXchgbds(env, lp, 1, &j, &lbc, &zero);
-                CPXchgbds(env, lp, 1, &j, &ubc, &one);
+            for (int col = 0; col < ncols; col++) {
+                CPXchgbds(env, lp, 1, &col, &lbc, &zero);
+                CPXchgbds(env, lp, 1, &col, &ubc, &one);
             }
         }
     }
 }
 
-void get_symmsol(double* xstar, int nedges, edge* edges, int* link) {
-    assert(link != NULL);
+void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
+                         int ncols, double* xstar) {
+    double timeremaining = 9 * inst->params->timelimit / 10;
 
-    /* set up parent as linked list, no check on size */
-    for (int i = 0; i < nedges; i++) link[i] = i;
+    CPXsetdblparam(env, CPX_PARAM_NODELIM, CPX_INFBOUND);
 
+    double k = 5.0;
+    int noImproveFlag = 0;
+
+    double bestVal;
+
+    while (timeremaining > 0) {
+        struct timeval start, end;
+        gettimeofday(&start, NULL);
+
+        double pvsObjVal = bestVal;
+        CPXgetobjval(env, lp, &bestVal);
+
+        if (pvsObjVal == bestVal)
+            noImproveFlag = 1;
+        else
+            noImproveFlag = 0;
+
+        printf("Soft fixing %f \n", timeremaining);
+        CPXsetdblparam(env, CPX_PARAM_TILIM, timeremaining);
+
+        if (noImproveFlag == 1)
+            k += 2;
+        else
+            k = 5.0;
+
+        char sense = 'L';
+        double rhs = k - nedges;
+
+        /* ColumnNAME: array of array used to inject variables in CPLEX */
+        char** cname = (char**)calloc(1, sizeof(char*));
+        cname[0] = (char*)calloc(100, sizeof(char));
+
+        int lastrow = CPXgetnumrows(env, lp);
+        snprintf(cname[0], strlen(cname[0]), "soft_fixing");
+
+        /* add the new constraint (with coefficent zero, null lhs) */
+        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
+            print_error("wrong CPXnewrows [degree]");
+        }
+
+        for (int i = 0; i < ncols; i++) {
+            if (xstar[i] < 0.5) {
+                /* change the coefficent from 0 to 1.0 for variables = 0 in
+                 * xstar */
+                if (CPXchgcoef(env, lp, lastrow, i, 1.0)) {
+                    print_error("wrong CPXchgcoef [degree]");
+                }
+            } else {
+                /* change the coefficent from 0 to -1.0 for variables = 1 in
+                 * xstar */
+                if (CPXchgcoef(env, lp, lastrow, i, -1.0)) {
+                    print_error("wrong CPXchgcoef [degree]");
+                }
+            }
+        }
+
+        if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
+
+        if (CPXgetx(env, lp, xstar, 0, ncols - 1))
+            print_error("CPXgetx() error\n");
+
+        gettimeofday(&end, NULL);
+        double seconds = (double)(end.tv_sec - start.tv_sec);
+        timeremaining -= seconds;
+
+        if (timeremaining > 0)
+            if (CPXdelrows(env, lp, lastrow, lastrow))
+                print_error("CPXdelrows() error\n");
+    }
+}
+
+void get_symmsol(double* xstar, solution sol) {
     /* index over selected edges */
     int k = 0;
 
     /* check for edges j>i if is selected */
-    for (int i = 0; i < nedges; i++) {
-        for (int j = i + 1; j < nedges; j++) {
-            if (xstar[xpos(i, j, nedges)] > 0.5) {
-                /* link is mandatory, edges is optional */
-                if (edges != NULL) edges[k] = (edge){i, j};
-                k++;
-
-                /* actually a shifted linked list */
-                if (!reachable(link, i, j) && !reachable(link, j, i))
-                    swap(&link[i], &link[j]);
+    for (int i = 0; i < sol->nedges; i++) {
+        for (int j = i + 1; j < sol->nedges; j++) {
+            if (xstar[xpos(i, j, sol->nedges)] > 0.5) {
+                /* then store it in the solution*/
+                sol->edges[k++] = (edge){i, j};
             }
         }
     }
 
+    // TODO(any): check this
     /*assert(k == nedges && "not enought edges CPLEX solution");*/
 }
 
-void get_asymmsol(double* xstar, int nedges, edge* edges, int* link) {
-    assert(link != NULL);
-
-    /* set up parent as linked list */
-    for (int i = 0; i < nedges; i++) link[i] = i;
-
+void get_asymmsol(double* xstar, solution sol) {
     /* index over selected edges */
     int k = 0;
 
-    /* check for all edges if is selected */
-    for (int i = 0; i < nedges; i++) {
-        for (int j = 0; j < nedges; j++) {
-            if (xstar[xxpos(i, j, nedges)] > 0.5) {
-                /* link is mandatory, edges is optional */
-                if (edges != NULL) edges[k] = (edge){i, j};
-                k++;
-                /* actually a shifted linked list */
-                if (!reachable(link, i, j)) swap(&link[i], &link[j]);
+    /* check for edges i, j if is selected */
+    for (int i = 0; i < sol->nedges; i++) {
+        for (int j = 0; j < sol->nedges; j++) {
+            if (xstar[xpos(i, j, sol->nedges)] > 0.5) {
+                /* then store it in the solution*/
+                sol->edges[k++] = (edge){i, j};
             }
         }
     }
+
+    // TODO(any): check this
     /*assert(k == nedges && "not enought edges CPLEX solution");*/
 }
 
-void assert_correctness(solution sol) {
-    int visited = 0;
-    int act = 0;
-    do {
-        visited++;
-    } while ((act = sol->link[act]) != 0);
+/* void assert_correctness(solution sol) { */
+/*     TODO(any): rewrite why not */
+/*     int visited = 0; */
+/*     int act = 0; */
+/*     do { */
+/*         visited++; */
+/*     } while ((act = sol->link[act]) != 0); */
 
-    assert(visited == sol->nedges);
-}
+/*     assert(visited == sol->nedges); */
+/* } */

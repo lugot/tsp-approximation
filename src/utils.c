@@ -228,6 +228,9 @@ char* model_type_tostring(enum model_types model_type) {
         case HARD_FIXING:
             snprintf(ans, bufsize, "hard_fixing");
             break;
+        case SOFT_FIXING:
+            snprintf(ans, bufsize, "hard_fixing");
+            break;
     }
 
     return ans;

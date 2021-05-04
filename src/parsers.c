@@ -273,7 +273,6 @@ instance parse_input_file(char* model_name, char* file_extension,
 
                 int nedges = sol->nedges = inst->nnodes;
                 sol->edges = (edge*)calloc(nedges, sizeof(struct edge_t));
-                sol->link = (int*)calloc(nedges, sizeof(int));
 
                 int prev, first;
                 assert(getline(&line, &len, fp) != -1 &&
@@ -285,11 +284,9 @@ instance parse_input_file(char* model_name, char* file_extension,
                     if (getline(&line, &len, fp) == -1) break;
                     int act = atoi(line) - 1;
 
-                    sol->link[prev] = act;
                     sol->edges[i - 1] = (edge){prev, act};
                     prev = act;
                 }
-                sol->link[prev] = first;
                 sol->edges[i - 1] = (edge){prev, first};
 
                 assert(i == inst->nnodes && "reached EOF while reading tour");

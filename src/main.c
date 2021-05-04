@@ -11,13 +11,13 @@
 #include "../include/utils.h"
 
 int main(int argc, char** argv) {
-    int ntests = 2;
+    int ntests = 3;
     enum model_types tests[] = {/*MTZ_STATIC,*/
                                 /*MTZ_LAZY,*/
                                 /*GGLIT_STATIC,*/
                                 /*GGLECT_STATIC,*/
                                 /*GGLIT_LAZY,*/
-                                /* BENDERS, */
+                                BENDERS,
                                 BENDERS_CALLBACK,
                                 HARD_FIXING};
 
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
             options->battery_test = maxi(1, options->battery_test);
             printf("generating %d instances\n", options->battery_test);
 
-            int num_nodes = 10;
+            int num_nodes = 50;
             instance* insts = generate_random_instances(options->battery_test,
                                                         num_nodes, 20.0);
             double zstar = 0.0;
