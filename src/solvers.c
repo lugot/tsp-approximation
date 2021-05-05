@@ -17,10 +17,10 @@
 void assert_correctness(solution sol);
 void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,
                      struct timespec s, struct timespec e);
-void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
-                         int ncols, double* xstar, int perc);
-void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
-                         int ncols, double* xstar);
+void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
+                         double* xstar, int perc);
+void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
+                         double* xstar);
 
 solution TSPopt(instance inst, enum model_types model_type) {
     assert(inst != NULL);
@@ -53,15 +53,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
     // Cplexrun (Passed by TSP opt?) TODO
 
     /* save the log of the execution */
-    char* logfile;
-    logfile = (char*)calloc(100, sizeof(char));
-    char* folder = model_folder_tostring(inst->model_folder);
-    sprintf(logfile, "../data_%s/%s/%slog.txt", folder, inst->model_name,
-            inst->model_name);
-
+    char logfile[] = "execution.log";
     CPXsetlogfilename(env, logfile, "w");
-    free(folder);
-    free(logfile);
 
     /* populate enviorment with model data */
     sol->build_time = build_tsp_model(env, lp, inst, model_type);
@@ -99,10 +92,11 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
         case SOFT_FIXING: {
             /* set iniitial fraction of timelimit for first execution */
-            CPXsetdblparam(env, CPX_PARAM_TILIM,
-                           inst->params->timelimit / SF_INITIAL_FRACTION_TIME);
+            /* CPXsetdblparam(env, CPX_PARAM_TILIM, */
+            /*                inst->params->timelimit /
+             * SF_INITIAL_FRACTION_TIME); */
             /* alternative: work on branching node limit */
-            /* CPXsetintparam(env, CPX_PARAM_NODELIM, 10); */
+            CPXsetintparam(env, CPX_PARAM_NODELIM, 10);
 
             /* recompute timelimit considering time spent on intial solution */
             inst->params->timelimit *= (1 - 1.0 / SF_INITIAL_FRACTION_TIME);
@@ -147,13 +141,12 @@ solution TSPopt(instance inst, enum model_types model_type) {
             break;
 
         case HARD_FIXING:
-            perform_HARD_FIXING(env, lp, inst, nedges, ncols, xstar,
-                                HF_PERCENTAGE);
+            perform_HARD_FIXING(env, lp, inst, xstar, HF_PERCENTAGE);
             get_symmsol(xstar, sol);
             break;
 
         case SOFT_FIXING:
-            perform_SOFT_FIXING(env, lp, inst, nedges, ncols, xstar);
+            perform_SOFT_FIXING(env, lp, inst, xstar);
             get_symmsol(xstar, sol);
             break;
 
@@ -252,13 +245,20 @@ void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,
     free(filename);
 }
 
-void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
-                         int ncols, double* xstar, int perc) {
+void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
+                         double* xstar, int perc) {
     assert(perc >= 0 && perc < 100);
+
+    int nedges = inst->nnodes;
+    int ncols = inst->ncols;
 
     /* TODO(lugot): FIX */
     srand(0);
     unsigned int seedp = 0L;
+
+    /* objective tracking */
+    double best_obj, prev_obj;
+    CPXgetobjval(env, lp, &best_obj);
 
     /* preparing some constants to quickly fix bounds */
     const char lbc = 'L';
@@ -270,9 +270,15 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
      * for each iteration fix randomly some edges, solve the model and release
      * the nodes fixed in order to warm start the next iteration */
     for (int iter = 0; iter < HF_ITERATIONS; iter++) {
+        prev_obj = best_obj;
+        CPXgetobjval(env, lp, &best_obj);
+
         if (VERBOSE) {
-            printf("[VERBOSE] hard fixing iter %d out of %d\n", iter,
-                   HF_ITERATIONS);
+            printf(
+                "[VERBOSE]: hard fixing status (iter %d out of %d)\n"
+                "\tprev_obj: %.20lf\n"
+                "\t act_obj: %.20lf\n",
+                iter, HF_ITERATIONS, prev_obj, best_obj);
         }
 
         /* create an adjacency to track the fixed edges */
@@ -286,9 +292,9 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
 
                 /* check if the edge is an actual edge and select it */
                 if (xstar[pos] > 0.5 && rand_r(&seedp) % 100 < perc) {
-                    if (VERBOSE) {
-                        printf("[VERBOSE] fixing arc (%d,%d)\n", i + 1, j + 1);
-                    }
+                    /* if (VERBOSE) { */
+                    /*     printf("[VERBOSE] fixing arc (%d,%d)\n", i + 1, j + 1); */
+                    /* } */
 
                     /* fix the edge by moving the lower bound to one */
                     CPXchgbds(env, lp, 1, &pos, &lbc, &one);
@@ -312,7 +318,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             /* if lb is 1.0 means that we previously fix it -> skip */
             if (lb == 1.0) continue;
 
-            if (VERBOSE) printf("[VERBOSE] removing (%d,%d)\n", i + 1, j + 1);
+            /* if (VERBOSE) printf("[VERBOSE] removing (%d,%d)\n", i + 1, j + 1); */
             CPXchgbds(env, lp, 1, &pos, &ubc, &zero);
         }
 
@@ -342,9 +348,9 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             int u, v;
             adjlist_reset(l);
             while (adjlist_get_edge(l, &u, &v)) {
-                for (int i = 0; i < nedges; i++) {
-                    if (sol->edges[i].i == u && sol->edges[i].j == v) {
-                        edgecolors[i] = 1;
+                for (int z = 0; z < nedges; z++) {
+                    if (sol->edges[z].i == z && sol->edges[z].j == v) {
+                        edgecolors[z] = 1;
                         break;
                     }
                 }
@@ -368,17 +374,26 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             }
         }
     }
+
+    if (VERBOSE) {
+        printf(
+            "[VERBOSE]: hard fixing status (on exiting)\n"
+            "\tprev_obj: %.20lf\n"
+            "\t act_obj: %.20lf\n",
+            prev_obj, best_obj);
+    }
 }
 
-void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
-                         int ncols, double* xstar) {
-    double remainingtime = inst->params->timelimit;
+void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
+                         double* xstar) {
+    int nedges = inst->nnodes;
+    int ncols = inst->ncols;
 
     double k = SF_INITIAL_K;
-    double best_obj;
+    double best_obj, prev_obj;
     CPXgetobjval(env, lp, &best_obj);
 
-    while (remainingtime > 0) {
+    while (inst->params->timelimit > 0) {
         /* track the time for the current iteration */
         struct timespec s, e;
         s.tv_sec = e.tv_sec = -1;
@@ -386,7 +401,7 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
 
         /* compute objective and compare it with the previous one to determine
          * if we need to enlarge the neighborhood size */
-        double prev_obj = best_obj;
+        prev_obj = best_obj;
         CPXgetobjval(env, lp, &best_obj);
 
         if (VERBOSE) {
@@ -396,7 +411,7 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
                 "\tk: %lf\n"
                 "\tprev_obj: %.20lf\n"
                 "\t act_obj: %.20lf\n",
-                remainingtime, k, prev_obj, best_obj);
+                inst->params->timelimit, k, prev_obj, best_obj);
         }
 
         /* if no improvment enlarge neigborhood size */
@@ -405,7 +420,7 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
         if (k >= SF_MAX_K) break;
 
         /* set the new timelimit and perform another resolution */
-        CPXsetdblparam(env, CPX_PARAM_TILIM, remainingtime);
+        CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit);
 
         char** cname = (char**)calloc(1, sizeof(char*));
         cname[0] = (char*)calloc(100, sizeof(char));
@@ -422,14 +437,9 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             print_error("wrong CPXnewrows [soft fixing]");
         }
 
+        /* TODO(lugot): MODIFY double for for tracking fixed nodes */
         for (int i = 0; i < ncols; i++) {
-            if (xstar[i] < 0.5) {
-                /* change the coefficent from 0 to 1.0 for variables = 0 in
-                 * xstar */
-                if (CPXchgcoef(env, lp, lastrow, i, 1.0)) {
-                    print_error("wrong CPXchgcoef [soft fixing]");
-                }
-            } else {
+            if (xstar[i] > 0.5) {
                 /* change the coefficent from 0 to -1.0 for variables = 1 in
                  * xstar */
                 if (CPXchgcoef(env, lp, lastrow, i, -1.0)) {
@@ -443,9 +453,9 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
         if (CPXgetx(env, lp, xstar, 0, ncols - 1))
             print_error("CPXgetx() error\n");
 
-        remainingtime -= stopwatch(&s, &e) / 1000.0;
+        inst->params->timelimit -= stopwatch(&s, &e) / 1000.0;
 
-        if (remainingtime > 0)
+        if (inst->params->timelimit > 0)
             if (CPXdelrows(env, lp, lastrow, lastrow))
                 print_error("CPXdelrows() error\n");
     }
@@ -456,7 +466,7 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst, int nedges,
             "\tremaining_time: %lf\n"
             "\tk: %lf\n"
             "\t act_obj: %.20lf\n",
-            remainingtime, k, best_obj);
+            inst->params->timelimit, k, best_obj);
     }
 }
 
@@ -469,7 +479,9 @@ void get_symmsol(double* xstar, solution sol) {
         for (int j = i + 1; j < sol->nedges; j++) {
             if (xstar[xpos(i, j, sol->nedges)] > 0.5) {
                 /* then store it in the solution*/
-                sol->edges[k++] = (edge){i, j};
+                sol->edges[k] = (edge){i, j};
+
+                k++;
             }
         }
     }
@@ -487,7 +499,9 @@ void get_asymmsol(double* xstar, solution sol) {
         for (int j = 0; j < sol->nedges; j++) {
             if (xstar[xpos(i, j, sol->nedges)] > 0.5) {
                 /* then store it in the solution*/
-                sol->edges[k++] = (edge){i, j};
+                sol->edges[k] = (edge){i, j};
+
+                k++;
             }
         }
     }

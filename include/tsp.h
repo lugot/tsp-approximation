@@ -32,11 +32,11 @@ typedef struct instance_t {
 
     /* parameters */
     cplex_params params;
-    // int timetype;
 
     /* data */
     enum weight_types weight_type;
     int nnodes;
+    int ncols;
     node* nodes;
     double** adjmatrix;
 

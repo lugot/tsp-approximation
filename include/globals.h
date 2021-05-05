@@ -12,7 +12,7 @@
 #define HF_ITERATIONS 20
 #define HF_INITIAL_FRACTION_TIME 10
 
-#define SF_INITIAL_K 2
+#define SF_INITIAL_K 3
 #define SF_MAX_K 15
 #define SF_K_STEP 2
 /* TODO(lugot): IDEA k increment function of time */

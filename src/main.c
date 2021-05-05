@@ -19,8 +19,9 @@ int main(int argc, char** argv) {
                                 /*GGLIT_LAZY,*/
                                 /* BENDERS, */
                                 /* BENDERS_CALLBACK, */
-                                /* HARD_FIXING, */
-                                SOFT_FIXING};
+                                HARD_FIXING,
+                                /* SOFT_FIXING */
+    };
 
     cplex_params params = create_params();
     run_options options = create_options();
@@ -36,15 +37,15 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = TSPopt(inst, SOFT_FIXING);
-            print_solution(sol, 1);
+            solution sol = TSPopt(inst, HARD_FIXING);
+            /* print_solution(sol, 1); */
             break;
         }
         case GENERATE: { 
             options->battery_test = maxi(1, options->battery_test);
             printf("generating %d instances\n", options->battery_test);
 
-            int num_nodes = 500;
+            int num_nodes = 1200;
             instance* insts = generate_random_instances(options->battery_test,
                                                         num_nodes, 20.0);
             double zstar = 0.0;

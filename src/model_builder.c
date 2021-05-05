@@ -146,6 +146,10 @@ void add_symm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {
         }
     }
 
+    /* add the number of CPLEX columns to the instance */
+    /* int this case is n chooses 2 cause of symmetry */
+    inst->ncols = nnodes * (nnodes - 1) / 2;
+
     free(cname[0]);
     free(cname);
 }
@@ -185,6 +189,10 @@ void add_asymm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {
             }
         }
     }
+
+    /* add the number of CPLEX columns to the instance */
+    /* int this case is n * (n - 1) cause of asymmetry */
+    inst->ncols = nnodes * (nnodes - 1);
 
     free(cname[0]);
     free(cname);
@@ -317,6 +325,9 @@ void add_MTZ_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
         }
     }
 
+    /* update the number of columns */
+    inst->ncols += nnodes;
+
     int izero = 0;
     int index[3];
     double value[3];
@@ -401,6 +412,9 @@ void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
         }
     }
 
+    /* update the number of columns */
+    inst->ncols += nnodes;
+
     int izero = 0;
     int index[3];
     double value[3];
@@ -411,7 +425,7 @@ void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
 
     /* add lazy constraints  1.0 * u_i - 1.0 * u_j + M * x_ij <= M - 1
      * for each arc (i,j) not touching node 0 */
-    for (int i = 1; i < nnodes; i++)
+    for (int i = 1; i < nnodes; i++) {
         for (int j = 1; j < nnodes; j++) {
             if (i == j) continue;
 
@@ -431,6 +445,7 @@ void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
                 print_error("wrong CPXlazyconstraints() for u-consistency");
             }
         }
+    }
 
     /* add lazy constraints 1.0 * x_ij + 1.0 * x_ji <= 1
      * for each arc (i,j) with i < j */
@@ -488,6 +503,9 @@ void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
             }
         }
     }
+
+    /* update the number of columns */
+    inst->ncols += nnodes * nnodes;
 
     double rhs = 0.0;
     char sense = 'L';
@@ -619,6 +637,9 @@ void add_GGlect_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
             }
         }
     }
+
+    /* update the number of columns */
+    inst->ncols += nnodes * nnodes;
 
     /* linking constraints */
     double rhs = 0.0;
@@ -777,6 +798,9 @@ void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
             }
         }
     }
+
+    /* update the number of columns */
+    inst->ncols += nnodes * nnodes;
 
     int izero = 0;
     int index[2 * nnodes - 2];
