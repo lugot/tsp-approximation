@@ -558,7 +558,6 @@ void save_results(instance* insts, int ninstances) {
     }
 
     fclose(fp);
-    printf("file closed\n");
 
     /* generate the plot */
     // TODO(lugot): adjust timelimit

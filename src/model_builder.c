@@ -899,7 +899,7 @@ void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {
         snprintf(cname[0], strlen(cname[0]), "benders_sec(%d)", subtour[0] + 1);
         /* .. and fix the sense and rhs */
         if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
-            print_error("wrong CPXnewrows [degree]");
+            print_error("wrong CPXnewrows [benders]");
         }
 
         /* iterate over all possible ordered pair (symmetric model) of the
@@ -908,7 +908,7 @@ void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {
             for (int j = i + 1; j < subsize; j++) {
                 if (CPXchgcoef(env, lp, lastrow,
                                xpos(subtour[i], subtour[j], nnodes), 1.0)) {
-                    print_error("wrong CPXchgcoef [degree]");
+                    print_error("wrong CPXchgcoef [benders]");
                 }
             }
         }
@@ -958,7 +958,7 @@ int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,
     CPXcallbackgetinfoint(context, CPXCALLBACKINFO_THREADID, &mythread);
     CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &zbest);
     CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &incumbent);
-    if (VERBOSE) {
+    if (VERBOSE && !SUPPRESS_CALLBACK) {
         printf("node information:\n");
         printf("- node index: %d\n", mynode);
         printf("- thread index: %d\n", mythread);
@@ -1023,8 +1023,8 @@ int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,
         free(subtour);
     }
 
-    if (VERBOSE) {
-        printf("[Verbose] num subtour BENDERS (callback) %d\n", nsubtours);
+    if (VERBOSE && !SUPPRESS_CALLBACK) {
+        printf("[VERBOSE] num subtour BENDERS (callback) %d\n", nsubtours);
     }
 
     return 0;
@@ -1060,7 +1060,7 @@ int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr context,
     CPXcallbackgetinfoint(context, CPXCALLBACKINFO_THREADID, &mythread);
     CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &zbest);
     CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &incumbent);
-    if (VERBOSE) {
+    if (VERBOSE && !SUPPRESS_CALLBACK) {
         printf("node information:\n");
         printf("- node index: %d\n", mynode);
         printf("- thread index: %d\n", mythread);
@@ -1094,7 +1094,7 @@ int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr context,
 
     /* it seems it never happends */
     if (ncomps == 1) {
-        if (VERBOSE) printf("[Verbose] add relaxation cut.");
+        if (VERBOSE) printf("[VERBOSE] add relaxation cut\n");
         if (CCcut_violated_cuts(nedges, ncols, elist, xstar, 2 - epsilon,
                                 doit_fn_concorde, (void*)data))
             print_error("CCcut_violated_cuts error");

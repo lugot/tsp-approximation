@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <time.h>
 
 #include "../include/tsp.h"
 
@@ -229,7 +230,7 @@ char* model_type_tostring(enum model_types model_type) {
             snprintf(ans, bufsize, "hard_fixing");
             break;
         case SOFT_FIXING:
-            snprintf(ans, bufsize, "hard_fixing");
+            snprintf(ans, bufsize, "soft_fixing");
             break;
     }
 
@@ -263,6 +264,18 @@ void swap(int* x, int* y) {
     temp = *y;
     *y = *x;
     *x = temp;
+}
+
+int64_t stopwatch(struct timespec* s, struct timespec* e) {
+    /* if stopwatch not started yet, do if */
+    if (s->tv_sec == -1) clock_gettime(CLOCK_REALTIME, s);
+
+    /* the next times do that for end and return difference
+     * first call result can be ignored */
+    clock_gettime(CLOCK_REALTIME, e);
+
+    return (e->tv_sec - s->tv_sec) * 1000 +
+           (time_t)((e->tv_nsec - s->tv_nsec)) / 1000000;
 }
 
 char** list_files(enum model_folders folder, int* nmodels) {

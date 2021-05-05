@@ -26,6 +26,9 @@ double min(double a, double b);
 int maxi(int a, int b);
 int mini(int a, int b);
 void swap(int* x, int* y);
+
+int64_t stopwatch(struct timespec* s, struct timespec* e);
+
 char** list_files(enum model_folders folder, int* nmodels);
 
 #endif  // INCLUDE_UTILS_H_

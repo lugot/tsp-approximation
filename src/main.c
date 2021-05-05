@@ -11,15 +11,16 @@
 #include "../include/utils.h"
 
 int main(int argc, char** argv) {
-    int ntests = 3;
+    int ntests = 1;
     enum model_types tests[] = {/*MTZ_STATIC,*/
                                 /*MTZ_LAZY,*/
                                 /*GGLIT_STATIC,*/
                                 /*GGLECT_STATIC,*/
                                 /*GGLIT_LAZY,*/
-                                BENDERS,
-                                BENDERS_CALLBACK,
-                                HARD_FIXING};
+                                /* BENDERS, */
+                                /* BENDERS_CALLBACK, */
+                                /* HARD_FIXING, */
+                                SOFT_FIXING};
 
     cplex_params params = create_params();
     run_options options = create_options();
@@ -35,15 +36,15 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = TSPopt(inst, HARD_FIXING);
+            solution sol = TSPopt(inst, SOFT_FIXING);
             print_solution(sol, 1);
             break;
         }
-        case GENERATE: {
+        case GENERATE: { 
             options->battery_test = maxi(1, options->battery_test);
             printf("generating %d instances\n", options->battery_test);
 
-            int num_nodes = 50;
+            int num_nodes = 500;
             instance* insts = generate_random_instances(options->battery_test,
                                                         num_nodes, 20.0);
             double zstar = 0.0;
@@ -56,7 +57,7 @@ int main(int argc, char** argv) {
 
                 for (int j = 0; j < ntests; j++) {
                     char* model_type_str = model_type_tostring(tests[j]);
-                    printf("\tsolving %s on instance %s: ", model_type_str,
+                    printf("\tsolving %s on instance %s:\n", model_type_str,
                            inst->model_name);
                     free(model_type_str);
 

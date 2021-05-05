@@ -84,7 +84,6 @@ void parse_command_line(int argc, char** argv, cplex_params params,
                               &long_index)) != -1) {
         switch (opt) {
             case 'v':
-                VERBOSE = 1;
                 break;
             case 'm':
                 options->mode = SINGLE_MODEL;
@@ -351,7 +350,6 @@ instance* parse_input_dir(enum model_folders folder, char* file_extension,
     char** model_names = list_files(folder, ninstances);
 
     instance* insts = (instance*)calloc(*ninstances, sizeof(struct instance_t));
-
 
     int nmodels = *ninstances;
     *ninstances = 0;
