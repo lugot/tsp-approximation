@@ -29,7 +29,6 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
     /* create and populate solution */
     solution sol = create_solution(inst, model_type, inst->nnodes);
-    int nedges = sol->nedges;
     sol->distance_time = compute_dist(inst);
     /* sol->timetype = inst->timetype; */
 
@@ -258,7 +257,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
 
     /* objective tracking */
     double best_obj, prev_obj;
-    CPXgetobjval(env, lp, &best_obj);
+    CPXgetobjval(env, lp, &prev_obj);
 
     /* preparing some constants to quickly fix bounds */
     const char lbc = 'L';
@@ -270,17 +269,6 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
      * for each iteration fix randomly some edges, solve the model and release
      * the nodes fixed in order to warm start the next iteration */
     for (int iter = 0; iter < HF_ITERATIONS; iter++) {
-        prev_obj = best_obj;
-        CPXgetobjval(env, lp, &best_obj);
-
-        if (VERBOSE) {
-            printf(
-                "[VERBOSE]: hard fixing status (iter %d out of %d)\n"
-                "\tprev_obj: %.20lf\n"
-                "\t act_obj: %.20lf\n",
-                iter, HF_ITERATIONS, prev_obj, best_obj);
-        }
-
         /* create an adjacency to track the fixed edges */
         adjlist l = adjlist_create(nedges);
 
@@ -293,7 +281,8 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
                 /* check if the edge is an actual edge and select it */
                 if (xstar[pos] > 0.5 && rand_r(&seedp) % 100 < perc) {
                     /* if (VERBOSE) { */
-                    /*     printf("[VERBOSE] fixing arc (%d,%d)\n", i + 1, j + 1); */
+                    /*     printf("[VERBOSE] fixing arc (%d,%d)\n", i + 1, j +
+                     * 1); */
                     /* } */
 
                     /* fix the edge by moving the lower bound to one */
@@ -318,7 +307,8 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
             /* if lb is 1.0 means that we previously fix it -> skip */
             if (lb == 1.0) continue;
 
-            /* if (VERBOSE) printf("[VERBOSE] removing (%d,%d)\n", i + 1, j + 1); */
+            /* if (VERBOSE) printf("[VERBOSE] removing (%d,%d)\n", i + 1, j +
+             * 1); */
             CPXchgbds(env, lp, 1, &pos, &ubc, &zero);
         }
 
@@ -335,6 +325,19 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
         if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
         if (CPXgetx(env, lp, xstar, 0, ncols - 1)) {
             print_error("CPXgetx() error\n");
+        }
+
+        if (VERBOSE) {
+            /* store the objective */
+            CPXgetobjval(env, lp, &best_obj);
+
+            printf(
+                "[VERBOSE]: hard fixing status (iter %d out of %d)\n"
+                "\tprev_obj: %.20lf\n"
+                "\t act_obj: %.20lf\n",
+                iter, HF_ITERATIONS, prev_obj, best_obj);
+
+            prev_obj = best_obj;
         }
 
         if (EXTRA) {
@@ -377,7 +380,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
 
     if (VERBOSE) {
         printf(
-            "[VERBOSE]: hard fixing status (on exiting)\n"
+            "[VERBOSE]: hard fixing status (on exit)\n"
             "\tprev_obj: %.20lf\n"
             "\t act_obj: %.20lf\n",
             prev_obj, best_obj);
@@ -391,33 +394,13 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
 
     double k = SF_INITIAL_K;
     double best_obj, prev_obj;
-    CPXgetobjval(env, lp, &best_obj);
+    CPXgetobjval(env, lp, &prev_obj);
 
     while (inst->params->timelimit > 0) {
         /* track the time for the current iteration */
         struct timespec s, e;
         s.tv_sec = e.tv_sec = -1;
         stopwatch(&s, &e);
-
-        /* compute objective and compare it with the previous one to determine
-         * if we need to enlarge the neighborhood size */
-        prev_obj = best_obj;
-        CPXgetobjval(env, lp, &best_obj);
-
-        if (VERBOSE) {
-            printf(
-                "[VERBOSE]: soft fixing status (bf k updating)\n"
-                "\tremaining_time: %lf\n"
-                "\tk: %lf\n"
-                "\tprev_obj: %.20lf\n"
-                "\t act_obj: %.20lf\n",
-                inst->params->timelimit, k, prev_obj, best_obj);
-        }
-
-        /* if no improvment enlarge neigborhood size */
-        if (fabs(prev_obj - best_obj) < EPSILON) k += SF_K_STEP;
-        /* cut the computation if k too high */
-        if (k >= SF_MAX_K) break;
 
         /* set the new timelimit and perform another resolution */
         CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit);
@@ -450,9 +433,32 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
 
         /* solve! and get solution */
         if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
-        if (CPXgetx(env, lp, xstar, 0, ncols - 1))
+        if (CPXgetx(env, lp, xstar, 0, ncols - 1)) {
             print_error("CPXgetx() error\n");
+        }
 
+        /* compute objective and compare it with the previous one to determine
+         * if we need to enlarge the neighborhood size */
+        CPXgetobjval(env, lp, &best_obj);
+
+        if (VERBOSE) {
+            printf(
+                "[VERBOSE]: soft fixing status (bf k updating)\n"
+                "\tremaining_time: %lf\n"
+                "\tk: %lf\n"
+                "\tprev_obj: %.20lf\n"
+                "\t act_obj: %.20lf\n",
+                inst->params->timelimit, k, prev_obj, best_obj);
+        }
+
+        /* if no improvment enlarge neigborhood size */
+        if (fabs(prev_obj - best_obj) < EPSILON) k += SF_K_STEP;
+        /* cut the computation if k too high */
+        if (k >= SF_MAX_K) break;
+        /* and update the objective */
+        prev_obj = best_obj;
+
+        /* update timelimit */
         inst->params->timelimit -= stopwatch(&s, &e) / 1000.0;
 
         if (inst->params->timelimit > 0)

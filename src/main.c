@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
                                 /*GGLIT_LAZY,*/
                                 /* BENDERS, */
                                 /* BENDERS_CALLBACK, */
-                                HARD_FIXING,
-                                /* SOFT_FIXING */
+                                /* HARD_FIXING, */
+                                SOFT_FIXING
     };
 
     cplex_params params = create_params();
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = TSPopt(inst, HARD_FIXING);
+            solution sol = TSPopt(inst, SOFT_FIXING);
             /* print_solution(sol, 1); */
             break;
         }
