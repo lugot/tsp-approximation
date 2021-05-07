@@ -12,15 +12,18 @@
 
 int main(int argc, char** argv) {
     int ntests = 1;
-    enum model_types tests[] = {/*MTZ_STATIC,*/
-                                /*MTZ_LAZY,*/
-                                /*GGLIT_STATIC,*/
-                                /*GGLECT_STATIC,*/
-                                /*GGLIT_LAZY,*/
-                                /* BENDERS, */
-                                /* BENDERS_CALLBACK, */
-                                /* HARD_FIXING, */
-                                SOFT_FIXING
+    enum model_types tests[] = {
+        /*MTZ_STATIC,*/
+        /*MTZ_LAZY,*/
+        /*GGLIT_STATIC,*/
+        /*GGLECT_STATIC,*/
+        /*GGLIT_LAZY,*/
+        /* BENDERS, */
+        /* BENDERS_CALLBACK, */
+        /* HARD_FIXING, */ 
+        /* SOFT_FIXING, */
+        GREEDY,
+        /* GRASP */
     };
 
     cplex_params params = create_params();
@@ -37,19 +40,18 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = solve(inst, SOFT_FIXING);
-            /* print_solution(sol, 1); */
+            solution sol = solve(inst, GREEDY);
+            plot_graphviz(sol, NULL, 0);
 
             free_instance(inst);
             break;
         }
-        case GENERATE: { 
+        case GENERATE: {
             options->battery_test = maxi(1, options->battery_test);
             printf("generating %d instances\n", options->battery_test);
 
-            int num_nodes = 120;
-            instance* insts = generate_random_instances(options->battery_test,
-                                                        num_nodes, 20.0);
+            instance* insts =
+                generate_random_instances(options->battery_test, NUM_NODES);
             double zstar = 0.0;
 
             for (int i = 0; i < options->battery_test; i++) {
@@ -71,6 +73,8 @@ int main(int argc, char** argv) {
 
                     if (zstar == 0.0) zstar = sol->zstar;
                     assert(fabs(zstar - sol->zstar) < EPSILON);
+
+                    plot_graphviz(sol, NULL, j);
                 }
             }
             plot_profiler(insts, options->battery_test);
@@ -107,6 +111,8 @@ int main(int argc, char** argv) {
 
                     if (zstar == 0.0) zstar = sol->zstar;
                     assert(fabs(zstar - sol->zstar) < EPSILON);
+
+                    plot_graphviz(sol, NULL, j);
                 }
             }
             plot_profiler(insts, ninstances);

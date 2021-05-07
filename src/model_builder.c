@@ -86,6 +86,8 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
             add_GGlit_lazy_sec(env, lp, inst);
             break;
 
+        case GRASP:
+        case GREEDY:
         case OPTIMAL_TOUR:
             print_error("unhandeled model type in variables");
     }
@@ -892,6 +894,66 @@ void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
     free(cname);
 }
 
+void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,
+                     struct timespec s, struct timespec e) {
+    int nedges = inst->nnodes;
+
+    /* create an adjacency list to track the edges .. */
+    adjlist l = adjlist_create(nedges);
+    /* .. and first fill it with the first solution found (with possible
+     * subtours) */
+    for (int i = 0; i < nedges; i++) {
+        for (int j = i + 1; j < nedges; j++) {
+            if (xstar[xpos(i, j, nedges)] > 0.5) {
+                adjlist_add_edge(l, i, j);
+            }
+        }
+    }
+
+    /* iterate and add SEC until we obtain a singe tour */
+    while (!adjlist_single_tour(l)) {
+        /* add the constraints */
+        add_BENDERS_sec(env, lp, l);
+
+        /* some time has passed, update the timelimit the timelimit
+         * we have to pass time in second! */
+        long restime = inst->params->timelimit - stopwatch(&s, &e) / 1000.0;
+        CPXsetdblparam(env, CPX_PARAM_TILIM, restime);
+
+        /* solve again! */
+        if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
+
+        /* store the optimal solution found by CPLEX */
+        if (CPXgetx(env, lp, xstar, 0, CPXgetnumcols(env, lp) - 1)) {
+            print_error("CPXgetx() error\n");
+        }
+
+        /* completely reset the adjacency list without recreating the object and
+         * fill it with the found solution */
+        adjlist_hard_reset(l);
+        for (int i = 0; i < nedges; i++) {
+            for (int j = i + 1; j < nedges; j++) {
+                if (xstar[xpos(i, j, nedges)] > 0.5) {
+                    adjlist_add_edge(l, i, j);
+                }
+            }
+        }
+    }
+
+    /* save the now complete model */
+    char* filename;
+    int bufsize = 100;
+    filename = (char*)calloc(bufsize, sizeof(char));
+    char* folder = model_folder_tostring(inst->model_folder);
+
+    snprintf(filename, bufsize, "../data_%s/%s/%s.benders.lp", folder,
+             inst->model_name, inst->model_name);
+
+    CPXwriteprob(env, lp, filename, NULL);
+    free(folder);
+    free(filename);
+}
+
 void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {
     /* add
      * sum i in V, j in V x_ij <= |V| - 1 for each V subtour of actual solution
@@ -1163,4 +1225,235 @@ int doit_fn_concorde(double cutval, int cutcount, int* cut, void* in) {
     free(index);
     free(value);
     return 0;
+}
+
+void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
+                         double* xstar, int perc) {
+    assert(perc >= 0 && perc < 100);
+
+    int nedges = inst->nnodes;
+    int ncols = inst->ncols;
+
+    /* TODO(lugot): FIX */
+    srand(0);
+    unsigned int seedp = 0L;
+
+    /* objective tracking */
+    double best_obj, prev_obj;
+    CPXgetobjval(env, lp, &prev_obj);
+
+    /* preparing some constants to quickly fix bounds */
+    const char lbc = 'L';
+    const char ubc = 'U';
+    const double one = 1.0;
+    const double zero = 0.0;
+
+    /* perform HARD FIXING:
+     * for each iteration fix randomly some edges, solve the model and release
+     * the nodes fixed in order to warm start the next iteration */
+    for (int iter = 0; iter < HF_ITERATIONS; iter++) {
+        /* create an adjacency to track the fixed edges */
+        adjlist l = adjlist_create(nedges);
+
+        /* iterate over edges to randomly fix them
+         * not a single for cause of arc tracking */
+        for (int i = 0; i < nedges; i++) {
+            for (int j = i + 1; j < nedges; j++) {
+                int pos = xpos(i, j, nedges);
+
+                /* check if the edge is an actual edge and select it */
+                if (xstar[pos] > 0.5 && rand_r(&seedp) % 100 < perc) {
+                    /* if (VERBOSE) { */
+                    /*     printf("[VERBOSE] fixing arc (%d,%d)\n", i + 1, j +
+                     * 1); */
+                    /* } */
+
+                    /* fix the edge by moving the lower bound to one */
+                    CPXchgbds(env, lp, 1, &pos, &lbc, &one);
+
+                    /* track which edges has been selected */
+                    adjlist_add_edge(l, i, j);
+                }
+            }
+        }
+
+        /* iterate over tracked edges to retreive the loose ends:
+         * let's create a simple SEC by fix that edge to zero */
+        int i, j;
+        while (adjlist_get_loose_ends(l, &i, &j)) {
+            int pos = xpos(i, j, nedges);
+
+            /* check if the edge is not part of a path (alone): in that case we
+             * have to keep the lower bound to one to maintain consistency */
+            double lb;
+            CPXgetlb(env, lp, &lb, pos, pos);
+            /* if lb is 1.0 means that we previously fix it -> skip */
+            if (lb == 1.0) continue;
+
+            /* if (VERBOSE) printf("[VERBOSE] removing (%d,%d)\n", i + 1, j +
+             * 1); */
+            CPXchgbds(env, lp, 1, &pos, &ubc, &zero);
+        }
+
+        /* save the model for analysis */
+        if (EXTRA) CPXwriteprob(env, lp, "./hard_fixing", "LP");
+
+        /* reset the timelimit: fraction of number of iterations */
+        CPXsetdblparam(env, CPX_PARAM_TILIM,
+                       inst->params->timelimit / HF_ITERATIONS);
+        /* alternative: set the nodelimit */
+        /* CPXsetintparam(env, CPX_PARAM_NODELIM, 100); */
+
+        /* solve! and get solution */
+        if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
+        if (CPXgetx(env, lp, xstar, 0, ncols - 1)) {
+            print_error("CPXgetx() error\n");
+        }
+
+        if (VERBOSE) {
+            /* store the objective */
+            CPXgetobjval(env, lp, &best_obj);
+
+            printf(
+                "[VERBOSE]: hard fixing status (iter %d out of %d)\n"
+                "\tprev_obj: %.20lf\n"
+                "\t act_obj: %.20lf\n",
+                iter, HF_ITERATIONS, prev_obj, best_obj);
+
+            prev_obj = best_obj;
+        }
+
+        if (EXTRA) {
+            /* create a solution for the plot */
+            solution sol = create_solution(inst, HARD_FIXING, nedges);
+            sol->inst = inst;
+            get_symmsol(xstar, sol);
+
+            /* track which edges we fixed */
+            int* edgecolors = (int*)calloc(nedges, sizeof(int));
+            int u, v;
+            adjlist_reset(l);
+            while (adjlist_get_edge(l, &u, &v)) {
+                for (int z = 0; z < nedges; z++) {
+                    if (sol->edges[z].i == z && sol->edges[z].j == v) {
+                        edgecolors[z] = 1;
+                        break;
+                    }
+                }
+            }
+
+            /* save the plot */
+            plot_graphviz(sol, edgecolors, iter);
+        }
+
+        /* free the adjlist, do it not for additional plot option */
+        adjlist_free(l);
+
+        /* relax the fixing: no need to check because most of the nodes are
+         * fixed. Just checking if this is not the last iteration to provide a
+         * coeherent model */
+        if (iter != HF_ITERATIONS - 1) {
+            for (int col = 0; col < ncols; col++) {
+                CPXchgbds(env, lp, 1, &col, &lbc, &zero);
+                CPXchgbds(env, lp, 1, &col, &ubc, &one);
+            }
+        }
+    }
+
+    if (VERBOSE) {
+        printf(
+            "[VERBOSE]: hard fixing status (on exit)\n"
+            "\tprev_obj: %.20lf\n"
+            "\t act_obj: %.20lf\n",
+            prev_obj, best_obj);
+    }
+}
+
+void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
+                         double* xstar) {
+    int nedges = inst->nnodes;
+    int ncols = inst->ncols;
+
+    double k = SF_INITIAL_K;
+    double best_obj, prev_obj;
+    CPXgetobjval(env, lp, &prev_obj);
+
+    while (inst->params->timelimit > 0) {
+        /* track the time for the current iteration */
+        struct timespec s, e;
+        s.tv_sec = e.tv_sec = -1;
+        stopwatch(&s, &e);
+
+        /* set the new timelimit and perform another resolution */
+        CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit);
+
+        char** cname = (char**)calloc(1, sizeof(char*));
+        cname[0] = (char*)calloc(100, sizeof(char));
+
+        // TODO(any): comment
+        const char sense = 'L';
+        const double rhs = k - nedges;
+
+        /* fetch new row .. */
+        int lastrow = CPXgetnumrows(env, lp);
+        snprintf(cname[0], strlen(cname[0]), "soft_fixing");
+        /* .. and fix the sense and rhs */
+        if (CPXnewrows(env, lp, 1, &rhs, &sense, NULL, cname)) {
+            print_error("wrong CPXnewrows [soft fixing]");
+        }
+
+        /* TODO(lugot): MODIFY double for for tracking fixed nodes */
+        for (int i = 0; i < ncols; i++) {
+            if (xstar[i] > 0.5) {
+                /* change the coefficent from 0 to -1.0 for variables = 1 in
+                 * xstar */
+                if (CPXchgcoef(env, lp, lastrow, i, -1.0)) {
+                    print_error("wrong CPXchgcoef [soft fixing]");
+                }
+            }
+        }
+
+        /* solve! and get solution */
+        if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
+        if (CPXgetx(env, lp, xstar, 0, ncols - 1)) {
+            print_error("CPXgetx() error\n");
+        }
+
+        /* compute objective and compare it with the previous one to determine
+         * if we need to enlarge the neighborhood size */
+        CPXgetobjval(env, lp, &best_obj);
+
+        if (VERBOSE) {
+            printf(
+                "[VERBOSE]: soft fixing status (bf k updating)\n"
+                "\tremaining_time: %lf\n"
+                "\tk: %lf\n"
+                "\tprev_obj: %.20lf\n"
+                "\t act_obj: %.20lf\n",
+                inst->params->timelimit, k, prev_obj, best_obj);
+        }
+
+        /* if no improvment enlarge neigborhood size */
+        if (fabs(prev_obj - best_obj) < EPSILON) k += SF_K_STEP;
+        /* cut the computation if k too high */
+        if (k >= SF_MAX_K) break;
+        /* and update the objective */
+        prev_obj = best_obj;
+
+        /* update timelimit */
+        inst->params->timelimit -= stopwatch(&s, &e) / 1000.0;
+
+        if (inst->params->timelimit > 0)
+            if (CPXdelrows(env, lp, lastrow, lastrow))
+                print_error("CPXdelrows() error\n");
+    }
+
+    if (VERBOSE) {
+        printf(
+            "[VERBOSE]: soft fixing status (on exiting)\n"
+            "\tremaining_time: %lf\n"
+            "\tk: %lf\n"
+            "\t act_obj: %.20lf\n",
+            inst->params->timelimit, k, best_obj);
+    }
 }

@@ -8,6 +8,7 @@
 
 #include "../include/string.h"
 #include "../include/utils.h"
+#include "globals.h"
 
 /* cplex param manipulators */
 cplex_params create_params() {
@@ -22,7 +23,6 @@ cplex_params create_params() {
 
     return params;
 }
-
 
 /* instance manipulators */
 instance create_empty_instance() {
@@ -49,7 +49,7 @@ void add_params(instance inst, cplex_params params) {
     memcpy(inst->params, params, sizeof(struct cplex_params_t));
 }
 
-instance generate_random_instance(int id, int nnodes, int box_size) {
+instance generate_random_instance(int id, int nnodes) {
     instance inst = create_empty_instance();
     srand(id);
 
@@ -78,6 +78,7 @@ instance generate_random_instance(int id, int nnodes, int box_size) {
     inst->weight_type = ATT;
     inst->nnodes = nnodes;
 
+    int box_size = 20.0;
     inst->nodes = (node*)calloc(nnodes, sizeof(struct node_t));
     for (int i = 0; i < nnodes; i++) {
         inst->nodes[i].x = (double)rand() / ((double)RAND_MAX / box_size);
@@ -89,7 +90,7 @@ instance generate_random_instance(int id, int nnodes, int box_size) {
     return inst;
 }
 
-instance* generate_random_instances(int ninstances, int nnodes, int box_size) {
+instance* generate_random_instances(int ninstances, int nnodes) {
     instance* insts = (instance*)calloc(ninstances, sizeof(struct instance_t));
 
     // TODO(lugot): do it better
@@ -98,7 +99,7 @@ instance* generate_random_instances(int ninstances, int nnodes, int box_size) {
 
     for (int i = 0; i < ninstances; i++) {
         /* between 0 and RAND_MAX (2^31 or smht here) */
-        insts[i] = generate_random_instance(rand_r(&seedp), nnodes, box_size);
+        insts[i] = generate_random_instance(rand_r(&seedp), nnodes);
     }
 
     return insts;
@@ -161,7 +162,6 @@ void free_instance(instance inst) {
     free(inst->sols);
 }
 
-
 /* solution manipulators */
 solution create_solution(instance inst, enum model_types model_type,
                          int nedges) {
@@ -189,7 +189,6 @@ void free_solution(solution sol) {
 
     free(sol);
 }
-
 
 /* printers */
 void print_cplex_params(cplex_params params) {
@@ -252,7 +251,7 @@ void print_instance(instance inst, int print_data) {
     printf("- number of nodes: %d\n", nnodes);
     if (print_data) {
         printf("- weights:\n");
-        if (inst->adjmatrix != NULL) {
+        if (inst->adjmatrix != NULL && EXTRA) {
             /* compute numof figures for spacing */
             int column_width = 0;
             for (int i = 0; i < nnodes; i++)
@@ -348,7 +347,6 @@ void print_solution(solution sol, int print_data) {
     printf("- solve time: %lf s\n", sol->solve_time / 1000.0);
 }
 
-
 /* plotters */
 void plot_graphviz(solution sol, int* edgecolors, int version) {
     double box_size = 20.0;
@@ -379,7 +377,11 @@ void plot_graphviz(solution sol, int* edgecolors, int version) {
     assert(fp != NULL && "file not found while saving .dot");
 
     fprintf(fp, "graph %s {\n", inst->model_name);
-    fprintf(fp, "\tnode [shape=circle fillcolor=white]\n");
+    if (inst->nnodes < 100) {
+        fprintf(fp, "\tnode [shape=circle fillcolor=white]\n");
+    } else {
+        fprintf(fp, "\tnode [shape=point fillcolor=white]\n");
+    }
     for (int i = 0; i < nnodes && inst->nodes != NULL; i++) {
         double plot_posx = inst->nodes[i].x / max_coord * box_size;
         double plot_posy = inst->nodes[i].y / max_coord * box_size;

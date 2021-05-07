@@ -61,7 +61,9 @@ enum model_types {
     BENDERS,
     BENDERS_CALLBACK,
     HARD_FIXING,
-    SOFT_FIXING
+    SOFT_FIXING,
+    GREEDY,
+    GRASP
 };
 typedef struct solution_t {
     struct instance_t* inst;
@@ -85,9 +87,8 @@ cplex_params create_params();
 instance create_empty_instance();
 instance create_instance(cplex_params params);
 void add_params(instance inst, cplex_params params);
-instance generate_random_instance(int id, int num_nodes, int box_size);
-instance* generate_random_instances(int num_instances, int num_nodes,
-                                    int box_size);
+instance generate_random_instance(int id, int num_nodes);
+instance* generate_random_instances(int num_instances, int num_nodes);
 void save_instance(instance inst);
 void free_instance();
 
