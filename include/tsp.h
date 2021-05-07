@@ -71,8 +71,6 @@ typedef struct solution_t {
     int nedges;
     edge* edges;
 
-    // int timetype;
-
     double start;
     double end;
     double distance_time;
@@ -90,7 +88,7 @@ void add_params(instance inst, cplex_params params);
 instance generate_random_instance(int id, int num_nodes, int box_size);
 instance* generate_random_instances(int num_instances, int num_nodes,
                                     int box_size);
-instance clone_instance(instance inst);
+void save_instance(instance inst);
 void free_instance();
 
 /* solution manipulators */
@@ -102,8 +100,9 @@ void free_solution(solution sol);
 void print_instance(instance inst, int print_data);
 void print_cplex_params(cplex_params params);
 void print_solution(solution sol, int print_data);
-void plot_solution_graphviz(solution sol, int* edgecolors, int version);
-void plot_solutions_graphviz(solution* sols, int num_sols);
-void save_results(instance* insts, int ninstances);
+
+/* plotters */
+void plot_graphviz(solution sol, int* edgecolors, int version);
+void plot_profiler(instance* insts, int ninstances);
 
 #endif  // INCLUDE_TSP_H_

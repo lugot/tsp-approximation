@@ -15,12 +15,36 @@
 #include "../include/utils.h"
 
 void assert_correctness(solution sol);
+solution TSPopt(instance inst, enum model_types model_type);
 void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,
                      struct timespec s, struct timespec e);
 void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
                          double* xstar, int perc);
 void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
                          double* xstar);
+
+solution solve(instance inst, enum model_types model_type) {
+    switch (model_type) {
+        case NOSEC:
+        case MTZ_STATIC:
+        case MTZ_LAZY:
+        case GGLIT_STATIC:
+        case GGLECT_STATIC:
+        case GGLIT_LAZY:
+        case BENDERS:
+        case BENDERS_CALLBACK:
+        case HARD_FIXING:
+        case SOFT_FIXING:
+            return TSPopt(inst, model_type);
+            break;
+
+        case OPTIMAL_TOUR:
+            assert(model_type != OPTIMAL_TOUR &&
+                   "tried to solve an optimal tour instance");
+            break;
+    }
+    return NULL;
+}
 
 solution TSPopt(instance inst, enum model_types model_type) {
     assert(inst != NULL);
@@ -30,14 +54,11 @@ solution TSPopt(instance inst, enum model_types model_type) {
     /* create and populate solution */
     solution sol = create_solution(inst, model_type, inst->nnodes);
     sol->distance_time = compute_dist(inst);
-    /* sol->timetype = inst->timetype; */
 
     /* open CPLEX model */
     int error;
     CPXENVptr env = CPXopenCPLEX(&error);
     CPXLPptr lp = CPXcreateprob(env, &error, "TSP");
-
-    CPXgetdettime(env, &sol->start);
 
     /* set params:
      * - timelimit (timetype = 0 -> seconds, timetype = 1 -> ticks)
@@ -91,9 +112,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
         case SOFT_FIXING: {
             /* set iniitial fraction of timelimit for first execution */
-            /* CPXsetdblparam(env, CPX_PARAM_TILIM, */
-            /*                inst->params->timelimit /
-             * SF_INITIAL_FRACTION_TIME); */
+            CPXsetdblparam(env, CPX_PARAM_TILIM,
+                           inst->params->timelimit / SF_INITIAL_FRACTION_TIME);
             /* alternative: work on branching node limit */
             CPXsetintparam(env, CPX_PARAM_NODELIM, 10);
 
@@ -114,10 +134,12 @@ solution TSPopt(instance inst, enum model_types model_type) {
             break;
     }
 
-    /* initialize total wall-clock time of execution */
+    /* initialize total wall-clock time of execution and track deterministic
+     * time */
     struct timespec s, e;
     s.tv_sec = e.tv_sec = -1;
     stopwatch(&s, &e);
+    CPXgetdettime(env, &sol->start);
 
     /* solve! */
     if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");

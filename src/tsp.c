@@ -1,11 +1,15 @@
 #include "../include/tsp.h"
 
 #include <assert.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "../include/string.h"
 #include "../include/utils.h"
 
+/* cplex param manipulators */
 cplex_params create_params() {
     cplex_params params =
         (cplex_params)calloc(1, sizeof(struct cplex_params_t));
@@ -19,24 +23,19 @@ cplex_params create_params() {
     return params;
 }
 
+
+/* instance manipulators */
 instance create_empty_instance() {
     instance inst = (instance)calloc(1, sizeof(struct instance_t));
-    inst->params = (cplex_params)calloc(1, sizeof(struct cplex_params_t));
-
-    /* initializing only the non-zero default parameters */
-    inst->params->num_threads = -1;
-    inst->params->timelimit = CPX_INFBOUND;
-    inst->params->available_memory = 4096;
-    inst->params->cost = REAL;
-
-    // inst->timetype = 1;
+    inst->params = create_params();
 
     return inst;
 }
 
 instance create_instance(cplex_params params) {
-    instance inst = (instance)calloc(1, sizeof(struct instance_t));
+    assert(params != NULL);
 
+    instance inst = (instance)calloc(1, sizeof(struct instance_t));
     /* initializing with passed parameters */
     inst->params = params;
 
@@ -44,7 +43,9 @@ instance create_instance(cplex_params params) {
 }
 
 void add_params(instance inst, cplex_params params) {
-    /* should be non NULL by default constructor */
+    assert(inst != NULL);
+    assert(params != NULL);
+
     memcpy(inst->params, params, sizeof(struct cplex_params_t));
 }
 
@@ -71,6 +72,9 @@ instance generate_random_instance(int id, int nnodes, int box_size) {
     inst->model_comment = (char*)calloc(1 + strlen(buf), sizeof(char));
     snprintf(inst->model_comment, bufsize, "%s", buf);
 
+    inst->model_folder = GENERATED;
+    inst->instance_type = TSP;
+
     inst->weight_type = ATT;
     inst->nnodes = nnodes;
 
@@ -78,11 +82,6 @@ instance generate_random_instance(int id, int nnodes, int box_size) {
     for (int i = 0; i < nnodes; i++) {
         inst->nodes[i].x = (double)rand() / ((double)RAND_MAX / box_size);
         inst->nodes[i].y = (double)rand() / ((double)RAND_MAX / box_size);
-
-        /* TODO: investigate
-         *uint64_t r53 = ((uint64_t)(rand()) << 21) ^ (rand() >> 2);
-         *return (double)r53 / 9007199254740991.0; // 2^53 - 1
-         */
     }
 
     free(buf);
@@ -105,23 +104,46 @@ instance* generate_random_instances(int ninstances, int nnodes, int box_size) {
     return insts;
 }
 
-// TODO(lugot): test
-instance clone_instance(instance inst) {
-    instance newone = (instance)calloc(1, sizeof(struct instance_t));
+void save_instance(instance inst) {
+    assert(inst != NULL);
 
-    newone->model_name =
-        (char*)calloc(1 + strlen(inst->model_name), sizeof(char));
-    snprintf(newone->model_name, 1 + strlen(inst->model_name), "%s",
+    int bufsize = 100;
+    char* folder = model_folder_tostring(inst->model_folder);
+    char* dirname = (char*)calloc(bufsize, sizeof(char));
+    snprintf(dirname, bufsize, "../data_%s/%s", folder, inst->model_name);
+
+    /* create the directory if not exists */
+    struct stat st = {0};
+    if (stat(dirname, &st) == -1) {
+        mkdir(dirname, 0700);
+    }
+
+    /* create the file */
+    char* fname;
+    fname = (char*)calloc(bufsize, sizeof(char));
+
+    snprintf(fname, bufsize, "../data_%s/%s/%s.tsp", folder, inst->model_name,
              inst->model_name);
-    newone->model_comment =
-        (char*)calloc(1 + strlen(inst->model_comment), sizeof(char));
-    snprintf(newone->model_comment, 1 + strlen(inst->model_comment), "%s",
-             inst->model_comment);
 
-    newone->params = (cplex_params)calloc(1, sizeof(struct cplex_params_t));
-    memcpy(newone->params, inst->params, sizeof(struct cplex_params_t));
+    FILE* fp;
+    fp = fopen(fname, "w");
+    assert(fp != NULL && "file not found while saving .tsp");
 
-    return newone;
+    fprintf(fp, "NAME : %s\n", inst->model_name);
+    fprintf(fp, "COMMENT: %s\n", inst->model_comment);
+    fprintf(fp, "TYPE : TSP\n");
+    fprintf(fp, "DIMENSION : %d\n", inst->nnodes);
+    fprintf(fp, "EDGE_WEIGHT_TYPE : EUC_2D\n");
+    fprintf(fp, "NODE_COORD_SECTION");
+    for (int i = 0; i < inst->nnodes; i++) {
+        fprintf(fp, "%d %f %f\n", i + 1, inst->nodes[i].x, inst->nodes[i].y);
+    }
+    fprintf(fp, "EOF\n");
+
+    fclose(fp);
+    free(fname);
+    free(folder);
+    free(dirname);
 }
 
 void free_instance(instance inst) {
@@ -129,27 +151,18 @@ void free_instance(instance inst) {
     free(inst->model_name);
     free(inst->model_comment);
 
+    free(inst->params);
+
     free(inst->nodes);
     for (int i = 0; i < nnodes; i++) free(inst->adjmatrix[i]);
     free(inst->adjmatrix);
 
-    // TODO(lugot): free sols?
-    /*for (int i=0; i<nnodes; i++) free(inst->adjmatrix[i]);*/
     for (int i = 0; i < inst->nsols; i++) free_solution(inst->sols[i]);
     free(inst->sols);
 }
 
-void save_instance(instance inst) {
-    char* filename;
-    int bufsize = 100;
-    filename = (char*)calloc(bufsize, sizeof(char));
-    snprintf(filename, bufsize, "../data_generated/%s/%s.tsp", inst->model_name,
-             inst->model_name);
 
-    // TODO(lugot): IMPLEMENT
-    free(filename);
-}
-
+/* solution manipulators */
 solution create_solution(instance inst, enum model_types model_type,
                          int nedges) {
     solution sol = (solution)calloc(1, sizeof(struct solution_t));
@@ -159,11 +172,6 @@ solution create_solution(instance inst, enum model_types model_type,
     sol->edges = (edge*)calloc(nedges, sizeof(struct edge_t));
 
     return sol;
-}
-void free_solution(solution sol) {
-    free(sol->edges);
-
-    free(sol);
 }
 
 void add_solution(instance inst, solution sol) {
@@ -176,7 +184,32 @@ void add_solution(instance inst, solution sol) {
     inst->nsols++;
 }
 
+void free_solution(solution sol) {
+    free(sol->edges);
+
+    free(sol);
+}
+
+
 /* printers */
+void print_cplex_params(cplex_params params) {
+    printf("cplex params:\n");
+    if (params == NULL) return;
+    printf("- random seed: %d\n", params->randomseed);
+    printf("- number of threads: %d\n", params->num_threads);
+    printf("- time limit: %lf\n", params->timelimit);
+    printf("- available memory: %d MB\n", params->available_memory);
+    printf("- costs type: ");
+    switch (params->cost) {
+        case REAL:
+            printf("real\n");
+            break;
+        case INTEGER:
+            printf("integer\n");
+            break;
+    }
+}
+
 void print_instance(instance inst, int print_data) {
     int nnodes = inst->nnodes;
     int nsols = inst->nsols;
@@ -283,63 +316,12 @@ void print_instance(instance inst, int print_data) {
     printf("--- ---\n\n");
 }
 
-void print_cplex_params(cplex_params params) {
-    printf("cplex params:\n");
-    if (params == NULL) return;
-    printf("- random seed: %d\n", params->randomseed);
-    printf("- number of threads: %d\n", params->num_threads);
-    printf("- time limit: %lf\n", params->timelimit);
-    printf("- available memory: %d MB\n", params->available_memory);
-    printf("- costs type: ");
-    switch (params->cost) {
-        case REAL:
-            printf("real\n");
-            break;
-        case INTEGER:
-            printf("integer\n");
-            break;
-    }
-}
-
 void print_solution(solution sol, int print_data) {
     int nedges = sol->nedges;
 
-    printf("- optimality: ");
-    switch (sol->model_type) {
-        case OPTIMAL_TOUR:
-            printf("optimal tour from file\n");
-            break;
-        case NOSEC:
-            printf("symmetric, no subtour elimination\n");
-            break;
-        case MTZ_STATIC:
-            printf("asymmetric, mtz subtour elimination\n");
-            break;
-        case MTZ_LAZY:
-            printf("asymmetric, mtz subtour elimination, lazy constraints\n");
-            break;
-        case GGLIT_STATIC:
-            printf("asymmetric, gg literature subtour elimination\n");
-            break;
-        case GGLECT_STATIC:
-            printf("asymmetric, gg lecture formulation subtour elimination\n");
-            break;
-        case GGLIT_LAZY:
-            printf("asymmetric, gg subtour elimination, lazy constraints\n");
-            break;
-        case BENDERS:
-            printf("symmetric, benders loop method\n");
-            break;
-        case BENDERS_CALLBACK:
-            printf("symmetric, benders loop method with callback\n");
-            break;
-        case HARD_FIXING:
-            printf("symmetric, hard fixing with callback\n");
-            break;
-        case SOFT_FIXING:
-            printf("symmetric, soft fixing with callback\n");
-            break;
-    }
+    char* type = model_type_tostring(sol->model_type);
+    printf("- model_type: %s\n", type);
+    free(type);
     printf("- zstar: %lf\n", sol->zstar);
     printf("- num edges: %d\n", nedges);
     if (print_data) {
@@ -360,17 +342,15 @@ void print_solution(solution sol, int print_data) {
             }
             free(buf);
         }
-        printf("- parent:\n");
     }
     printf("- distance time: %lf ms\n", sol->distance_time);
     printf("- build time: %lf ms\n", sol->build_time);
-    // if(sol->timetype == 0)
     printf("- solve time: %lf s\n", sol->solve_time / 1000.0);
-    /*else
-            printf("- solve time: %lf ticks\n", sol->solve_time);*/
 }
 
-void plot_solution_graphviz(solution sol, int* edgecolors, int version) {
+
+/* plotters */
+void plot_graphviz(solution sol, int* edgecolors, int version) {
     double box_size = 20.0;
     double max_coord = 0.0;
 
@@ -428,7 +408,8 @@ void plot_solution_graphviz(solution sol, int* edgecolors, int version) {
     /* bsize = 200; */
     /* char* command = (char*)calloc(bsize, sizeof(char)); */
     /* snprintf(command, bsize, */
-    /*          "(cd ../data_%s/%s && dot -Kneato %s.%d.dot -Tpng > %s.%d.png)", */
+    /*          "(cd ../data_%s/%s && dot -Kneato %s.%d.dot -Tpng > %s.%d.png)",
+     */
     /*          model_folder_tostring(inst->model_folder), inst->model_name, */
     /*          inst->model_name, version, inst->model_name, version); */
 
@@ -440,80 +421,7 @@ void plot_solution_graphviz(solution sol, int* edgecolors, int version) {
     free(fname);
 }
 
-// TODO(lugot): DEPRECATED
-void plot_solutions_graphviz(solution* sols, int num_sols) {
-    // TODO(lugot): make proportional to the number of nodes
-    double box_size = 20.0;
-    double max_coord = 0.0;
-
-    instance inst = sols[0]->inst;
-    assert(inst != NULL && "no instance associated with solution");
-    int nnodes = inst->nnodes;
-
-    for (int i = 0; i < nnodes && inst->nodes != NULL; i++) {
-        max_coord = max(max_coord, fabs(inst->nodes[i].x));
-        max_coord = max(max_coord, fabs(inst->nodes[i].y));
-    }
-
-    char* fname;
-    int bsize = 100;
-    fname = (char*)calloc(bsize, sizeof(char));
-    if (inst->model_folder == TSPLIB)
-        snprintf(fname, bsize, "../data_tsplib/%s/%s.dot", inst->model_name,
-                 inst->model_name);
-    if (inst->model_folder == GENERATED)
-        snprintf(fname, bsize, "../data_generated/%s/%s.dot", inst->model_name,
-                 inst->model_name);
-
-    FILE* fp;
-    fp = fopen(fname, "w");
-    assert(fp != NULL && "file not found while saving .dot");
-
-    fprintf(fp, "graph %s {\n", inst->model_name);
-    fprintf(fp, "\tnode [shape=circle fillcolor=white]\n");
-    for (int i = 0; i < nnodes && inst->nodes != NULL; i++) {
-        double plot_posx = inst->nodes[i].x / max_coord * box_size;
-        double plot_posy = inst->nodes[i].y / max_coord * box_size;
-
-        fprintf(fp, "\t%d [ pos = \"%lf,%lf!\"]\n", i + 1, plot_posx,
-                plot_posy);
-    }
-    fprintf(fp, "\n");
-
-    for (int u = 0; u < num_sols; u++) {
-        for (int k = 0; k < sols[u]->nedges; k++) {
-            fprintf(fp, "\t%d -- %d", sols[u]->edges[k].i + 1,
-                    sols[u]->edges[k].j + 1);
-
-            if (sols[u]->model_type == OPTIMAL_TOUR)
-                fprintf(fp, " [color = red]");
-            fprintf(fp, "\n");
-        }
-    }
-    fprintf(fp, "}");
-
-    fclose(fp);
-
-    bsize = 200;
-    char* command = (char*)calloc(bsize, sizeof(char));
-    if (inst->model_folder == TSPLIB) {
-        snprintf(command, bsize,
-                 "(cd ../data_tsplib/%s && dot -Kneato %s -Tpng > %s.png)",
-                 inst->model_name, fname, fname);
-    }
-    if (inst->model_folder == GENERATED) {
-        snprintf(command, bsize,
-                 "(cd ../data_generated/%s &&  dot -Kneato %s -Tpng > %s.png)",
-                 inst->model_name, fname, fname);
-    }
-
-    printf("command: %s\n", command);
-    system(command);
-    free(command);
-    free(fname);
-}
-
-void save_results(instance* insts, int ninstances) {
+void plot_profiler(instance* insts, int ninstances) {
     assert(insts != NULL);
     assert(insts[0] != NULL);
 

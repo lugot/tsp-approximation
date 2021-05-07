@@ -37,15 +37,17 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = TSPopt(inst, SOFT_FIXING);
+            solution sol = solve(inst, SOFT_FIXING);
             /* print_solution(sol, 1); */
+
+            free_instance(inst);
             break;
         }
         case GENERATE: { 
             options->battery_test = maxi(1, options->battery_test);
             printf("generating %d instances\n", options->battery_test);
 
-            int num_nodes = 1200;
+            int num_nodes = 120;
             instance* insts = generate_random_instances(options->battery_test,
                                                         num_nodes, 20.0);
             double zstar = 0.0;
@@ -55,6 +57,7 @@ int main(int argc, char** argv) {
 
                 instance inst = insts[i];
                 add_params(inst, params);
+                save_instance(inst);
 
                 for (int j = 0; j < ntests; j++) {
                     char* model_type_str = model_type_tostring(tests[j]);
@@ -62,7 +65,7 @@ int main(int argc, char** argv) {
                            inst->model_name);
                     free(model_type_str);
 
-                    solution sol = TSPopt(inst, tests[j]);
+                    solution sol = solve(inst, tests[j]);
                     printf("%lf, ", sol->zstar);
                     printf("%lf\n", sol->solve_time);
 
@@ -70,8 +73,12 @@ int main(int argc, char** argv) {
                     assert(fabs(zstar - sol->zstar) < EPSILON);
                 }
             }
-            save_results(insts, options->battery_test);
+            plot_profiler(insts, options->battery_test);
 
+            for (int i = 0; i < options->battery_test; i++) {
+                free_instance(insts[i]);
+            }
+            free(insts);
             break;
         }
         case LOAD_DIR: {
@@ -94,7 +101,7 @@ int main(int argc, char** argv) {
                            inst->model_name);
                     free(model_type_str);
 
-                    solution sol = TSPopt(inst, tests[j]);
+                    solution sol = solve(inst, tests[j]);
                     printf("%lf, ", sol->zstar);
                     printf("%lf\n", sol->solve_time);
 
@@ -102,7 +109,12 @@ int main(int argc, char** argv) {
                     assert(fabs(zstar - sol->zstar) < EPSILON);
                 }
             }
-            save_results(insts, ninstances);
+            plot_profiler(insts, ninstances);
+
+            for (int i = 0; i < ninstances; i++) {
+                free_instance(insts[i]);
+            }
+            free(insts);
 
             break;
         }
