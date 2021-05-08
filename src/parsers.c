@@ -175,7 +175,7 @@ instance parse_input_file(char* model_name, char* file_extension,
         if (icolon == strlen(line)) {
             /* parsing NODE_COORD_SECTION or similar, no param */
             section_name = line;
-            section_param = (char*)calloc(1, sizeof(char));
+            section_param = NULL;
         } else if (line[icolon - 1] == ' ') {
             /* parsing att48-like tsp files */
             section_name = strtok_r(line, " : ", &saveptr);

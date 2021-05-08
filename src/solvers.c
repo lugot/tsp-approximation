@@ -7,10 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <time.h>
 
 #include "../include/adjlist.h"
 #include "../include/globals.h"
 #include "../include/model_builder.h"
+#include "../include/pqueue.h"
 #include "../include/tsp.h"
 #include "../include/union_find.h"
 #include "../include/utils.h"
@@ -224,7 +226,7 @@ solution TSPgreedy(instance inst) {
     /* track the best solution up to this point */
     solution sol = create_solution(inst, GREEDY, nnodes);
     sol->distance_time = compute_dist(inst);
-    print_instance(inst, 1);
+    sol->zstar = DBL_MAX;
 
     /* initialize total wall-clock time of execution and track deterministic
      * time */
@@ -232,17 +234,13 @@ solution TSPgreedy(instance inst) {
     s.tv_sec = e.tv_sec = -1;
     stopwatch(&s, &e);
 
-    /* track visited nodes for each starting point (will be memsetted) */
+    /* data structure for computation: visited flags, topk queue for performance
+     * and tour container */
     int* visited = (int*)malloc(nnodes * sizeof(int));
-
-    /* track best solution so far */
-    int* best_tour = (int*)malloc((nnodes - 1) * sizeof(int));
-    double best_obj = DBL_MAX;
+    int* tour = (int*)malloc(nnodes * sizeof(int));
 
     /* iterate over staring point (all possibilities) */
-    int* tour = (int*)malloc((nnodes - 1) * sizeof(int));
-    double obj;
-    for (int start = 0; start < nnodes; start++) {
+    for (int start = 0; start < 1; start++) {
         /* reset visited */
         memset(visited, 0, nnodes * sizeof(int));
 
@@ -250,17 +248,17 @@ solution TSPgreedy(instance inst) {
 
         /* add starting point to the actual tour */
         int t = 0;
-        tour[t] = start;
+        tour[0] = start;
+        visited[tour[0]] = 1;
+        double obj = 0.0;
+
         t++;
 
-        visited[start] = 1;
-        obj = 0.0;
-
         /* loop over nodes to visit */
-        int unvisited = nnodes - 1;
         int next;
+        int unvisited = nnodes - 1;
         while (unvisited > 0) {
-            double weight = DBL_MAX; /* hopefully cached */
+            double weight = DBL_MAX;
 
             /* search for best new node */
             for (int i = 0; i < nnodes; i++) {
@@ -268,41 +266,36 @@ solution TSPgreedy(instance inst) {
                 if (i == tour[t - 1]) continue;
 
                 /* update best new edge */
-                if (weight > dist(i, tour[t-1], inst)) {
+                if (weight > dist(i, tour[t - 1], inst)) {
                     next = i;
-                    weight = dist(i, tour[t-1], inst);
+                    weight = dist(i, tour[t - 1], inst);
                 }
             }
 
             /* add the best new edge to the tour */
-            obj += weight;
             tour[t] = next;
-            t++;
-
+            obj += weight;
             visited[next] = 1;
             unvisited--;
 
-            if (VERBOSE) printf("\tnext: %d, obj: %lf\n", next, obj);
+            t++;
+
+            if (EXTRA) printf("\tnext: %d, obj: %lf\n", next, obj);
         }
 
         /* do not forget to close the loop! */
-        obj += inst->adjmatrix[next][start];
+        obj += inst->adjmatrix[tour[t - 1]][tour[1]];
 
         if (VERBOSE) printf("\tfinish selecting, obj: %lf\n", obj);
 
         /* select best tour */
-        if (obj < best_obj) {
-            memcpy(best_tour, tour, (nnodes - 1) * sizeof(int));
-            best_obj = obj;
+        if (obj < sol->zstar) {
+            for (int i = 0; i < nnodes; i++) {
+                sol->edges[i] = (edge){tour[i], tour[(i + 1) % (nnodes)]};
+            }
+            sol->zstar = obj;
         }
     }
-
-    /* store the best tour in the solution */
-    for (int i = 0; i < nnodes; i++) {
-        sol->edges[i] = (edge){tour[i], tour[(i+1) % nnodes]};
-    }
-    sol->zstar = best_obj;
-
     /* track the solve time */
     sol->solve_time = stopwatch(&s, &e);
 
@@ -311,12 +304,101 @@ solution TSPgreedy(instance inst) {
 
     free(visited);
     free(tour);
-    free(best_tour);
 
     return sol;
 }
 
-solution TSPgrasp(instance inst) { return NULL; }
+solution TSPgrasp(instance inst) {
+    assert(inst != NULL);
+    assert(inst->instance_type == TSP && "need TSP instance");
+    assert(inst->params != NULL);
+
+    int nnodes = inst->nnodes;
+    srand(time(NULL));
+    unsigned int seedp = time(NULL);
+
+    /* track the best solution up to this point */
+    solution sol = create_solution(inst, GRASP, nnodes);
+    sol->distance_time = compute_dist(inst);
+    sol->zstar = DBL_MAX;
+
+    /* data structure for computation: visited flags, topk queue for performance
+     * and tour container */
+    int* visited = (int*)malloc(nnodes * sizeof(int));
+    topkqueue tk = topkqueue_create(GRASP_K);
+    int* tour = (int*)malloc(nnodes * sizeof(int));
+
+    /* iterate over staring point (randomly) until timelimit */
+    while (inst->params->timelimit > 0) {
+        /* initialize total wall-clock time for iteration */
+        struct timespec s, e;
+        s.tv_sec = e.tv_sec = -1;
+        stopwatch_n(&s, &e);
+
+        /* reset visited */
+        memset(visited, 0, nnodes * sizeof(int));
+
+        /* generate starting point to the actual tour */
+        int t = 0;
+        tour[0] = rand_r(&seedp) % nnodes;
+        visited[tour[0]] = 1;
+        double obj = 0.0;
+
+        t++;
+
+        if (VERBOSE) {
+            printf("[VERBOSE] grasp start %d", tour[0]);
+            fflush(0);
+        }
+
+        /* loop over nodes to visit */
+        int unvisited = nnodes - 1;
+        while (unvisited > 0) {
+            /* search for best new node */
+            for (int i = 0; i < nnodes; i++) {
+                if (visited[i]) continue;
+                if (i == tour[t - 1]) continue;
+
+                /* update top-k queue*/
+                topkqueue_push(tk, dist(i, tour[t - 1], inst), i);
+            }
+
+            /* add the best new edge to the tour */
+            tour[t] = topkqueue_randompick(tk);
+            obj += dist(tour[t - 1], tour[t], inst);
+            visited[tour[t]] = 1;
+            unvisited--;
+
+            t++;
+
+            if (EXTRA) printf("\tnext: %d, obj: %lf\n", tour[t - 1], obj);
+        }
+
+        /* do not forget to close the loop! */
+        obj += inst->adjmatrix[tour[t - 1]][tour[0]];
+
+        if (VERBOSE) printf(" -> obj: %lf\n", obj);
+
+        /* select best tour */
+        if (obj < sol->zstar) {
+            for (int i = 0; i < nnodes; i++) {
+                sol->edges[i] = (edge){tour[i], tour[(i + 1) % nnodes]};
+            }
+            sol->zstar = obj;
+        }
+
+        /* update timelimit */
+        inst->params->timelimit -= stopwatch_n(&s, &e) / 1e9;
+    }
+    /* add the solution to the pool associated with it's instance */
+    add_solution(inst, sol);
+
+    topkqueue_free(tk);
+    free(visited);
+    free(tour);
+
+    return sol;
+}
 
 void get_symmsol(double* xstar, solution sol) {
     /* index over selected edges */

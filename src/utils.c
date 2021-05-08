@@ -22,12 +22,12 @@ int xpos(int i, int j, int nnodes) {
      * map needed
      *
      * for n=4 variables
-     *   j 1 2 3 4
+     *   j 0 1 2 3
      * i
-     * 1   X 0 1 2
-     * 2   X X 3 4
+     * 0   X 0 1 2
+     * 1   X X 3 4
+     * 2   X X X 5
      * 3   X X X X
-     * 4   X X X X
      */
 
     if (i == j) print_error("i == j in xpos");
@@ -37,6 +37,7 @@ int xpos(int i, int j, int nnodes) {
     /*                       [^^^^^^^^^^^^^] */
     return i * nnodes + j - ((i + 1) * (i + 2)) / 2;
 }
+
 int xxpos(int i, int j, int nnodes) {
     /*
      * CPLEX variables representation:
@@ -44,26 +45,28 @@ int xxpos(int i, int j, int nnodes) {
      * map needed
      *
      * for n=4 variables
-     *   j 1 2 3 4
+     *   j 0 1 2 3
      * i
-     * 1   0 1 2 3
-     * 2   4 5 6 7
-     * 3   8 9 10 11
-     * 4   12 13 14 15
+     * 0   0 1 2 3
+     * 1   4 5 6 7
+     * 2   8 9 10 11
+     * 3   12 13 14 15
      */
 
     return i * nnodes + j;
 }
+
 int upos(int i, int nnodes) { return (nnodes * nnodes) + i - 1; }
+
 int ypos(int i, int j, int nnodes) {
     /*
      * for n=4 variables
-     *   j 1 2 3 4
+     *   j 0 1 2 3
      * i
-     * 1   x 0 1 2
-     * 2   3 x 4 5
-     * 3   6 7 x 8
-     * 4   9 10 11 x
+     * 0   x 0 1 2
+     * 1   3 x 4 5
+     * 2   6 7 x 8
+     * 3   9 10 11 x
      */
 
     if (i == j) print_error("variable y does not exist for same i and j");
@@ -72,6 +75,23 @@ int ypos(int i, int j, int nnodes) {
     if (i < j) n--;
 
     return n;
+}
+
+edge xpos_inverse(int pos, int nnodes) {
+    // TODO(lugot): PERFORMANCE
+    int tosub = nnodes - 1;
+    int temp = pos;
+
+    edge e;
+    e.i = 0;
+    while (temp >= tosub) {
+        temp -= tosub;
+        tosub--;
+        e.i++;
+    }
+    e.j = e.i + 1 + temp;
+
+    return e;
 }
 
 double compute_zstar(instance inst, solution sol) {
@@ -283,6 +303,19 @@ int64_t stopwatch(struct timespec* s, struct timespec* e) {
     return (e->tv_sec - s->tv_sec) * 1000 +
            (time_t)((e->tv_nsec - s->tv_nsec)) / 1000000;
 }
+
+int64_t stopwatch_n(struct timespec* s, struct timespec* e) {
+    /* if stopwatch not started yet, do if */
+    if (s->tv_sec == -1) clock_gettime(CLOCK_REALTIME, s);
+
+    /* the next times do that for end and return difference
+     * first call result can be ignored */
+    clock_gettime(CLOCK_REALTIME, e);
+
+    return (e->tv_sec - s->tv_sec) * 1e9 +
+           (time_t)(e->tv_nsec - s->tv_nsec);
+}
+
 
 char** list_files(enum model_folders folder, int* nmodels) {
     char* path;

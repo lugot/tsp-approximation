@@ -13,7 +13,7 @@
 /* cplex param manipulators */
 cplex_params create_params() {
     cplex_params params =
-        (cplex_params)calloc(1, sizeof(struct cplex_params_t));
+        (cplex_params)malloc(sizeof(struct cplex_params_t));
 
     /* set defaults for params */
     params->num_threads = -1;

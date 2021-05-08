@@ -7,6 +7,7 @@ int xpos(int i, int j, int nnodes);
 int xxpos(int i, int j, int nnodes);
 int upos(int i, int nnodes);
 int ypos(int i, int j, int nnodes);
+edge xpos_inverse(int pos, int nnodes);
 
 double compute_zstar(instance inst, solution sol);
 
@@ -28,6 +29,7 @@ int mini(int a, int b);
 void swap(int* x, int* y);
 
 int64_t stopwatch(struct timespec* s, struct timespec* e);
+int64_t stopwatch_n(struct timespec* s, struct timespec* e);
 
 char** list_files(enum model_folders folder, int* nmodels);
 

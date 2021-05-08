@@ -6,9 +6,9 @@
 #define EXTRA 0
 
 #define XSMALL 1e5
-#define EPSILON 1e9
+#define EPSILON 1e-9
 
-#define NUM_NODES 800
+#define NUM_NODES 150
 
 #define HF_PERCENTAGE 80
 #define HF_ITERATIONS 20
@@ -19,6 +19,7 @@
 #define SF_K_STEP 2
 #define SF_INITIAL_FRACTION_TIME 5
 
-#define GRASP_K
+#define GRASP_K 10
+#define GRASP_MAX_ITERATION 1
 
 #endif  // INCLUDE_GLOBALS_H_
