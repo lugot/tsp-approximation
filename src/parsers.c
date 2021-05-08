@@ -43,6 +43,10 @@ run_options create_options() {
 
     return options;
 }
+void free_options(run_options options) {
+    free(options->model_name);
+    free(options);
+}
 
 void print_usage() {
     printf("Usage: ./<name_executable> [options]\n");

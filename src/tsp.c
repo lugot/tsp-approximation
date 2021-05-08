@@ -12,10 +12,10 @@
 
 /* cplex param manipulators */
 cplex_params create_params() {
-    cplex_params params =
-        (cplex_params)malloc(sizeof(struct cplex_params_t));
+    cplex_params params = (cplex_params)malloc(sizeof(struct cplex_params_t));
 
     /* set defaults for params */
+    params->randomseed = 1337;
     params->num_threads = -1;
     params->timelimit = CPX_INFBOUND;
     params->available_memory = 4096;
@@ -23,6 +23,21 @@ cplex_params create_params() {
 
     return params;
 }
+
+void add_params(instance inst, cplex_params params) {
+    assert(inst != NULL);
+    assert(params != NULL);
+
+    inst->params->randomseed = params->randomseed;
+    inst->params->num_threads = params->num_threads;
+    inst->params->timelimit = params->timelimit;
+    inst->params->available_memory = params->available_memory;
+    inst->params->cost = params->cost;
+
+    /* memcpy(inst->params, params, sizeof(struct cplex_params_t)); */
+}
+
+void free_params(cplex_params params) { free(params); }
 
 /* instance manipulators */
 instance create_empty_instance() {
@@ -40,13 +55,6 @@ instance create_instance(cplex_params params) {
     inst->params = params;
 
     return inst;
-}
-
-void add_params(instance inst, cplex_params params) {
-    assert(inst != NULL);
-    assert(params != NULL);
-
-    memcpy(inst->params, params, sizeof(struct cplex_params_t));
 }
 
 instance generate_random_instance(int id, int nnodes) {
@@ -148,18 +156,19 @@ void save_instance(instance inst) {
 }
 
 void free_instance(instance inst) {
-    int nnodes = inst->nnodes;
     free(inst->model_name);
     free(inst->model_comment);
 
     free(inst->params);
 
     free(inst->nodes);
-    for (int i = 0; i < nnodes; i++) free(inst->adjmatrix[i]);
+    for (int i = 0; i < inst->nnodes; i++) free(inst->adjmatrix[i]);
     free(inst->adjmatrix);
 
     for (int i = 0; i < inst->nsols; i++) free_solution(inst->sols[i]);
     free(inst->sols);
+
+    free(inst);
 }
 
 /* solution manipulators */

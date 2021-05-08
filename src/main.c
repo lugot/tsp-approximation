@@ -128,5 +128,8 @@ int main(int argc, char** argv) {
         }
     }
 
+    free_options(options);
+    free_params(params);
+
     return EXIT_SUCCESS;
 }

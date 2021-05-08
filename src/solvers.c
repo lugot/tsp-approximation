@@ -284,7 +284,7 @@ solution TSPgreedy(instance inst) {
         }
 
         /* do not forget to close the loop! */
-        obj += inst->adjmatrix[tour[t - 1]][tour[1]];
+        obj += dist(tour[t - 1], tour[1], inst);
 
         if (VERBOSE) printf("\tfinish selecting, obj: %lf\n", obj);
 
@@ -375,7 +375,7 @@ solution TSPgrasp(instance inst) {
         }
 
         /* do not forget to close the loop! */
-        obj += inst->adjmatrix[tour[t - 1]][tour[0]];
+        obj += dist(tour[t - 1], tour[0], inst);
 
         if (VERBOSE) printf(" -> obj: %lf\n", obj);
 

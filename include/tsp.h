@@ -82,6 +82,7 @@ typedef struct solution_t {
 
 /* cplex param manipulators */
 cplex_params create_params();
+void free_params(cplex_params params);
 
 /* instance manipulators */
 instance create_empty_instance();

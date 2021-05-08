@@ -17,6 +17,7 @@ typedef struct run_options_t {
 } * run_options;
 
 run_options create_options();
+void free_options(run_options options);
 
 void parse_command_line(int argc, char** argv, cplex_params params,
                         run_options options);

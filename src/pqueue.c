@@ -175,6 +175,7 @@ void pqueue_print(pqueue pq) {
 }
 void pqueue_free(pqueue pq) {
     for (int i = 0; i < pq->size; i++) free(pq->data[i]);
+    free(pq->data);
     free(pq);
 }
 
