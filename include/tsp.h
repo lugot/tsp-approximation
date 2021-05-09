@@ -68,7 +68,8 @@ enum model_types {
     SOFT_FIXING,
     MST,
     GREEDY,
-    GRASP
+    GRASP,
+    EXTRA_MILAGE
 };
 typedef struct solution_t {
     struct instance_t* inst;

@@ -29,8 +29,7 @@ union_find uf_create(int N) {
 }
 
 int uf_find_set(union_find uf, int i) {
-    /* return (uf->p[i] == i) ? i : (uf->p[i] = uf_find_set(uf, uf->p[i])); */
-    return (uf->p[i] == i) ? i : (uf_find_set(uf, uf->p[i]));
+    return (uf->p[i] == i) ? i : (uf->p[i] = uf_find_set(uf, uf->p[i]));
 }
 
 int uf_same_set(union_find uf, int i, int j) {

@@ -10,8 +10,8 @@
 #include <sys/time.h>
 #include <time.h>
 
-#include "../include/tsp.h"
 #include "../include/globals.h"
+#include "../include/tsp.h"
 
 double geodist(size_t i, size_t j, instance inst);
 double l2dist(size_t i, size_t j, instance inst);
@@ -205,10 +205,29 @@ int wedgecmp(const void* a, const void* b) {
     double wa = ((wedge*)a)->w;
     double wb = ((wedge*)b)->w;
 
-
     return wa - wb < EPSILON ? -1 : +1;
 }
 
+/* compare nodes lexycographically */
+int nodelexcmp(const void* a, const void* b) {
+    node* na = (node*)a;
+    node* nb = (node*)b;
+
+    // TODO(lugot): CHECK a < b vs a - b < EPS FP SAFETY
+    if (fabs(na->x - nb->x) > EPSILON) return na->x < nb->x ? -1 : 1;
+    return na->y < nb->y ? -1 : 1;
+}
+
+
+/* computational geometry helpers */
+double cross(node a, node b) { return a.x * b.y - a.y * b.x; }
+
+int ccw(node a, node b, node c) {
+    node ba = (node){b.x - a.x, b.y - a.y};
+    node ca = (node){c.x - a.x, c.y - a.y};
+
+    return cross(ba, ca) > EPSILON;
+}
 
 /* print helpers */
 void print_error(const char* err, ...) {
@@ -272,6 +291,9 @@ char* model_type_tostring(enum model_types model_type) {
         case GRASP:
             snprintf(ans, bufsize, "grasp");
             break;
+        case EXTRA_MILAGE:
+            snprintf(ans, bufsize, "extra_milage");
+            break;
     }
 
     return ans;
@@ -326,10 +348,8 @@ int64_t stopwatch_n(struct timespec* s, struct timespec* e) {
      * first call result can be ignored */
     clock_gettime(CLOCK_REALTIME, e);
 
-    return (e->tv_sec - s->tv_sec) * 1e9 +
-           (time_t)(e->tv_nsec - s->tv_nsec);
+    return (e->tv_sec - s->tv_sec) * 1e9 + (time_t)(e->tv_nsec - s->tv_nsec);
 }
-
 
 char** list_files(enum model_folders folder, int* nmodels) {
     char* path;

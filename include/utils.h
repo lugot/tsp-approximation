@@ -18,6 +18,10 @@ int reachable(int* link, int i, int j);
 int visitable(int* link, int nnodes);
 
 int wedgecmp(const void* a, const void* b);
+int nodelexcmp(const void* a, const void* b);
+
+double cross(node a, node b);
+int ccw(node a, node b, node c); 
 
 char* model_type_tostring(enum model_types model_type);
 char* model_folder_tostring(enum model_folders folder);

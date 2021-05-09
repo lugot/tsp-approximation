@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
         MST,
         /* GREEDY, */
         /* GRASP, */
+        /* EXTRA_MILAGE */
     };
 
     cplex_params params = create_params();
@@ -43,7 +44,7 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = solve(inst, MST);
+            solution sol = solve(inst, EXTRA_MILAGE);
             print_solution(sol, 1);
             plot_graphviz(sol, NULL, 0);
 
@@ -80,6 +81,8 @@ int main(int argc, char** argv) {
 
                     plot_graphviz(sol, NULL, j);
                 }
+                
+                if (VERBOSE) print_instance(inst, 1);
             }
             plot_profiler(insts, options->battery_test);
 
