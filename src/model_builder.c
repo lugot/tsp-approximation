@@ -86,6 +86,7 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
             add_GGlit_lazy_sec(env, lp, inst);
             break;
 
+        case MST:
         case GRASP:
         case GREEDY:
         case OPTIMAL_TOUR:

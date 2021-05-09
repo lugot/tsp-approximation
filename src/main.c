@@ -10,9 +10,10 @@
 #include "../include/solvers.h"
 #include "../include/tsp.h"
 #include "../include/utils.h"
+#include "../include/union_find.h"
 
 int main(int argc, char** argv) {
-    int ntests = 2;
+    int ntests = 1;
     enum model_types tests[] = {
         /*MTZ_STATIC,*/
         /*MTZ_LAZY,*/
@@ -23,8 +24,9 @@ int main(int argc, char** argv) {
         /* BENDERS_CALLBACK, */
         /* HARD_FIXING, */
         /* SOFT_FIXING, */
-        GREEDY,
-        GRASP
+        MST,
+        /* GREEDY, */
+        /* GRASP, */
     };
 
     cplex_params params = create_params();
@@ -41,7 +43,7 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = solve(inst, GRASP);
+            solution sol = solve(inst, MST);
             print_solution(sol, 1);
             plot_graphviz(sol, NULL, 0);
 

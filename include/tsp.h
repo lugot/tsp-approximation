@@ -23,6 +23,10 @@ typedef struct node_t {
 typedef struct edge_t {
     int i, j;
 } edge;
+typedef struct wedge_t {
+    double w;
+    int i, j;
+} wedge;
 typedef struct instance_t {
     /* model infos */
     char* model_name;
@@ -62,6 +66,7 @@ enum model_types {
     BENDERS_CALLBACK,
     HARD_FIXING,
     SOFT_FIXING,
+    MST,
     GREEDY,
     GRASP
 };

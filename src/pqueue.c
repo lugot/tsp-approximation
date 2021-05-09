@@ -3,10 +3,9 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "../include/globals.h"
-
-typedef pqueue_node node;
 
 /* kinship helpers */
 int parent(int i);
@@ -14,8 +13,8 @@ int left(int i);
 int right(int i);
 
 /* node helpers */
-node create_node(double key, int val);
-void swap_node(node* n, node* m);
+pqueue_node create_node(double key, int val);
+void swap_node(pqueue_node* n, pqueue_node* m);
 
 /* heap shift operations */
 void shiftup(pqueue pq, int i);
@@ -27,16 +26,16 @@ int left(int i) { return 2 * i + 1; }
 int right(int i) { return 2 * i + 2; }
 
 /* node helpers */
-node create_node(double key, int val) {
-    node n = (node)calloc(1, sizeof(struct pqueue_node_t));
+pqueue_node create_node(double key, int val) {
+    pqueue_node n = (pqueue_node)calloc(1, sizeof(struct pqueue_node_t));
     n->key = key;
     n->val = val;
 
     return n;
 }
 
-void swap_node(node* n, node* m) {
-    node temp = *n;
+void swap_node(pqueue_node* n, pqueue_node* m) {
+    pqueue_node temp = *n;
     *n = *m;
     *m = temp;
 }
@@ -112,7 +111,7 @@ pqueue pqueue_create(enum modes mode) {
 
     pq->size = 0;
     pq->capacity = 10;
-    pq->data = (node*)calloc(10, sizeof(struct pqueue_node_t));
+    pq->data = (pqueue_node*)calloc(10, sizeof(struct pqueue_node_t));
     pq->mode = mode;
 
     return pq;
@@ -143,8 +142,8 @@ void pqueue_push(pqueue pq, double key, int val) {
 
     if (pq->size >= pq->capacity) {
         pq->capacity = 2 * pq->capacity;
-        pq->data = (node*)realloc(pq->data,
-                                  pq->capacity * sizeof(struct pqueue_node_t));
+        pq->data = (pqueue_node*)realloc(
+            pq->data, pq->capacity * sizeof(struct pqueue_node_t));
     }
     pq->data[pq->size - 1] = create_node(key, val);
 
@@ -204,7 +203,8 @@ void topkqueue_push(topkqueue tk, double key, int val) {
 }
 
 int topkqueue_randompick(topkqueue tk) {
-    int npops = rand() % tk->pq->size;
+    unsigned int seedp = time(NULL);
+    int npops = rand_r(&seedp) % tk->pq->size;
     while (npops--) pqueue_pop(tk->pq);
     int ans = pqueue_top(tk->pq);
 

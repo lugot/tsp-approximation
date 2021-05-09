@@ -3,12 +3,12 @@
 
 #define VERBOSE 0
 #define SUPPRESS_CALLBACK 1
-#define EXTRA 0
+#define EXTRA 1
 
 #define XSMALL 1e5
 #define EPSILON 1e-9
 
-#define NUM_NODES 150
+#define NUM_NODES 30
 
 #define HF_PERCENTAGE 80
 #define HF_ITERATIONS 20

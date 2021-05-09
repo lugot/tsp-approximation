@@ -19,6 +19,7 @@
 
 void assert_correctness(solution sol);
 solution TSPopt(instance inst, enum model_types model_type);
+solution TSPminspantree(instance inst);
 solution TSPgreedy(instance inst);
 solution TSPgrasp(instance inst);
 
@@ -35,6 +36,10 @@ solution solve(instance inst, enum model_types model_type) {
         case HARD_FIXING:
         case SOFT_FIXING:
             return TSPopt(inst, model_type);
+            break;
+
+        case MST:
+            return TSPminspantree(inst);
             break;
 
         case GREEDY:
@@ -191,6 +196,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
                    "tried to solve an optimal tour instance");
             break;
 
+        case MST:
         case GREEDY:
         case GRASP:
             assert(model_type != GREEDY && model_type != GRASP &&
@@ -396,6 +402,115 @@ solution TSPgrasp(instance inst) {
     topkqueue_free(tk);
     free(visited);
     free(tour);
+
+    return sol;
+}
+
+solution TSPminspantree(instance inst) {
+    assert(inst != NULL);
+    assert(inst->instance_type == TSP && "need TSP instance");
+
+    int nnodes = inst->nnodes;
+    int nedges = nnodes * (nnodes - 1) / 2;
+
+    solution sol = create_solution(inst, GREEDY, nnodes);
+    sol->distance_time = compute_dist(inst);
+
+    /* initialize total wall-clock time of execution time */
+    struct timespec s, e;
+    s.tv_sec = e.tv_sec = -1;
+    stopwatch(&s, &e);
+
+    /* build weighted edge list and sort it */
+    wedge* wedges = (wedge*)malloc(nedges * sizeof(struct wedge_t));
+    for (int i = 0; i < nnodes; i++) {
+        for (int j = i + 1; j < nnodes; j++) {
+            wedges[xpos(i, j, nnodes)] = (wedge){dist(i, j, inst), i, j};
+        }
+    }
+    qsort(wedges, nedges, sizeof(struct wedge_t), wedgecmp);
+
+    /* itearate over the edges and create the mst */
+    union_find uf = uf_create(nnodes);
+    for (int k = 0; k < nedges; k++) {
+        int i, j;
+        i = wedges[k].i;
+        j = wedges[k].j;
+
+        if (uf_same_set(uf, i, j)) continue;
+
+        uf_union_set(uf, i, j);
+    }
+
+    /* save the solution: pre/post order visit the tree and save the nodes
+     * encountered, starting from the uf root */
+    sol->zstar = 0.0;
+    int prev, next;
+    prev = -1;
+    int i = 0;
+    while (uf_postorder(uf, &next)) {
+        if (prev != -1) {
+            sol->edges[i] = (edge){prev, next};
+            sol->zstar += dist(prev, next, inst);
+
+            i++;
+        }
+
+        prev = next;
+    }
+    /* do not forget to close the loop! */
+    sol->edges[i] = (edge){prev, sol->edges[0].i};
+    sol->zstar += dist(prev, sol->edges[0].i, inst);
+
+    /* track the solve time */
+    sol->solve_time = stopwatch(&s, &e);
+
+    /* add the solution to the pool associated with it's instance */
+    add_solution(inst, sol);
+
+    if (EXTRA) {
+        /* add the spanning tree to the solution */
+
+        /* tree has nnodes -1 edges, realloc */
+        sol->nedges += sol->nedges - 1;
+        sol->edges =
+            (edge*)realloc(sol->edges, sol->nedges * sizeof(struct edge_t));
+
+        int msti = 1 + sol->nedges / 2; /* index of mst edge to add */
+        int* visited = (int*)calloc(nnodes, sizeof(int));
+        for (int i = 0; i < nnodes; i++) {
+            if (visited[i]) continue;
+
+            /* visit the node and store all the exiting edges */
+            visited[i] = 1;
+            for (int j = 0; j < uf->tns[i]->size; j++) {
+                if (visited[uf->tns[i]->sons[j]]) continue;
+
+                sol->edges[msti] = (edge){i, uf->tns[i]->sons[j]};
+
+                msti++;
+            }
+        }
+        free(visited);
+
+        /* yeah i could reuse visitd and flip the bit, but this is executed just
+         * one.. let me do this pls */
+        int* edgecolors = (int*)calloc(sol->nedges, sizeof(int));
+        for (int i = 1 + sol->nedges / 2; i < sol->nedges; i++) {
+            edgecolors[i] = 1;
+        }
+
+        /* plot the instance with special code version 100 */
+        plot_graphviz(sol, edgecolors, 100);
+        free(edgecolors);
+
+        /* return the correct solution */
+        sol->nedges = 1 + sol->nedges / 2;
+        sol->edges = realloc(sol->edges, sol->nedges * sizeof(struct edge_t));
+    }
+
+    free(wedges);
+    uf_free(uf);
 
     return sol;
 }

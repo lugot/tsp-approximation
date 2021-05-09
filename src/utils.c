@@ -11,6 +11,7 @@
 #include <time.h>
 
 #include "../include/tsp.h"
+#include "../include/globals.h"
 
 double geodist(size_t i, size_t j, instance inst);
 double l2dist(size_t i, size_t j, instance inst);
@@ -199,6 +200,16 @@ int visitable(int* link, int nnodes) {
     return visits == nnodes - 1;
 }
 
+/* edge comparator for kruskal */
+int wedgecmp(const void* a, const void* b) {
+    double wa = ((wedge*)a)->w;
+    double wb = ((wedge*)b)->w;
+
+
+    return wa - wb < EPSILON ? -1 : +1;
+}
+
+
 /* print helpers */
 void print_error(const char* err, ...) {
     va_list args;
@@ -251,6 +262,9 @@ char* model_type_tostring(enum model_types model_type) {
             break;
         case SOFT_FIXING:
             snprintf(ans, bufsize, "soft_fixing");
+            break;
+        case MST:
+            snprintf(ans, bufsize, "minspantree");
             break;
         case GREEDY:
             snprintf(ans, bufsize, "greedy");
