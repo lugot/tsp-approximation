@@ -237,7 +237,7 @@ solution TSPminspantree(instance inst) {
     int nedges = nnodes * (nnodes - 1) / 2;
 
     solution sol = create_solution(inst, GREEDY, nnodes);
-    sol->distance_time = compute_dist(inst);
+    sol->distance_time = 0.0;
 
     /* initialize total wall-clock time of execution time */
     struct timespec s, e;
@@ -248,7 +248,7 @@ solution TSPminspantree(instance inst) {
     wedge* wedges = (wedge*)malloc(nedges * sizeof(struct wedge_t));
     for (int i = 0; i < nnodes; i++) {
         for (int j = i + 1; j < nnodes; j++) {
-            wedges[xpos(i, j, nnodes)] = (wedge){dist(i, j, inst), i, j};
+            wedges[xpos(i, j, nnodes)] = (wedge){l2dist(i, j, inst), i, j};
         }
     }
     qsort(wedges, nedges, sizeof(struct wedge_t), wedgecmp);
@@ -274,7 +274,7 @@ solution TSPminspantree(instance inst) {
     while (uf_postorder(uf, &next)) {
         if (prev != -1) {
             sol->edges[i] = (edge){prev, next};
-            sol->zstar += dist(prev, next, inst);
+            sol->zstar += l2dist(prev, next, inst);
 
             i++;
         }
@@ -283,7 +283,7 @@ solution TSPminspantree(instance inst) {
     }
     /* do not forget to close the loop! */
     sol->edges[i] = (edge){prev, sol->edges[0].i};
-    sol->zstar += dist(prev, sol->edges[0].i, inst);
+    sol->zstar += l2dist(prev, sol->edges[0].i, inst);
 
     /* track the solve time */
     sol->solve_time = stopwatch(&s, &e);
@@ -346,7 +346,7 @@ solution TSPgreedy(instance inst) {
 
     /* track the best solution up to this point */
     solution sol = create_solution(inst, GREEDY, nnodes);
-    sol->distance_time = compute_dist(inst);
+    sol->distance_time = 0.0;
     sol->zstar = DBL_MAX;
 
     /* initialize total wall-clock time of execution and track deterministic
@@ -365,7 +365,7 @@ solution TSPgreedy(instance inst) {
         /* reset visited */
         memset(visited, 0, nnodes * sizeof(int));
 
-        if (VERBOSE) printf("[VERBOSE] greedy start %d\n", start);
+        if (VERBOSE) printf("[VERBOSE] greedy start %d\n", start + 1);
 
         /* add starting point to the actual tour */
         int t = 0;
@@ -387,9 +387,9 @@ solution TSPgreedy(instance inst) {
                 if (i == tour[t - 1]) continue;
 
                 /* update best new edge */
-                if (weight > dist(i, tour[t - 1], inst)) {
+                if (weight > l2dist(i, tour[t - 1], inst)) {
                     next = i;
-                    weight = dist(i, tour[t - 1], inst);
+                    weight = l2dist(i, tour[t - 1], inst);
                 }
             }
 
@@ -401,11 +401,11 @@ solution TSPgreedy(instance inst) {
 
             t++;
 
-            if (EXTRA) printf("\tnext: %d, obj: %lf\n", next, obj);
+            if (EXTRA) printf("\tnext: %d, obj: %lf\n", next + 1, obj);
         }
 
         /* do not forget to close the loop! */
-        obj += dist(tour[t - 1], tour[1], inst);
+        obj += l2dist(tour[t - 1], tour[1], inst);
 
         if (VERBOSE) printf("\tfinish selecting, obj: %lf\n", obj);
 
@@ -440,7 +440,7 @@ solution TSPgrasp(instance inst) {
 
     /* track the best solution up to this point */
     solution sol = create_solution(inst, GRASP, nnodes);
-    sol->distance_time = compute_dist(inst);
+    sol->distance_time = 0.0;
     sol->zstar = DBL_MAX;
 
     /* data structure for computation: visited flags, topk queue for performance
@@ -468,7 +468,7 @@ solution TSPgrasp(instance inst) {
         t++;
 
         if (VERBOSE) {
-            printf("[VERBOSE] grasp start %d", tour[0]);
+            printf("[VERBOSE] grasp start %d", tour[0] + 1);
             fflush(0);
         }
 
@@ -481,22 +481,22 @@ solution TSPgrasp(instance inst) {
                 if (i == tour[t - 1]) continue;
 
                 /* update top-k queue*/
-                topkqueue_push(tk, dist(i, tour[t - 1], inst), i);
+                topkqueue_push(tk, l2dist(i, tour[t - 1], inst), i);
             }
 
             /* add the best new edge to the tour */
             tour[t] = topkqueue_randompick(tk);
-            obj += dist(tour[t - 1], tour[t], inst);
+            obj += l2dist(tour[t - 1], tour[t], inst);
             visited[tour[t]] = 1;
             nunvisited--;
 
             t++;
 
-            if (EXTRA) printf("\tnext: %d, obj: %lf\n", tour[t - 1], obj);
+            if (EXTRA) printf("\tnext: %d, obj: %lf\n", tour[t - 1] + 1, obj);
         }
 
         /* do not forget to close the loop! */
-        obj += dist(tour[t - 1], tour[0], inst);
+        obj += l2dist(tour[t - 1], tour[0], inst);
 
         if (VERBOSE) printf(" -> obj: %lf\n", obj);
 
@@ -529,7 +529,7 @@ solution TSPextramilage(instance inst) {
 
     /* track the best solution up to this point */
     solution sol = create_solution(inst, EXTRA_MILAGE, nnodes);
-    sol->distance_time = compute_dist(inst);
+    sol->distance_time = 0.0;
     sol->zstar = 0.0;
 
     /* initialize total wall-clock time of execution and track deterministic
@@ -574,7 +574,7 @@ solution TSPextramilage(instance inst) {
     int* visited = (int*)calloc(nnodes, sizeof(int));
     for (int i = 0; i < k; i++) {
         sol->edges[i] = (edge){H[i], H[i + 1]};
-        sol->zstar += dist(H[i], H[i + 1], inst);
+        sol->zstar += l2dist(H[i], H[i + 1], inst);
 
         visited[H[i]] = visited[H[i + 1]] = 1;
     }
@@ -585,7 +585,7 @@ solution TSPextramilage(instance inst) {
     int nunvisited = nnodes - k;
     while (nunvisited > 0) {
         double best_extra_milage = DBL_MAX;
-        int next; /* next unvisited node to pick */
+        int next;  /* next unvisited node to pick */
         int edgei; /* edge index */
 
         /* iterate over unvisited nodes */
@@ -595,9 +595,12 @@ solution TSPextramilage(instance inst) {
             /* iterate over saved edges */
             for (int j = 0; j < k; j++) {
                 double extra_milage =
-                    dist(i, sol->edges[j].i, inst) +
-                    dist(i, sol->edges[j].j, inst) -
-                    dist(sol->edges[j].i, sol->edges[j].j, inst);
+                    l2dist(i, sol->edges[j].i, inst) +
+                    l2dist(i, sol->edges[j].j, inst) -
+                    l2dist(sol->edges[j].i, sol->edges[j].j, inst);
+
+                printf("extra %lf %d (%d, %d)\n", extra_milage, i + 1,
+                       sol->edges[j].i + 1, sol->edges[j].j + 1);
 
                 if (extra_milage < best_extra_milage) {
                     best_extra_milage = extra_milage;
@@ -607,9 +610,9 @@ solution TSPextramilage(instance inst) {
             }
         }
 
-        /* add the new two edges to the saved ones: 
-        * actually perform a substitution and add the other one
-        * also update the objective */ 
+        /* add the new two edges to the saved ones:
+         * actually perform a substitution and add the other one
+         * also update the objective */
         int oldi = sol->edges[edgei].i;
         int oldj = sol->edges[edgei].j;
 
@@ -622,7 +625,12 @@ solution TSPextramilage(instance inst) {
 
         sol->zstar += best_extra_milage;
 
-        if (VERBOSE) printf("[VERBOSE] next: %d, break (%d, %d)\n", next, oldi, oldj);
+        printf("best extra %lf %d (%d, %d)\n", best_extra_milage, next + 1,
+               oldi + 1, oldj + 1);
+
+        if (VERBOSE)
+            printf("[VERBOSE] next: %d, break (%d, %d)\n", next + 1, oldi + 1,
+                   oldj + 1);
     }
 
     /* track the solve time */
@@ -642,7 +650,7 @@ solution TSPextramilage(instance inst) {
         int* edgecolors = (int*)calloc(sol->nedges, sizeof(int));
         int chi = sol->nedges - nhull + 1;
         for (int i = 0; i < nhull - 1; i++) {
-            sol->edges[chi] = (edge) {H[i], H[i+1]};
+            sol->edges[chi] = (edge){H[i], H[i + 1]};
             edgecolors[chi] = 1;
 
             chi++;

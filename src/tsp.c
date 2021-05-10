@@ -162,8 +162,10 @@ void free_instance(instance inst) {
     free(inst->params);
 
     free(inst->nodes);
+    if (inst->adjmatrix != NULL) {
     for (int i = 0; i < inst->nnodes; i++) free(inst->adjmatrix[i]);
     free(inst->adjmatrix);
+    }
 
     for (int i = 0; i < inst->nsols; i++) free_solution(inst->sols[i]);
     free(inst->sols);

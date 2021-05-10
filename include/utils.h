@@ -12,6 +12,7 @@ edge xpos_inverse(int pos, int nnodes);
 double compute_zstar(instance inst, solution sol);
 
 double dist(int i, int j, instance inst);
+double l2dist(size_t i, size_t j, instance inst);
 double compute_dist(instance inst);
 
 int reachable(int* link, int i, int j);

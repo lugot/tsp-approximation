@@ -24,10 +24,10 @@ int main(int argc, char** argv) {
         /* BENDERS_CALLBACK, */
         /* HARD_FIXING, */
         /* SOFT_FIXING, */
-        MST,
+        /* MST, */
         /* GREEDY, */
         /* GRASP, */
-        /* EXTRA_MILAGE */
+        EXTRA_MILAGE
     };
 
     cplex_params params = create_params();

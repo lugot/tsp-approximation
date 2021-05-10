@@ -14,7 +14,6 @@
 #include "../include/tsp.h"
 
 double geodist(size_t i, size_t j, instance inst);
-double l2dist(size_t i, size_t j, instance inst);
 
 int xpos(int i, int j, int nnodes) {
     /*
