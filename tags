@@ -1,0 +1,497 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/lugot/documents/university/master/52/operation_research_2/project/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	/p5.9.20210110.0/
+$(EXE)	src/Makefile	/^$(EXE): $(OBJS) $(LIBUTILS)$/;"	t
+$(LIBUTILS)	src/Makefile	/^$(LIBUTILS) : $(HEADERS_LIBUTILS)$/;"	t
+$(LIBUTILS)	src/Makefile	/^$(LIBUTILS): $(OBJS_LIBUTILS)$/;"	t
+$(OBJS)	src/Makefile	/^$(OBJS) : $(HEADERS)$/;"	t
+.c.o	src/Makefile	/^.c.o :$/;"	t
+.cpp.o	src/Makefile	/^.cpp.o :$/;"	t
+0	compile_commands.json	/^      "\/usr\/bin\/gcc",$/;"	s	array:0.arguments
+0	compile_commands.json	/^      "\/usr\/bin\/gcc",$/;"	s	array:1.arguments
+0	compile_commands.json	/^      "\/usr\/bin\/gcc",$/;"	s	array:2.arguments
+0	compile_commands.json	/^      "\/usr\/bin\/gcc",$/;"	s	array:3.arguments
+0	compile_commands.json	/^      "\/usr\/bin\/gcc",$/;"	s	array:4.arguments
+0	compile_commands.json	/^      "\/usr\/bin\/gcc",$/;"	s	array:5.arguments
+0	compile_commands.json	/^      "\/usr\/bin\/gcc",$/;"	s	array:6.arguments
+0	compile_commands.json	/^      "\/usr\/bin\/gcc",$/;"	s	array:7.arguments
+0	compile_commands.json	/^      "\/usr\/bin\/gcc",$/;"	s	array:8.arguments
+0	compile_commands.json	/^  {$/;"	o
+1	compile_commands.json	/^      "-Wall",$/;"	s	array:0.arguments
+1	compile_commands.json	/^      "-Wall",$/;"	s	array:1.arguments
+1	compile_commands.json	/^      "-Wall",$/;"	s	array:2.arguments
+1	compile_commands.json	/^      "-Wall",$/;"	s	array:3.arguments
+1	compile_commands.json	/^      "-Wall",$/;"	s	array:4.arguments
+1	compile_commands.json	/^      "-Wall",$/;"	s	array:5.arguments
+1	compile_commands.json	/^      "-Wall",$/;"	s	array:6.arguments
+1	compile_commands.json	/^      "-Wall",$/;"	s	array:7.arguments
+1	compile_commands.json	/^      "-Wall",$/;"	s	array:8.arguments
+1	compile_commands.json	/^  {$/;"	o
+10	compile_commands.json	/^      "adjlist.o"$/;"	s	array:8.arguments
+10	compile_commands.json	/^      "globals.o"$/;"	s	array:1.arguments
+10	compile_commands.json	/^      "main.o"$/;"	s	array:0.arguments
+10	compile_commands.json	/^      "model_builder.o"$/;"	s	array:7.arguments
+10	compile_commands.json	/^      "parsers.o"$/;"	s	array:3.arguments
+10	compile_commands.json	/^      "solvers.o"$/;"	s	array:5.arguments
+10	compile_commands.json	/^      "tsp.o"$/;"	s	array:2.arguments
+10	compile_commands.json	/^      "union_find.o"$/;"	s	array:6.arguments
+10	compile_commands.json	/^      "utils.o"$/;"	s	array:4.arguments
+2	compile_commands.json	/^      "-O0",$/;"	s	array:0.arguments
+2	compile_commands.json	/^      "-O0",$/;"	s	array:1.arguments
+2	compile_commands.json	/^      "-O0",$/;"	s	array:2.arguments
+2	compile_commands.json	/^      "-O0",$/;"	s	array:3.arguments
+2	compile_commands.json	/^      "-O0",$/;"	s	array:4.arguments
+2	compile_commands.json	/^      "-O0",$/;"	s	array:5.arguments
+2	compile_commands.json	/^      "-O0",$/;"	s	array:6.arguments
+2	compile_commands.json	/^      "-O0",$/;"	s	array:7.arguments
+2	compile_commands.json	/^      "-O0",$/;"	s	array:8.arguments
+2	compile_commands.json	/^  {$/;"	o
+3	compile_commands.json	/^      "-g",$/;"	s	array:0.arguments
+3	compile_commands.json	/^      "-g",$/;"	s	array:1.arguments
+3	compile_commands.json	/^      "-g",$/;"	s	array:2.arguments
+3	compile_commands.json	/^      "-g",$/;"	s	array:3.arguments
+3	compile_commands.json	/^      "-g",$/;"	s	array:4.arguments
+3	compile_commands.json	/^      "-g",$/;"	s	array:5.arguments
+3	compile_commands.json	/^      "-g",$/;"	s	array:6.arguments
+3	compile_commands.json	/^      "-g",$/;"	s	array:7.arguments
+3	compile_commands.json	/^      "-g",$/;"	s	array:8.arguments
+3	compile_commands.json	/^  {$/;"	o
+4	compile_commands.json	/^      "-I..\/include",$/;"	s	array:0.arguments
+4	compile_commands.json	/^      "-I..\/include",$/;"	s	array:1.arguments
+4	compile_commands.json	/^      "-I..\/include",$/;"	s	array:2.arguments
+4	compile_commands.json	/^      "-I..\/include",$/;"	s	array:3.arguments
+4	compile_commands.json	/^      "-I..\/include",$/;"	s	array:4.arguments
+4	compile_commands.json	/^      "-I..\/include",$/;"	s	array:5.arguments
+4	compile_commands.json	/^      "-I..\/include",$/;"	s	array:6.arguments
+4	compile_commands.json	/^      "-I..\/include",$/;"	s	array:7.arguments
+4	compile_commands.json	/^      "-I..\/include",$/;"	s	array:8.arguments
+4	compile_commands.json	/^  {$/;"	o
+5	compile_commands.json	/^      "-I\/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex\/include\/ilcplex",$/;"	s	array:0.arguments
+5	compile_commands.json	/^      "-I\/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex\/include\/ilcplex",$/;"	s	array:1.arguments
+5	compile_commands.json	/^      "-I\/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex\/include\/ilcplex",$/;"	s	array:2.arguments
+5	compile_commands.json	/^      "-I\/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex\/include\/ilcplex",$/;"	s	array:3.arguments
+5	compile_commands.json	/^      "-I\/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex\/include\/ilcplex",$/;"	s	array:4.arguments
+5	compile_commands.json	/^      "-I\/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex\/include\/ilcplex",$/;"	s	array:5.arguments
+5	compile_commands.json	/^      "-I\/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex\/include\/ilcplex",$/;"	s	array:6.arguments
+5	compile_commands.json	/^      "-I\/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex\/include\/ilcplex",$/;"	s	array:7.arguments
+5	compile_commands.json	/^      "-I\/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex\/include\/ilcplex",$/;"	s	array:8.arguments
+5	compile_commands.json	/^  {$/;"	o
+6	compile_commands.json	/^      "-I\/opt\/concorde",$/;"	s	array:0.arguments
+6	compile_commands.json	/^      "-I\/opt\/concorde",$/;"	s	array:1.arguments
+6	compile_commands.json	/^      "-I\/opt\/concorde",$/;"	s	array:2.arguments
+6	compile_commands.json	/^      "-I\/opt\/concorde",$/;"	s	array:3.arguments
+6	compile_commands.json	/^      "-I\/opt\/concorde",$/;"	s	array:4.arguments
+6	compile_commands.json	/^      "-I\/opt\/concorde",$/;"	s	array:5.arguments
+6	compile_commands.json	/^      "-I\/opt\/concorde",$/;"	s	array:6.arguments
+6	compile_commands.json	/^      "-I\/opt\/concorde",$/;"	s	array:7.arguments
+6	compile_commands.json	/^      "-I\/opt\/concorde",$/;"	s	array:8.arguments
+6	compile_commands.json	/^  {$/;"	o
+7	compile_commands.json	/^      "-c",$/;"	s	array:0.arguments
+7	compile_commands.json	/^      "-c",$/;"	s	array:1.arguments
+7	compile_commands.json	/^      "-c",$/;"	s	array:2.arguments
+7	compile_commands.json	/^      "-c",$/;"	s	array:3.arguments
+7	compile_commands.json	/^      "-c",$/;"	s	array:4.arguments
+7	compile_commands.json	/^      "-c",$/;"	s	array:5.arguments
+7	compile_commands.json	/^      "-c",$/;"	s	array:6.arguments
+7	compile_commands.json	/^      "-c",$/;"	s	array:7.arguments
+7	compile_commands.json	/^      "-c",$/;"	s	array:8.arguments
+7	compile_commands.json	/^  {$/;"	o
+8	compile_commands.json	/^      "adjlist.c",$/;"	s	array:8.arguments
+8	compile_commands.json	/^      "globals.c",$/;"	s	array:1.arguments
+8	compile_commands.json	/^      "main.c",$/;"	s	array:0.arguments
+8	compile_commands.json	/^      "model_builder.c",$/;"	s	array:7.arguments
+8	compile_commands.json	/^      "parsers.c",$/;"	s	array:3.arguments
+8	compile_commands.json	/^      "solvers.c",$/;"	s	array:5.arguments
+8	compile_commands.json	/^      "tsp.c",$/;"	s	array:2.arguments
+8	compile_commands.json	/^      "union_find.c",$/;"	s	array:6.arguments
+8	compile_commands.json	/^      "utils.c",$/;"	s	array:4.arguments
+8	compile_commands.json	/^  {$/;"	o
+9	compile_commands.json	/^      "-o",$/;"	s	array:0.arguments
+9	compile_commands.json	/^      "-o",$/;"	s	array:1.arguments
+9	compile_commands.json	/^      "-o",$/;"	s	array:2.arguments
+9	compile_commands.json	/^      "-o",$/;"	s	array:3.arguments
+9	compile_commands.json	/^      "-o",$/;"	s	array:4.arguments
+9	compile_commands.json	/^      "-o",$/;"	s	array:5.arguments
+9	compile_commands.json	/^      "-o",$/;"	s	array:6.arguments
+9	compile_commands.json	/^      "-o",$/;"	s	array:7.arguments
+9	compile_commands.json	/^      "-o",$/;"	s	array:8.arguments
+AR	src/Makefile	/^AR = ar rc$/;"	m
+ATT	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
+BENDERS	include/tsp.h	/^    BENDERS,$/;"	e	enum:model_types
+BENDERS_CALLBACK	include/tsp.h	/^    BENDERS_CALLBACK,$/;"	e	enum:model_types
+CAPACITY	src/parsers.c	/^    CAPACITY,$/;"	e	enum:sections	file:
+CC	src/Makefile	/^CC = gcc$/;"	m
+CCDIR	src/Makefile	/^CCDIR = \/opt\/concorde$/;"	m
+CFLAGS	src/Makefile	/^CFLAGS = -Wall -O0 -g$/;"	m
+COMMENT	src/parsers.c	/^    COMMENT,$/;"	e	enum:sections	file:
+CONCORDELIB	src/Makefile	/^CONCORDELIB = \/opt\/concorde$/;"	m
+CPLEX_HOME	src/Makefile	/^CPLEX_HOME = \/opt\/ibm\/ILOG\/CPLEX_Studio201\/cplex$/;"	m
+CmdLineParser	results/perprof.py	/^class CmdLineParser(object):$/;"	c
+DEMAND_SECTION	src/parsers.c	/^    DEMAND_SECTION,$/;"	e	enum:sections	file:
+DEPOT_SECTION	src/parsers.c	/^    DEPOT_SECTION,$/;"	e	enum:sections	file:
+DIMENSION	src/parsers.c	/^    DIMENSION,$/;"	e	enum:sections	file:
+DISPLAY_DATA_SECTION	src/parsers.c	/^    DISPLAY_DATA_SECTION,$/;"	e	enum:sections	file:
+DISPLAY_DATA_TYPE	src/parsers.c	/^    DISPLAY_DATA_TYPE,$/;"	e	enum:sections	file:
+EDGE_DATA_FORMAT	src/parsers.c	/^    EDGE_DATA_FORMAT,$/;"	e	enum:sections	file:
+EDGE_DATA_SECTION	src/parsers.c	/^    EDGE_DATA_SECTION,$/;"	e	enum:sections	file:
+EDGE_WEIGHT_FORMAT	src/parsers.c	/^    EDGE_WEIGHT_FORMAT,$/;"	e	enum:sections	file:
+EDGE_WEIGHT_SECTION	src/parsers.c	/^    EDGE_WEIGHT_SECTION,$/;"	e	enum:sections	file:
+EDGE_WEIGHT_TYPE	src/parsers.c	/^    EDGE_WEIGHT_TYPE,$/;"	e	enum:sections	file:
+END_OF_FILE	src/parsers.c	/^    END_OF_FILE,$/;"	e	enum:sections	file:
+EPSILON	include/globals.h	/^#define EPSILON /;"	d
+EUC_2D	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
+EXE	src/Makefile	/^EXE = tsp_approx$/;"	m
+EXPLICIT	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
+EXTRA	include/globals.h	/^#define EXTRA /;"	d
+EXTRA_MILEAGE	include/tsp.h	/^    EXTRA_MILEAGE$/;"	e	enum:model_types
+EXTRA_MILEAGE	src/main.c	/^                                EXTRA_MILEAGE$/;"	e	enum:main::tests	file:
+FIXED_EDGE_SECTION	src/parsers.c	/^    FIXED_EDGE_SECTION,$/;"	e	enum:sections	file:
+GENERATE	include/parsers.h	/^    GENERATE,$/;"	e	enum:run_modes
+GENERATED	include/tsp.h	/^enum model_folders { TSPLIB, GENERATED };$/;"	e	enum:model_folders
+GEN_NUM_NODES	include/globals.h	/^#define GEN_NUM_NODES /;"	d
+GEO	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
+GGLECT_STATIC	include/tsp.h	/^    GGLECT_STATIC,$/;"	e	enum:model_types
+GGLIT_LAZY	include/tsp.h	/^    GGLIT_LAZY,$/;"	e	enum:model_types
+GGLIT_STATIC	include/tsp.h	/^    GGLIT_STATIC,$/;"	e	enum:model_types
+GRASP	include/tsp.h	/^    GRASP,$/;"	e	enum:model_types
+GRASP_K	include/globals.h	/^#define GRASP_K /;"	d
+GRASP_MAX_ITERATION	include/globals.h	/^#define GRASP_MAX_ITERATION /;"	d
+GREEDY	include/tsp.h	/^    GREEDY,$/;"	e	enum:model_types
+HARD_FIXING	include/tsp.h	/^    HARD_FIXING,$/;"	e	enum:model_types
+HEADERS	src/Makefile	/^HEADERS =$/;"	m
+HF_INITIAL_FRACTION_TIME	include/globals.h	/^#define HF_INITIAL_FRACTION_TIME /;"	d
+HF_ITERATIONS	include/globals.h	/^#define HF_ITERATIONS /;"	d
+HF_PERCENTAGE	include/globals.h	/^#define HF_PERCENTAGE /;"	d
+INC	src/Makefile	/^INC = -I..\/include -I${CPLEX_HOME}\/include\/ilcplex -I${CCDIR}$/;"	m
+INCLUDE_ADJLIST_H_	include/adjlist.h	/^#define INCLUDE_ADJLIST_H_$/;"	d
+INCLUDE_GLOBALS_H_	include/globals.h	/^#define INCLUDE_GLOBALS_H_$/;"	d
+INCLUDE_MODEL_BUILDER_H_	include/model_builder.h	/^#define INCLUDE_MODEL_BUILDER_H_$/;"	d
+INCLUDE_PARSERS_H_	include/parsers.h	/^#define INCLUDE_PARSERS_H_$/;"	d
+INCLUDE_PQUEUE_H_	include/pqueue.h	/^#define INCLUDE_PQUEUE_H_$/;"	d
+INCLUDE_SOLVERS_H_	include/solvers.h	/^#define INCLUDE_SOLVERS_H_$/;"	d
+INCLUDE_TSP_H_	include/tsp.h	/^#define INCLUDE_TSP_H_$/;"	d
+INCLUDE_UNION_FIND_H_	include/union_find.h	/^#define INCLUDE_UNION_FIND_H_$/;"	d
+INCLUDE_UTILS_H_	include/utils.h	/^#define INCLUDE_UTILS_H_$/;"	d
+INTEGER	include/tsp.h	/^enum costs { INTEGER, REAL };$/;"	e	enum:costs
+LIBS	src/Makefile	/^LIBS = -L${CPLEX_HOME}\/lib\/x86-64_linux\/static_pic -L. -lcplex -lm -lpthread -ldl ${CONCORDEL/;"	m
+LOAD_DIR	include/parsers.h	/^    LOAD_DIR$/;"	e	enum:run_modes
+MAX_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
+MIN_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
+MST	include/tsp.h	/^    MST,$/;"	e	enum:model_types
+MTZ_LAZY	include/tsp.h	/^    MTZ_LAZY,$/;"	e	enum:model_types
+MTZ_STATIC	include/tsp.h	/^    MTZ_STATIC,$/;"	e	enum:model_types
+N	include/adjlist.h	/^    int N;$/;"	m	struct:adjlist_t	typeref:typename:int
+N	include/union_find.h	/^    int N;$/;"	m	struct:union_find_t	typeref:typename:int
+NAME	src/parsers.c	/^    NAME,$/;"	e	enum:sections	file:
+NODE_COORD_SECTION	src/parsers.c	/^    NODE_COORD_SECTION,$/;"	e	enum:sections	file:
+NODE_COORD_TYPE	src/parsers.c	/^    NODE_COORD_TYPE,$/;"	e	enum:sections	file:
+NOSEC	include/tsp.h	/^    NOSEC,$/;"	e	enum:model_types
+OBJS	src/Makefile	/^OBJS = main.o tsp.o parsers.o utils.o solvers.o union_find.o model_builder.o adjlist.o pqueue.o$/;"	m
+OPTIMAL_TOUR	include/tsp.h	/^    OPTIMAL_TOUR,$/;"	e	enum:model_types
+OS	src/Makefile	/^OS := $(shell uname)$/;"	m
+REAL	include/tsp.h	/^enum costs { INTEGER, REAL };$/;"	e	enum:costs
+RM	src/Makefile	/^RM = rm -rf$/;"	m
+SF_INITIAL_FRACTION_TIME	include/globals.h	/^#define SF_INITIAL_FRACTION_TIME /;"	d
+SF_INITIAL_K	include/globals.h	/^#define SF_INITIAL_K /;"	d
+SF_K_STEP	include/globals.h	/^#define SF_K_STEP /;"	d
+SF_MAX_K	include/globals.h	/^#define SF_MAX_K /;"	d
+SINGLE_MODEL	include/parsers.h	/^    SINGLE_MODEL,$/;"	e	enum:run_modes
+SOFT_FIXING	include/tsp.h	/^    SOFT_FIXING,$/;"	e	enum:model_types
+SUPPRESS_CALLBACK	include/globals.h	/^#define SUPPRESS_CALLBACK /;"	d
+TOUR	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
+TOUR_SECTION	src/parsers.c	/^    TOUR_SECTION,$/;"	e	enum:sections	file:
+TSP	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
+TSPLIB	include/tsp.h	/^enum model_folders { TSPLIB, GENERATED };$/;"	e	enum:model_folders
+TSPextramileage	src/solvers.c	/^solution TSPextramileage(instance inst) {$/;"	f	typeref:typename:solution
+TSPgrasp	src/solvers.c	/^solution TSPgrasp(instance inst) {$/;"	f	typeref:typename:solution
+TSPgreedy	src/solvers.c	/^solution TSPgreedy(instance inst) {$/;"	f	typeref:typename:solution
+TSPminspantree	src/solvers.c	/^solution TSPminspantree(instance inst) {$/;"	f	typeref:typename:solution
+TSPopt	src/solvers.c	/^solution TSPopt(instance inst, enum model_types model_type) {$/;"	f	typeref:typename:solution
+TYPE	src/parsers.c	/^    TYPE,$/;"	e	enum:sections	file:
+UNHANDLED_INSTANCE_TYPE	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
+UNHANDLED_SECTION	src/parsers.c	/^    UNHANDLED_SECTION,$/;"	e	enum:sections	file:
+UNHANDLED_WEIGHT_TYPE	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
+VERBOSE	include/globals.h	/^#define VERBOSE /;"	d
+XSMALL	include/globals.h	/^#define XSMALL /;"	d
+__init__	results/perprof.py	/^	def __init__(self):$/;"	m	class:CmdLineParser
+addOption	results/perprof.py	/^	def addOption(self, *args, **kwargs):$/;"	m	class:CmdLineParser
+add_BENDERS_sec	src/model_builder.c	/^void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {$/;"	f	typeref:typename:void
+add_BENDERS_sec_callback_candidate	src/model_builder.c	/^int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,$/;"	f	typeref:typename:int CPXPUBLIC
+add_BENDERS_sec_callback_driver	src/model_builder.c	/^int CPXPUBLIC add_BENDERS_sec_callback_driver(CPXCALLBACKCONTEXTptr context,$/;"	f	typeref:typename:int CPXPUBLIC
+add_BENDERS_sec_callback_relaxation	src/model_builder.c	/^int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr context,$/;"	f	typeref:typename:int CPXPUBLIC
+add_GGlect_static_sec	src/model_builder.c	/^void add_GGlect_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_GGlit_lazy_sec	src/model_builder.c	/^void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_GGlit_static_sec	src/model_builder.c	/^void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_MTZ_lazy_sec	src/model_builder.c	/^void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_MTZ_static_sec	src/model_builder.c	/^void add_MTZ_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_asymm_constraints	src/model_builder.c	/^void add_asymm_constraints(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_asymm_variables	src/model_builder.c	/^void add_asymm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_params	src/tsp.c	/^void add_params(instance inst, cplex_params params) {$/;"	f	typeref:typename:void
+add_solution	src/tsp.c	/^void add_solution(instance inst, solution sol) {$/;"	f	typeref:typename:void
+add_symm_constraints	src/model_builder.c	/^void add_symm_constraints(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_symm_variables	src/model_builder.c	/^void add_symm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+adjlist	include/adjlist.h	/^} * adjlist;$/;"	t	typeref:struct:adjlist_t *
+adjlist_add_edge	src/adjlist.c	/^void adjlist_add_edge(adjlist l, int i, int j) {$/;"	f	typeref:typename:void
+adjlist_create	src/adjlist.c	/^adjlist adjlist_create(int N) {$/;"	f	typeref:typename:adjlist
+adjlist_free	src/adjlist.c	/^void adjlist_free(adjlist l) {$/;"	f	typeref:typename:void
+adjlist_get_edge	src/adjlist.c	/^int adjlist_get_edge(adjlist l, int* u, int* v) {$/;"	f	typeref:typename:int
+adjlist_get_loose_ends	src/adjlist.c	/^int adjlist_get_loose_ends(adjlist l, int* end1, int* end2) {$/;"	f	typeref:typename:int
+adjlist_get_subtour	src/adjlist.c	/^int* adjlist_get_subtour(adjlist l, int* subsize) {$/;"	f	typeref:typename:int *
+adjlist_hard_reset	src/adjlist.c	/^void adjlist_hard_reset(adjlist l) {$/;"	f	typeref:typename:void
+adjlist_print	src/adjlist.c	/^void adjlist_print(adjlist l) {$/;"	f	typeref:typename:void
+adjlist_reset	src/adjlist.c	/^void adjlist_reset(adjlist l) {$/;"	f	typeref:typename:void
+adjlist_single_tour	src/adjlist.c	/^int adjlist_single_tour(adjlist l) {$/;"	f	typeref:typename:int
+adjlist_t	include/adjlist.h	/^typedef struct adjlist_t {$/;"	s
+adjmatrix	include/tsp.h	/^    double** adjmatrix;$/;"	m	struct:instance_t	typeref:typename:double **
+again	src/Makefile	/^again:$/;"	t
+all	src/Makefile	/^all: $(EXE)$/;"	t
+arguments	compile_commands.json	/^    "arguments": [$/;"	a	object:0
+arguments	compile_commands.json	/^    "arguments": [$/;"	a	object:1
+arguments	compile_commands.json	/^    "arguments": [$/;"	a	object:2
+arguments	compile_commands.json	/^    "arguments": [$/;"	a	object:3
+arguments	compile_commands.json	/^    "arguments": [$/;"	a	object:4
+arguments	compile_commands.json	/^    "arguments": [$/;"	a	object:5
+arguments	compile_commands.json	/^    "arguments": [$/;"	a	object:6
+arguments	compile_commands.json	/^    "arguments": [$/;"	a	object:7
+arguments	compile_commands.json	/^    "arguments": [$/;"	a	object:8
+available_memory	include/tsp.h	/^    int available_memory;$/;"	m	struct:cplex_params_t	typeref:typename:int
+battery_test	include/parsers.h	/^    int battery_test;$/;"	m	struct:run_options_t	typeref:typename:int
+bit	include/adjlist.h	/^    int bit;$/;"	m	struct:adjlist_t	typeref:typename:int
+build_time	include/tsp.h	/^    double build_time;$/;"	m	struct:solution_t	typeref:typename:double
+build_tsp_model	src/model_builder.c	/^double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,$/;"	f	typeref:typename:double
+capacity	include/pqueue.h	/^    int capacity;$/;"	m	struct:pqueue_t	typeref:typename:int
+capacity	include/union_find.h	/^    int capacity;$/;"	m	struct:tree_node_t	typeref:typename:int
+ccw	src/utils.c	/^int ccw(node a, node b, node c) {$/;"	f	typeref:typename:int
+clean	src/Makefile	/^clean:$/;"	t
+colors	results/perprof.py	/^colors = ['r', 'b', 'y', 'g', 'm', 'c']$/;"	v
+compute_distmatrix	src/utils.c	/^double compute_distmatrix(instance inst) {$/;"	f	typeref:typename:double
+compute_zstar	src/utils.c	/^double compute_zstar(instance inst, solution sol) {$/;"	f	typeref:typename:double
+context	include/tsp.h	/^    CPXCALLBACKCONTEXTptr context;$/;"	m	struct:doit_fn_input_t	typeref:typename:CPXCALLBACKCONTEXTptr
+cost	include/tsp.h	/^    enum costs cost;$/;"	m	struct:cplex_params_t	typeref:enum:costs
+costs	include/tsp.h	/^enum costs { INTEGER, REAL };$/;"	g
+cplex_params	include/tsp.h	/^} * cplex_params;$/;"	t	typeref:struct:cplex_params_t *
+cplex_params_t	include/tsp.h	/^typedef struct cplex_params_t {$/;"	s
+create_empty_instance	src/tsp.c	/^instance create_empty_instance() {$/;"	f	typeref:typename:instance
+create_instance	src/tsp.c	/^instance create_instance(cplex_params params) {$/;"	f	typeref:typename:instance
+create_node	src/pqueue.c	/^pqueue_node create_node(double key, int val) {$/;"	f	typeref:typename:pqueue_node
+create_options	src/parsers.c	/^run_options create_options() {$/;"	f	typeref:typename:run_options
+create_params	src/tsp.c	/^cplex_params create_params() {$/;"	f	typeref:typename:cplex_params
+create_solution	src/tsp.c	/^solution create_solution(instance inst, enum model_types model_type,$/;"	f	typeref:typename:solution
+cross	src/utils.c	/^double cross(node a, node b) { return a.x * b.y - a.y * b.x; }$/;"	f	typeref:typename:double
+dashes	results/perprof.py	/^dashes = ['-',  # solid line$/;"	v
+data	include/pqueue.h	/^    struct pqueue_node_t** data;$/;"	m	struct:pqueue_t	typeref:struct:pqueue_node_t **
+defLW	results/perprof.py	/^defLW = 1.2  # default line width$/;"	v
+defMS	results/perprof.py	/^defMS = 7  # default marker size$/;"	v
+directory	compile_commands.json	/^    "directory": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/projec/;"	s	object:0
+directory	compile_commands.json	/^    "directory": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/projec/;"	s	object:1
+directory	compile_commands.json	/^    "directory": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/projec/;"	s	object:2
+directory	compile_commands.json	/^    "directory": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/projec/;"	s	object:3
+directory	compile_commands.json	/^    "directory": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/projec/;"	s	object:4
+directory	compile_commands.json	/^    "directory": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/projec/;"	s	object:5
+directory	compile_commands.json	/^    "directory": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/projec/;"	s	object:6
+directory	compile_commands.json	/^    "directory": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/projec/;"	s	object:7
+directory	compile_commands.json	/^    "directory": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/projec/;"	s	object:8
+dist	src/utils.c	/^double dist(int i, int j, instance inst) {$/;"	f	typeref:typename:double
+distance_time	include/tsp.h	/^    double distance_time;$/;"	m	struct:solution_t	typeref:typename:double
+doit_fn_concorde	src/model_builder.c	/^int doit_fn_concorde(double cutval, int cutcount, int* cut, void* in) {$/;"	f	typeref:typename:int
+doit_fn_input	include/tsp.h	/^} * doit_fn_input;$/;"	t	typeref:struct:doit_fn_input_t *
+doit_fn_input_t	include/tsp.h	/^typedef struct doit_fn_input_t {$/;"	s
+edge	include/tsp.h	/^} edge;$/;"	t	typeref:struct:edge_t
+edge_t	include/tsp.h	/^typedef struct edge_t {$/;"	s
+edges	include/tsp.h	/^    edge* edges;$/;"	m	struct:solution_t	typeref:typename:edge *
+edges_tosucc	src/utils.c	/^int* edges_tosucc(edge* edges, int nnodes) {$/;"	f	typeref:typename:int *
+end	include/tsp.h	/^    double end;$/;"	m	struct:solution_t	typeref:typename:double
+file	compile_commands.json	/^    "file": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\/sr/;"	s	object:0
+file	compile_commands.json	/^    "file": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\/sr/;"	s	object:1
+file	compile_commands.json	/^    "file": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\/sr/;"	s	object:2
+file	compile_commands.json	/^    "file": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\/sr/;"	s	object:3
+file	compile_commands.json	/^    "file": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\/sr/;"	s	object:4
+file	compile_commands.json	/^    "file": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\/sr/;"	s	object:5
+file	compile_commands.json	/^    "file": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\/sr/;"	s	object:6
+file	compile_commands.json	/^    "file": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\/sr/;"	s	object:7
+file	compile_commands.json	/^    "file": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\/sr/;"	s	object:8
+folder	include/parsers.h	/^    enum model_folders folder;$/;"	m	struct:run_options_t	typeref:enum:model_folders
+free_instance	src/tsp.c	/^void free_instance(instance inst) {$/;"	f	typeref:typename:void
+free_options	src/parsers.c	/^void free_options(run_options options) {$/;"	f	typeref:typename:void
+free_params	src/tsp.c	/^void free_params(cplex_params params) { free(params); }$/;"	f	typeref:typename:void
+free_solution	src/tsp.c	/^void free_solution(solution sol) {$/;"	f	typeref:typename:void
+generate_random_instance	src/tsp.c	/^instance generate_random_instance(int id, int nnodes) {$/;"	f	typeref:typename:instance
+generate_random_instances	src/tsp.c	/^instance* generate_random_instances(int ninstances, int nnodes) {$/;"	f	typeref:typename:instance *
+geodist	src/utils.c	/^double geodist(size_t i, size_t j, instance inst) {$/;"	f	typeref:typename:double
+get_asymmsol	src/solvers.c	/^void get_asymmsol(double* xstar, solution sol) {$/;"	f	typeref:typename:void
+get_symmsol	src/solvers.c	/^void get_symmsol(double* xstar, solution sol) {$/;"	f	typeref:typename:void
+i	include/adjlist.h	/^    int i;$/;"	m	struct:adjlist_t	typeref:typename:int
+i	include/tsp.h	/^    int i, j;$/;"	m	struct:edge_t	typeref:typename:int
+i	include/tsp.h	/^    int i, j;$/;"	m	struct:wedge_t	typeref:typename:int
+inst	include/tsp.h	/^    struct instance_t* inst;$/;"	m	struct:solution_t	typeref:struct:instance_t *
+instance	include/tsp.h	/^} * instance;$/;"	t	typeref:struct:instance_t *
+instance_t	include/tsp.h	/^typedef struct instance_t {$/;"	s
+instance_type	include/tsp.h	/^    enum instance_types instance_type;$/;"	m	struct:instance_t	typeref:enum:instance_types
+instance_type_enumerator	src/parsers.c	/^enum instance_types instance_type_enumerator(char* section_param) {$/;"	f	typeref:enum:instance_types
+instance_types	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	g
+j	include/tsp.h	/^    int i, j;$/;"	m	struct:edge_t	typeref:typename:int
+j	include/tsp.h	/^    int i, j;$/;"	m	struct:wedge_t	typeref:typename:int
+k	include/pqueue.h	/^    int k;$/;"	m	struct:topkqueue_t	typeref:typename:int
+key	include/pqueue.h	/^    double key;$/;"	m	struct:pqueue_node_t	typeref:typename:double
+l2dist	src/utils.c	/^double l2dist(size_t i, size_t j, instance inst) {$/;"	f	typeref:typename:double
+left	src/pqueue.c	/^int left(int i) { return 2 * i + 1; }$/;"	f	typeref:typename:int
+list_files	src/utils.c	/^char** list_files(enum model_folders folder, int* nmodels) {$/;"	f	typeref:typename:char **
+main	results/perprof.py	/^def main():$/;"	f
+main	src/main.c	/^int main(int argc, char** argv) {$/;"	f	typeref:typename:int
+markers	results/perprof.py	/^markers = ['+', 'x', 's', '^', 'o', 'd']$/;"	v
+max	src/utils.c	/^double max(double a, double b) { return a > b ? a : b; }$/;"	f	typeref:typename:double
+maxi	src/utils.c	/^int maxi(int a, int b) { return a > b ? a : b; }$/;"	f	typeref:typename:int
+min	src/utils.c	/^double min(double a, double b) { return a < b ? a : b; }$/;"	f	typeref:typename:double
+mini	src/utils.c	/^int mini(int a, int b) { return a < b ? a : b; }$/;"	f	typeref:typename:int
+mode	include/parsers.h	/^    enum run_modes mode;$/;"	m	struct:run_options_t	typeref:enum:run_modes
+mode	include/pqueue.h	/^    enum modes mode;$/;"	m	struct:pqueue_t	typeref:enum:modes
+model_comment	include/tsp.h	/^    char* model_comment;$/;"	m	struct:instance_t	typeref:typename:char *
+model_folder	include/tsp.h	/^    enum model_folders model_folder;$/;"	m	struct:instance_t	typeref:enum:model_folders
+model_folder_tostring	src/utils.c	/^char* model_folder_tostring(enum model_folders folder) {$/;"	f	typeref:typename:char *
+model_folders	include/tsp.h	/^enum model_folders { TSPLIB, GENERATED };$/;"	g
+model_name	include/parsers.h	/^    char* model_name;$/;"	m	struct:run_options_t	typeref:typename:char *
+model_name	include/tsp.h	/^    char* model_name;$/;"	m	struct:instance_t	typeref:typename:char *
+model_type	include/tsp.h	/^    enum model_types model_type;$/;"	m	struct:solution_t	typeref:enum:model_types
+model_type_tostring	src/utils.c	/^char* model_type_tostring(enum model_types model_type) {$/;"	f	typeref:typename:char *
+model_types	include/tsp.h	/^enum model_types {$/;"	g
+modes	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	g
+ncols	include/tsp.h	/^    int ncols;$/;"	m	struct:instance_t	typeref:typename:int
+nedges	include/tsp.h	/^    int nedges;$/;"	m	struct:doit_fn_input_t	typeref:typename:int
+nedges	include/tsp.h	/^    int nedges;$/;"	m	struct:solution_t	typeref:typename:int
+neigh	include/adjlist.h	/^    int (*neigh)[2];$/;"	m	struct:adjlist_t	typeref:typename:int (*)[2]
+nnodes	include/tsp.h	/^    int nnodes;$/;"	m	struct:instance_t	typeref:typename:int
+node	include/tsp.h	/^} node;$/;"	t	typeref:struct:node_t
+node_t	include/tsp.h	/^typedef struct node_t {$/;"	s
+nodelexcmp	src/utils.c	/^int nodelexcmp(const void* a, const void* b) {$/;"	f	typeref:typename:int
+nodes	include/tsp.h	/^    node* nodes;$/;"	m	struct:instance_t	typeref:typename:node *
+np	results/perprof.py	/^import numpy as np$/;"	I	nameref:module:numpy
+nsets	include/union_find.h	/^    int nsets;$/;"	m	struct:union_find_t	typeref:typename:int
+nsols	include/tsp.h	/^    int nsols;$/;"	m	struct:instance_t	typeref:typename:int
+num_threads	include/tsp.h	/^    int num_threads;$/;"	m	struct:cplex_params_t	typeref:typename:int
+output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:0
+output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:1
+output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:2
+output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:3
+output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:4
+output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:5
+output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:6
+output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:7
+output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:8
+p	include/union_find.h	/^    int *p, *rank, *size_of_set;$/;"	m	struct:union_find_t	typeref:typename:int *
+params	include/tsp.h	/^    cplex_params params;$/;"	m	struct:instance_t	typeref:typename:cplex_params
+parent	src/pqueue.c	/^int parent(int i) { return (i - 1) \/ 2; }$/;"	f	typeref:typename:int
+parseArgs	results/perprof.py	/^	def parseArgs(self):$/;"	m	class:CmdLineParser
+parse_command_line	src/parsers.c	/^void parse_command_line(int argc, char** argv, cplex_params params,$/;"	f	typeref:typename:void
+parse_input_dir	src/parsers.c	/^instance* parse_input_dir(enum model_folders folder, char* file_extension,$/;"	f	typeref:typename:instance *
+parse_input_file	src/parsers.c	/^instance parse_input_file(char* model_name, char* file_extension,$/;"	f	typeref:typename:instance
+perform_BENDERS	src/model_builder.c	/^void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,$/;"	f	typeref:typename:void
+perform_HARD_FIXING	src/model_builder.c	/^void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,$/;"	f	typeref:typename:void
+perform_SOFT_FIXING	src/model_builder.c	/^void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,$/;"	f	typeref:typename:void
+plot_graphviz	src/tsp.c	/^void plot_graphviz(solution sol, int* edgecolors, int version) {$/;"	f	typeref:typename:void
+plot_profiler	src/tsp.c	/^void plot_profiler(instance* insts, int ninstances) {$/;"	f	typeref:typename:void
+plt	results/perprof.py	/^import matplotlib.pyplot as plt$/;"	I	nameref:module:matplotlib.pyplot
+pq	include/pqueue.h	/^    pqueue pq;$/;"	m	struct:topkqueue_t	typeref:typename:pqueue
+pqueue	include/pqueue.h	/^} * pqueue;$/;"	t	typeref:struct:pqueue_t *
+pqueue_create	src/pqueue.c	/^pqueue pqueue_create(enum modes mode) {$/;"	f	typeref:typename:pqueue
+pqueue_empty	src/pqueue.c	/^int pqueue_empty(pqueue pq) { return pq->size == 0; }$/;"	f	typeref:typename:int
+pqueue_free	src/pqueue.c	/^void pqueue_free(pqueue pq) {$/;"	f	typeref:typename:void
+pqueue_node	include/pqueue.h	/^} * pqueue_node;$/;"	t	typeref:struct:pqueue_node_t *
+pqueue_node_t	include/pqueue.h	/^typedef struct pqueue_node_t {$/;"	s
+pqueue_pop	src/pqueue.c	/^int pqueue_pop(pqueue pq) {$/;"	f	typeref:typename:int
+pqueue_print	src/pqueue.c	/^void pqueue_print(pqueue pq) {$/;"	f	typeref:typename:void
+pqueue_push	src/pqueue.c	/^void pqueue_push(pqueue pq, double key, int val) {$/;"	f	typeref:typename:void
+pqueue_t	include/pqueue.h	/^typedef struct pqueue_t {$/;"	s
+pqueue_top	src/pqueue.c	/^int pqueue_top(pqueue pq) { return pq->data[0]->val; }$/;"	f	typeref:typename:int
+pqueue_top_key	src/pqueue.c	/^double pqueue_top_key(pqueue pq) { return pq->data[0]->key; }$/;"	f	typeref:typename:double
+print_cplex_params	src/tsp.c	/^void print_cplex_params(cplex_params params) {$/;"	f	typeref:typename:void
+print_error	src/utils.c	/^void print_error(const char* err, ...) {$/;"	f	typeref:typename:void
+print_instance	src/tsp.c	/^void print_instance(instance inst, int print_data) {$/;"	f	typeref:typename:void
+print_solution	src/tsp.c	/^void print_solution(solution sol, int print_data) {$/;"	f	typeref:typename:void
+print_usage	src/parsers.c	/^void print_usage() {$/;"	f	typeref:typename:void
+randomseed	include/tsp.h	/^    int randomseed;$/;"	m	struct:cplex_params_t	typeref:typename:int
+rank	include/union_find.h	/^    int *p, *rank, *size_of_set;$/;"	m	struct:union_find_t	typeref:typename:int *
+reachable	src/utils.c	/^int reachable(int* link, int i, int j) {$/;"	f	typeref:typename:int
+readTable	results/perprof.py	/^def readTable(fp, delimiter):$/;"	f
+right	src/pqueue.c	/^int right(int i) { return 2 * i + 2; }$/;"	f	typeref:typename:int
+run_modes	include/parsers.h	/^enum run_modes {$/;"	g
+run_options	include/parsers.h	/^} * run_options;$/;"	t	typeref:struct:run_options_t *
+run_options_t	include/parsers.h	/^typedef struct run_options_t {$/;"	s
+save_instance	src/tsp.c	/^void save_instance(instance inst) {$/;"	f	typeref:typename:void
+section_enumerator	src/parsers.c	/^enum sections section_enumerator(char* section_name) {$/;"	f	typeref:enum:sections
+sections	src/parsers.c	/^enum sections {$/;"	g	file:
+setting	src/Makefile	/^setting = -1$/;"	m
+setting	src/Makefile	/^setting = 1$/;"	m
+shiftdown	src/pqueue.c	/^void shiftdown(pqueue pq, int i) {$/;"	f	typeref:typename:void
+shiftup	src/pqueue.c	/^void shiftup(pqueue pq, int i) {$/;"	f	typeref:typename:void
+si	include/union_find.h	/^    int si; \/* stack index *\/$/;"	m	struct:union_find_t	typeref:typename:int
+size	include/pqueue.h	/^    int size;$/;"	m	struct:pqueue_t	typeref:typename:int
+size	include/union_find.h	/^    int size;$/;"	m	struct:tree_node_t	typeref:typename:int
+size_of_set	include/union_find.h	/^    int *p, *rank, *size_of_set;$/;"	m	struct:union_find_t	typeref:typename:int *
+sols	include/tsp.h	/^    struct solution_t** sols;$/;"	m	struct:instance_t	typeref:struct:solution_t **
+solution	include/tsp.h	/^} * solution;$/;"	t	typeref:struct:solution_t *
+solution_t	include/tsp.h	/^typedef struct solution_t {$/;"	s
+solve	src/solvers.c	/^solution solve(instance inst, enum model_types model_type) {$/;"	f	typeref:typename:solution
+solve_time	include/tsp.h	/^    double solve_time;$/;"	m	struct:solution_t	typeref:typename:double
+sons	include/union_find.h	/^    int* sons;$/;"	m	struct:tree_node_t	typeref:typename:int *
+stack	include/union_find.h	/^    int* stack;$/;"	m	struct:union_find_t	typeref:typename:int *
+start	include/tsp.h	/^    double start;$/;"	m	struct:solution_t	typeref:typename:double
+stopwatch	src/utils.c	/^int64_t stopwatch(struct timespec* s, struct timespec* e) {$/;"	f	typeref:typename:int64_t
+stopwatch_n	src/utils.c	/^int64_t stopwatch_n(struct timespec* s, struct timespec* e) {$/;"	f	typeref:typename:int64_t
+swap	src/utils.c	/^void swap(int* x, int* y) {$/;"	f	typeref:typename:void
+swap_node	src/pqueue.c	/^void swap_node(pqueue_node* n, pqueue_node* m) {$/;"	f	typeref:typename:void
+tests	src/main.c	/^    enum model_types tests[] = {\/*MTZ_STATIC,*\/$/;"	g	function:main	file:
+timelimit	include/tsp.h	/^    double timelimit;$/;"	m	struct:cplex_params_t	typeref:typename:double
+tn_add_son	src/union_find.c	/^void tn_add_son(tree_node tn, int s) {$/;"	f	typeref:typename:void
+tn_create	src/union_find.c	/^tree_node tn_create() {$/;"	f	typeref:typename:tree_node
+tn_free	src/union_find.c	/^void tn_free(tree_node tn) {$/;"	f	typeref:typename:void
+tns	include/union_find.h	/^    tree_node* tns;$/;"	m	struct:union_find_t	typeref:typename:tree_node *
+topkqueue	include/pqueue.h	/^} * topkqueue;$/;"	t	typeref:struct:topkqueue_t *
+topkqueue_create	src/pqueue.c	/^topkqueue topkqueue_create(int k) {$/;"	f	typeref:typename:topkqueue
+topkqueue_free	src/pqueue.c	/^void topkqueue_free(topkqueue tk) {$/;"	f	typeref:typename:void
+topkqueue_print	src/pqueue.c	/^void topkqueue_print(topkqueue tk) { pqueue_print(tk->pq); }$/;"	f	typeref:typename:void
+topkqueue_push	src/pqueue.c	/^void topkqueue_push(topkqueue tk, double key, int val) {$/;"	f	typeref:typename:void
+topkqueue_randompick	src/pqueue.c	/^int topkqueue_randompick(topkqueue tk) {$/;"	f	typeref:typename:int
+topkqueue_t	include/pqueue.h	/^typedef struct topkqueue_t {$/;"	s
+tree_node	include/union_find.h	/^} * tree_node;$/;"	t	typeref:struct:tree_node_t *
+tree_node_t	include/union_find.h	/^typedef struct tree_node_t {$/;"	s
+twoopt_move	src/solvers.c	/^void twoopt_move(int* succ, int nnodes, int a, int b) {$/;"	f	typeref:typename:void
+twoopt_pick	src/solvers.c	/^double twoopt_pick(instance inst, int* succ, int* a, int* b) {$/;"	f	typeref:typename:double
+twoopt_refinement	src/solvers.c	/^void twoopt_refinement(instance inst, solution sol) {$/;"	f	typeref:typename:void
+uf_create	src/union_find.c	/^union_find uf_create(int N) {$/;"	f	typeref:typename:union_find
+uf_find_set	src/union_find.c	/^int uf_find_set(union_find uf, int i) {$/;"	f	typeref:typename:int
+uf_free	src/union_find.c	/^void uf_free(union_find uf) {$/;"	f	typeref:typename:void
+uf_postorder	src/union_find.c	/^int uf_postorder(union_find uf, int* next) {$/;"	f	typeref:typename:int
+uf_same_set	src/union_find.c	/^int uf_same_set(union_find uf, int i, int j) {$/;"	f	typeref:typename:int
+uf_set_size	src/union_find.c	/^int uf_set_size(union_find uf, int i) {$/;"	f	typeref:typename:int
+uf_union_set	src/union_find.c	/^void uf_union_set(union_find uf, int i, int j) {$/;"	f	typeref:typename:void
+union_find	include/union_find.h	/^} * union_find;$/;"	t	typeref:struct:union_find_t *
+union_find_t	include/union_find.h	/^typedef struct union_find_t {$/;"	s
+upos	src/utils.c	/^int upos(int i, int nnodes) { return (nnodes * nnodes) + i - 1; }$/;"	f	typeref:typename:int
+val	include/pqueue.h	/^    int val;$/;"	m	struct:pqueue_node_t	typeref:typename:int
+visitable	src/utils.c	/^int visitable(int* link, int nnodes) {$/;"	f	typeref:typename:int
+visited	include/adjlist.h	/^    int* visited;$/;"	m	struct:adjlist_t	typeref:typename:int *
+visited	include/union_find.h	/^    int* visited;$/;"	m	struct:union_find_t	typeref:typename:int *
+w	include/tsp.h	/^    double w;$/;"	m	struct:wedge_t	typeref:typename:double
+wedge	include/tsp.h	/^} wedge;$/;"	t	typeref:struct:wedge_t
+wedge_t	include/tsp.h	/^typedef struct wedge_t {$/;"	s
+wedgecmp	src/utils.c	/^int wedgecmp(const void* a, const void* b) {$/;"	f	typeref:typename:int
+weight_type	include/tsp.h	/^    enum weight_types weight_type;$/;"	m	struct:instance_t	typeref:enum:weight_types
+weight_type_enumerator	src/parsers.c	/^enum weight_types weight_type_enumerator(char* section_param) {$/;"	f	typeref:enum:weight_types
+weight_types	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	g
+who	src/Makefile	/^who:$/;"	t
+wow	src/Makefile	/^wow:$/;"	t
+x	include/tsp.h	/^    double x, y;$/;"	m	struct:node_t	typeref:typename:double
+xpos	src/utils.c	/^int xpos(int i, int j, int nnodes) {$/;"	f	typeref:typename:int
+xpos_inverse	src/utils.c	/^edge xpos_inverse(int pos, int nnodes) {$/;"	f	typeref:typename:edge
+xxpos	src/utils.c	/^int xxpos(int i, int j, int nnodes) {$/;"	f	typeref:typename:int
+y	include/tsp.h	/^    double x, y;$/;"	m	struct:node_t	typeref:typename:double
+ypos	src/utils.c	/^int ypos(int i, int j, int nnodes) {$/;"	f	typeref:typename:int
+zstar	include/tsp.h	/^    double zstar;$/;"	m	struct:solution_t	typeref:typename:double

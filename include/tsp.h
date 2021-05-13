@@ -69,7 +69,7 @@ enum model_types {
     MST,
     GREEDY,
     GRASP,
-    EXTRA_MILAGE
+    EXTRA_MILEAGE
 };
 typedef struct solution_t {
     struct instance_t* inst;
@@ -88,12 +88,12 @@ typedef struct solution_t {
 
 /* cplex param manipulators */
 cplex_params create_params();
+void add_params(instance inst, cplex_params params);
 void free_params(cplex_params params);
 
 /* instance manipulators */
 instance create_empty_instance();
 instance create_instance(cplex_params params);
-void add_params(instance inst, cplex_params params);
 instance generate_random_instance(int id, int num_nodes);
 instance* generate_random_instances(int num_instances, int num_nodes);
 void save_instance(instance inst);

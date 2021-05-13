@@ -8,7 +8,7 @@
 #define XSMALL 1e5
 #define EPSILON 1e-9
 
-#define NUM_NODES 10
+#define GEN_NUM_NODES 200
 
 #define HF_PERCENTAGE 80
 #define HF_ITERATIONS 20

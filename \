@@ -23,10 +23,7 @@ solution TSPminspantree(instance inst);
 solution TSPgreedy(instance inst);
 solution TSPgrasp(instance inst);
 solution TSPextramileage(instance inst);
-
-void twoopt_refinement(instance inst, solution sol);
-double twoopt_pick(instance inst, int* succ, int* a, int* b);
-void twoopt_move(int* succ, int nnodes, int a, int b);
+double twoopt_move(instance inst, int* succ);
 
 solution solve(instance inst, enum model_types model_type) {
     switch (model_type) {
@@ -630,10 +627,17 @@ solution TSPextramileage(instance inst) {
                    oldj + 1);
     }
 
-    /* refine it! */
-    twoopt_refinement(inst, sol);
-
     print_solution(sol, 1);
+
+    int* succ;
+    if ((succ = edges_tosucc(sol->edges, nnodes)) == NULL) {
+        print_error("solver didnt produced a tour");
+    }
+    for (int i = 0; i < nnodes; i++) printf("%d ", succ[i]+1);
+    printf("\n");
+
+    twoopt_move(inst, succ);
+
 
     /* track the solve time */
     sol->solve_time = stopwatch(&s, &e);
@@ -711,90 +715,32 @@ void get_asymmsol(double* xstar, solution sol) {
     /*assert(k == nedges && "not enought edges CPLEX solution");*/
 }
 
-void twoopt_refinement(instance inst, solution sol) {
-    int nnodes = inst->nnodes;
-
-    int* succ;
-    if ((succ = edges_tosucc(sol->edges, nnodes)) == NULL) {
-        print_error("solver didnt produced a tour");
-    }
-
-    int a, b;
-    double delta = 1.0; /* using 0.0 as sentinel */
-    a = b = 0;
-
-    /* iterate over 2opt moves until not improvable */
-    while ((delta = twoopt_pick(inst, succ, &a, &b)) != 0.0) {
-        if (VERBOSE) printf("refinement on %d, %d delta %lf\n", a, b, delta);
-
-        /* actually perform the move */
-        twoopt_move(succ, nnodes, a, b);
-
-        /* update the objective */
-        sol->zstar += delta; /* delta should be negative */
-    }
-
-    /* store the succ as usual edges array */
-    for (int i = 0; i < nnodes; i++) {
-        sol->edges[i] = (edge){i, succ[i]};
-    }
-    free(succ);
-}
-
-double twoopt_pick(instance inst, int* succ, int* a, int* b) {
+double twoopt_move(instance inst, int* succ) {
     assert(inst != NULL);
     int nnodes, nedges;
     nnodes = nedges = inst->nnodes;
 
-    double deltabest;
-    deltabest = 0.0;
-    *a = *b = 0;
+    int abest, bbest;
+    abest = bbest = 0;
+    double deltabest = 0.0;
+    for (int a = 0; a < nnodes; a++) {
+        int aprime = succ[a];
 
-    for (int i = 0; i < nnodes; i++) {
-        for (int j = i + 1; j < nnodes; j++) {
-            double delta = dist(i, j, inst) + dist(succ[i], succ[j], inst) -
-                           (dist(i, succ[i], inst) + dist(j, succ[j], inst));
+        for (int b = a + 1; b < nnodes; b++) {
+            int bprime = succ[b];
+
+            double delta = dist(a, b, inst) + dist(aprime, bprime, inst) -
+                           (dist(a, aprime, inst) + dist(b, bprime, inst));
 
             if (delta < deltabest) {
                 deltabest = delta;
-                *a = i;
-                *b = j;
+                abest = a;
+                bbest = b;
             }
         }
     }
 
+    printf("(%d, %d): %lf\n", abest+1, bbest+1, deltabest);
+
     return deltabest;
-}
-
-void twoopt_move(int* succ, int nnodes, int a, int b) {
-    int aprime = succ[a], bprime = succ[b];
-
-    /* b -> b' becomes b ~-> a' */
-    int* stack = (int*)malloc(nnodes * sizeof(int));
-    int k = 0;
-
-    stack[0] = aprime;
-    k++;
-
-    printf("a, a' %d %d\n", a + 1, aprime + 1);
-
-    while (stack[k - 1] != b) {
-        stack[k] = succ[stack[k - 1]];
-        k++;
-    }
-
-    k--;
-    while (k >= 1) {
-        succ[stack[k]] = stack[k - 1];
-        k--;
-    }
-
-    /* a -> a' becomes a -> b */
-    succ[a] = b;
-    /* a' ~-> b becomes a' -> b' */
-    succ[aprime] = bprime;
-    /* b' ~-> a remains untouched */
-    ;
-
-    free(stack);
 }

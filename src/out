@@ -1,0 +1,26 @@
+==2073== Memcheck, a memory error detector
+==2073== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2073== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
+==2073== Command: ./tsp_approx -g 1
+==2073== 
+==2073== 
+==2073== HEAP SUMMARY:
+==2073==     in use at exit: 28 bytes in 1 blocks
+==2073==   total heap usage: 41 allocs, 40 frees, 21,424 bytes allocated
+==2073== 
+==2073== 28 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==2073==    at 0x483E77F: malloc (vg_replace_malloc.c:307)
+==2073==    by 0x14BAB3: edges_tosucc (utils.c:211)
+==2073==    by 0x14E558: TSPextramileage (solvers.c:633)
+==2073==    by 0x14C683: solve (solvers.c:56)
+==2073==    by 0x147F55: main (main.c:75)
+==2073== 
+==2073== LEAK SUMMARY:
+==2073==    definitely lost: 28 bytes in 1 blocks
+==2073==    indirectly lost: 0 bytes in 0 blocks
+==2073==      possibly lost: 0 bytes in 0 blocks
+==2073==    still reachable: 0 bytes in 0 blocks
+==2073==         suppressed: 0 bytes in 0 blocks
+==2073== 
+==2073== For lists of detected and suppressed errors, rerun with: -s
+==2073== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

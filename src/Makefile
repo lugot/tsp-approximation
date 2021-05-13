@@ -1,4 +1,4 @@
-OBJS = main.o globals.o tsp.o parsers.o utils.o solvers.o union_find.o model_builder.o adjlist.o pqueue.o
+OBJS = main.o tsp.o parsers.o utils.o solvers.o union_find.o model_builder.o adjlist.o pqueue.o
 HEADERS =
 EXE = tsp_approx
 all: $(EXE)
@@ -39,10 +39,8 @@ $(LIBUTILS): $(OBJS_LIBUTILS)
 $(LIBUTILS) : $(HEADERS_LIBUTILS)
 
 clean:
-	$(RM) $(OBJS)
-	$(RM) $(OBJS_LIBUTILS)
-	$(RM) $(LIBUTILS)
-	#$(RM) $(EXE)
+	rm *.o
+	rm vgcore.*
 
 again:
 	make clean

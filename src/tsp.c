@@ -23,7 +23,6 @@ cplex_params create_params() {
 
     return params;
 }
-
 void add_params(instance inst, cplex_params params) {
     assert(inst != NULL);
     assert(params != NULL);
@@ -36,7 +35,6 @@ void add_params(instance inst, cplex_params params) {
 
     /* memcpy(inst->params, params, sizeof(struct cplex_params_t)); */
 }
-
 void free_params(cplex_params params) { free(params); }
 
 /* instance manipulators */
@@ -46,7 +44,6 @@ instance create_empty_instance() {
 
     return inst;
 }
-
 instance create_instance(cplex_params params) {
     assert(params != NULL);
 
@@ -56,7 +53,6 @@ instance create_instance(cplex_params params) {
 
     return inst;
 }
-
 instance generate_random_instance(int id, int nnodes) {
     instance inst = create_empty_instance();
     srand(id);
@@ -97,7 +93,6 @@ instance generate_random_instance(int id, int nnodes) {
 
     return inst;
 }
-
 instance* generate_random_instances(int ninstances, int nnodes) {
     instance* insts = (instance*)calloc(ninstances, sizeof(struct instance_t));
 
@@ -112,7 +107,6 @@ instance* generate_random_instances(int ninstances, int nnodes) {
 
     return insts;
 }
-
 void save_instance(instance inst) {
     assert(inst != NULL);
 
@@ -154,7 +148,6 @@ void save_instance(instance inst) {
     free(folder);
     free(dirname);
 }
-
 void free_instance(instance inst) {
     free(inst->model_name);
     free(inst->model_comment);
@@ -184,7 +177,6 @@ solution create_solution(instance inst, enum model_types model_type,
 
     return sol;
 }
-
 void add_solution(instance inst, solution sol) {
     int nsols = inst->nsols;
     inst->sols =
@@ -194,7 +186,6 @@ void add_solution(instance inst, solution sol) {
 
     inst->nsols++;
 }
-
 void free_solution(solution sol) {
     free(sol->edges);
 
@@ -202,24 +193,6 @@ void free_solution(solution sol) {
 }
 
 /* printers */
-void print_cplex_params(cplex_params params) {
-    printf("cplex params:\n");
-    if (params == NULL) return;
-    printf("- random seed: %d\n", params->randomseed);
-    printf("- number of threads: %d\n", params->num_threads);
-    printf("- time limit: %lf\n", params->timelimit);
-    printf("- available memory: %d MB\n", params->available_memory);
-    printf("- costs type: ");
-    switch (params->cost) {
-        case REAL:
-            printf("real\n");
-            break;
-        case INTEGER:
-            printf("integer\n");
-            break;
-    }
-}
-
 void print_instance(instance inst, int print_data) {
     int nnodes = inst->nnodes;
     int nsols = inst->nsols;
@@ -325,7 +298,23 @@ void print_instance(instance inst, int print_data) {
 
     printf("--- ---\n\n");
 }
-
+void print_cplex_params(cplex_params params) {
+    printf("cplex params:\n");
+    if (params == NULL) return;
+    printf("- random seed: %d\n", params->randomseed);
+    printf("- number of threads: %d\n", params->num_threads);
+    printf("- time limit: %lf\n", params->timelimit);
+    printf("- available memory: %d MB\n", params->available_memory);
+    printf("- costs type: ");
+    switch (params->cost) {
+        case REAL:
+            printf("real\n");
+            break;
+        case INTEGER:
+            printf("integer\n");
+            break;
+    }
+}
 void print_solution(solution sol, int print_data) {
     int nedges = sol->nedges;
 
@@ -373,9 +362,8 @@ void plot_graphviz(solution sol, int* edgecolors, int version) {
         max_coord = max(max_coord, fabs(inst->nodes[i].y));
     }
 
-    char* fname;
     int bsize = 100;
-    fname = (char*)calloc(bsize, sizeof(char));
+    char* fname = (char*)calloc(bsize, sizeof(char));
     char* folder = model_folder_tostring(inst->model_folder);
 
     snprintf(fname, bsize, "../data_%s/%s/%s.%d.dot", folder, inst->model_name,
@@ -433,10 +421,10 @@ void plot_graphviz(solution sol, int* edgecolors, int version) {
     fclose(fp);
     free(fname);
 }
-
 void plot_profiler(instance* insts, int ninstances) {
     assert(insts != NULL);
     assert(insts[0] != NULL);
+    //ciao
 
     /* remove and create new fresh csv */
     remove("../results/results.csv");

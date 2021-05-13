@@ -27,19 +27,15 @@ union_find uf_create(int N) {
 
     return uf;
 }
-
 int uf_find_set(union_find uf, int i) {
     return (uf->p[i] == i) ? i : (uf->p[i] = uf_find_set(uf, uf->p[i]));
 }
-
 int uf_same_set(union_find uf, int i, int j) {
     return uf_find_set(uf, i) == uf_find_set(uf, j);
 }
-
 int uf_set_size(union_find uf, int i) {
     return uf->size_of_set[uf_find_set(uf, i)];
 }
-
 void uf_union_set(union_find uf, int i, int j) {
     if (!uf_same_set(uf, i, j)) {
         tn_add_son(uf->tns[i], j);
@@ -57,7 +53,6 @@ void uf_union_set(union_find uf, int i, int j) {
         uf->nsets--;
     }
 }
-
 int uf_postorder(union_find uf, int* next) {
     assert(uf->nsets == 1);
 
@@ -109,7 +104,6 @@ tree_node tn_create() {
 
     return tn;
 }
-
 void tn_add_son(tree_node tn, int s) {
     tn->size++;
 
@@ -119,7 +113,6 @@ void tn_add_son(tree_node tn, int s) {
     }
     tn->sons[tn->size - 1] = s;
 }
-
 void tn_free(tree_node tn) {
     free(tn->sons);
     free(tn);
