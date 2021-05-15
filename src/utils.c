@@ -185,14 +185,19 @@ double compute_zstar(instance inst, solution sol) {
 }
 
 /* graphs utils */
-int reachable(int* link, int i, int j) {
+int reachable(int* succ, int i, int j) {
+    int ans = 0;
     int next = i;
     do {
-        next = link[next];
-        if (next == j) return 1;
-    } while (link[next] != i);
+        next = succ[next];
+        if (next == -1) return -1;
 
-    return 0;
+        ans++;
+
+        if (next == j) return ans;
+    } while (succ[next] != i);
+
+    return -1;
 }
 int visitable(int* link, int nnodes) {
     int visits = 0;
@@ -205,6 +210,31 @@ int visitable(int* link, int nnodes) {
 
     return visits == nnodes - 1;
 }
+void reverse_path(int* succ, int nnodes, int start, int end) {
+    int* stack = (int*)malloc(nnodes * sizeof(int));
+    int k = 0;
+
+    stack[0] = start;
+    k++;
+
+    while (stack[k - 1] != end) {
+        if (stack[k - 1] == -1) {
+            printf("mad\n");
+        }
+        stack[k] = succ[stack[k - 1]];
+        k++;
+    }
+
+    k--;
+    while (k >= 1) {
+        succ[stack[k]] = stack[k - 1];
+        k--;
+    }
+
+    free(stack);
+}
+
+/* edges representation convertes */
 int* edges_tosucc(edge* edges, int nnodes) {
     /* return nonzero if not a tour, 0 otherwise */
 
@@ -253,6 +283,12 @@ int nodelexcmp(const void* a, const void* b) {
     // TODO(lugot): CHECK a < b vs a - b < EPS FP SAFETY
     if (fabs(na->x - nb->x) > EPSILON) return na->x < nb->x ? -1 : 1;
     return na->y < nb->y ? -1 : 1;
+}
+int pathcmp(const void* a, const void* b, void* data) {
+    int* pathlenghts = (int*)data;
+
+    if (pathlenghts[*((int*)a)] < pathlenghts[*((int*)b)]) return -1;
+    return 1;
 }
 
 /* computational geometry helpers */
@@ -369,6 +405,11 @@ void swap(int* x, int* y) {
     temp = *y;
     *y = *x;
     *x = temp;
+}
+void* intset(int* arr, int c, int n) {
+    for (int i = 0; i < n; i++) arr[i] = c;
+
+    return arr;
 }
 void print_error(const char* err, ...) {
     va_list args;

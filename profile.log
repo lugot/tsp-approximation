@@ -1,0 +1,1174 @@
+FUNCTION  7()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/matchparen.vim:132
+Called 10 times
+Total time:   0.001592
+ Self time:   0.001532
+
+count  total (s)   self (s)
+   10              0.000041   if exists('w:matchup_match_id_list')
+                                for l:id in w:matchup_match_id_list
+                                  silent! call matchdelete(l:id)
+                                endfor
+                                unlet! w:matchup_match_id_list
+   10              0.000007   endif
+   10              0.000031   if exists('s:ns_id')
+   10              0.000607     call nvim_buf_clear_namespace(0, s:ns_id, 0, -1)
+   10              0.000009   endif
+                            
+   10              0.000051   if exists('t:match_popup') && (exists('*win_gettype') ? win_gettype() !=# 'popup' : &buftype !=# 'terminal')
+                                call popup_hide(t:match_popup)
+   10              0.000038   elseif has('nvim')
+   10   0.000465   0.000405     call s:close_floating_win()
+   10              0.000007   endif
+                            
+   10              0.000028   if exists('w:matchup_oldstatus')
+                                let &l:statusline = w:matchup_oldstatus
+                                unlet w:matchup_oldstatus
+                                if exists('#User#MatchupOffscreenLeave')
+                                  doautocmd <nomodeline> User MatchupOffscreenLeave
+                                endif
+   10              0.000006   endif
+   10              0.000027   if exists('w:matchup_statusline')
+                                unlet w:matchup_statusline
+   10              0.000006   endif
+                            
+   10              0.000023   let w:matchup_need_clear = 0
+
+FUNCTION  8()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/matchparen.vim:199
+Called 10 times
+Total time:   0.001781
+ Self time:   0.000190
+
+count  total (s)   self (s)
+                              ""
+                              " fade feature: remove highlights after a certain time
+                              " {level}
+                              "   =  0: prepare for possible loss of cursor support
+                              "   =  1: new highlights are coming (cancel prior fade)
+                              "   =  2: end of new highlights
+                              " {pos}     [lnum, column] of current match
+                              " {token}   in/out saves state between calls
+                              "
+                              " returns 1 if highlighting should be canceled
+                            
+   10              0.000033   if !g:matchup_matchparen_deferred || !exists('w:matchup_fade_timer')
+   10              0.000019     if a:level <= 0
+   10   0.001653   0.000061       call s:matchparen.clear()
+   10              0.000008     endif
+   10              0.000011     return 0
+                              endif
+                            
+                              " jumping between windows
+                              if a:level == 0 && win_getid() != get(s:, 'save_win')
+                                call timer_pause(w:matchup_fade_timer, 1)
+                                if exists('w:matchup_fade_pos')
+                                  unlet w:matchup_fade_pos
+                                endif
+                                call s:matchparen.clear()
+                                let s:save_win = win_getid()
+                              endif
+                            
+                              " highlighting might be stale
+                              if a:level == 0
+                                if exists('w:matchup_fade_pos')
+                                  let a:token.save_pos = w:matchup_fade_pos
+                                  unlet w:matchup_fade_pos
+                                endif
+                                if !w:matchup_need_clear
+                                  call timer_pause(w:matchup_fade_timer, 1)
+                                endif
+                                return 0
+                              endif
+                            
+                              " prepare for new highlighting
+                              if a:level == 1
+                                " if token has no save_pos, cursor was previously off of a match
+                                if !has_key(a:token, 'save_pos') || a:pos != a:token.save_pos
+                                  " clear immediately
+                                  call timer_pause(w:matchup_fade_timer, 1)
+                                  call s:matchparen.clear()
+                                  return 0
+                                endif
+                                let w:matchup_fade_pos = a:token.save_pos
+                                return 1
+                              endif
+                            
+                              " new highlighting is active
+                              if a:level == 2 && a:pos != get(w:, 'matchup_fade_pos', [])
+                                " init fade request
+                                let w:matchup_fade_pos = a:pos
+                                let w:matchup_fade_start = reltime()
+                                call timer_pause(w:matchup_fade_timer, 0)
+                              endif
+                            
+                              return 0
+
+FUNCTION  9()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/matchparen.vim:299
+Called 20 times
+Total time:   0.018941
+ Self time:   0.000320
+
+count  total (s)   self (s)
+   20              0.000109   if !get(b:, 'matchup_matchparen_deferred', g:matchup_matchparen_deferred)
+   20   0.018798   0.000177     return s:matchparen.highlight()
+                              endif
+                            
+                              if !exists('w:matchup_timer')
+                                let s:show_delay = g:matchup_matchparen_deferred_show_delay
+                                let s:hide_delay = g:matchup_matchparen_deferred_hide_delay
+                                let w:matchup_timer = timer_start(s:show_delay, function('s:timer_callback', [ win_getid() ]), {'repeat': -1})
+                                if !exists('w:matchup_need_clear')
+                                  let w:matchup_need_clear = 0
+                                endif
+                                let s:fade_time = g:matchup_matchparen_deferred_fade_time
+                                if s:fade_time > 0
+                                  let w:matchup_fade_timer = timer_start(s:fade_time, function('s:fade_timer_callback', [ win_getid() ]), {'repeat': -1})
+                                  call timer_pause(w:matchup_fade_timer, 1)
+                                endif
+                              endif
+                            
+                              " keep the timer alive with a heartbeat
+                              let w:matchup_pulse_time = reltime()
+                            
+                              " if the timer is paused, some time has passed
+                              if timer_info(w:matchup_timer)[0].paused
+                                " unpause the timer
+                                call timer_pause(w:matchup_timer, 0)
+                            
+                                " set the hi time to the pulse time
+                                let w:matchup_hi_time = w:matchup_pulse_time
+                              endif
+
+FUNCTION  signature#utils#IsValidMarker()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-signature/autoload/signature/utils.vim:183
+Called 255 times
+Total time:   0.001478
+ Self time:   0.001478
+
+count  total (s)   self (s)
+  255              0.001333   return (  (b:SignatureIncludeMarkers =~# a:marker) && (a:marker != ' ') )
+
+FUNCTION  <SNR>137_parse_args()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/pos.vim:112
+Called 80 times
+Total time:   0.002920
+ Self time:   0.001736
+
+count  total (s)   self (s)
+                              "
+                              " The arguments should be in one of the following forms (when unpacked):
+                              "
+                              "   [lnum, cnum]
+                              "   [bufnum, lnum, cnum, ...]
+                              "   {'lnum' : lnum, 'cnum' : cnum}
+                              "
+                            
+   80              0.000222   if len(a:args) > 1
+   40              0.000218     return s:parse_args([a:args])
+   40              0.000097   elseif len(a:args) == 1
+   40              0.000172     if type(a:args[0]) == type({})
+                                  return [get(a:args[0], 'lnum'), get(a:args[0], 'cnum')]
+   40              0.000033     else
+   40              0.000104       if len(a:args[0]) == 2
+                                    return a:args[0]
+   40              0.000027       else
+   40              0.000125         return a:args[0][1:]
+                                  endif
+                                endif
+                              else
+                                return a:args
+                              endif
+
+FUNCTION  indent_blankline#helper#GetListChar()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim/autoload/indent_blankline/helper.vim:2
+Called 20 times
+Total time:   0.001524
+ Self time:   0.001524
+
+count  total (s)   self (s)
+   20              0.000155     let l:list_chars = {}
+                            
+   80              0.000336     for l:char in split(&listchars, ',')
+   60              0.000388         let l:split = split(l:char, ':')
+   60              0.000277         let l:list_chars[l:split[0]] = l:split[1]
+   80              0.000080     endfor
+                            
+   20              0.000100     return get(l:list_chars, a:key, a:fallback)
+
+FUNCTION  matchup#perf#timeout()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/perf.vim:79
+Called 10 times
+Total time:   0.000040
+ Self time:   0.000040
+
+count  total (s)   self (s)
+   10              0.000033   return float2nr(s:timeout)
+
+FUNCTION  signature#sign#Remove()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-signature/autoload/signature/sign.vim:38
+Called 255 times
+Total time:   0.014236
+ Self time:   0.012758
+
+count  total (s)   self (s)
+                              " Description: Remove signs for marks/markers from the specified line number
+                              " Arguments:
+                              "   sign : The mark/marker whose sign is to be placed/removed/toggled
+                              "   lnum : Line number from which the sign is to be removed
+                              "          If sign is a marker and lnum is 0, the sign will be removed from all lines
+                              "          If sign is a mark   and lnum is 0, the lnum will be found and the sign will be removed from that line
+                            
+                              "echom "DEBUG: sign = " . a:sign . ",  lnum = " . a:lnum
+                            
+                              " If Signature is not enabled, return
+  255              0.000789   if !b:sig_enabled | return | endif
+                            
+                              " Remove sign for markers
+  255   0.004021   0.002544   if signature#utils#IsValidMarker(a:sign)
+                                let b:sig_markers[a:lnum] = substitute(b:sig_markers[a:lnum], "\\C" . escape( a:sign, '$^' ), "", "")
+                            
+                                " If there are no markers on the line, delete signs on that line
+                                if b:sig_markers[a:lnum] == ""
+                                  call remove(b:sig_markers, a:lnum)
+                                endif
+                                call s:RefreshLine(a:lnum)
+                            
+                              " Remove sign for marks
+  255              0.000200   else
+                                " For marks, if a:lnum == 0, find out the line where the mark was placed
+  255              0.000421     if a:lnum == 0
+  255              0.002543       let l:arr = keys(filter(copy(b:sig_marks), 'v:val =~# a:sign'))
+  255              0.000847       if empty(l:arr) | return | endif
+                                else
+                                  let l:arr = [a:lnum]
+                                endif
+                                if (v:version >= 800)
+                                  call assert_true(len(l:arr) == 1, "Multiple marks found where one was expected")
+                                elseif (len(l:arr) != 1)
+                                  echoerr "Multiple marks found where one was expected"
+                                endif
+                            
+                                for l:lnum in l:arr
+                                  " FIXME: Placed guard to avoid triggering issue #53
+                                  if has_key(b:sig_marks, l:lnum)
+                                    let b:sig_marks[l:lnum] = substitute(b:sig_marks[l:lnum], "\\C" . a:sign, "", "")
+                                    " If there are no marks on the line, delete signs on that line
+                                    if b:sig_marks[l:lnum] == ""
+                                      call remove(b:sig_marks, l:lnum)
+                                    endif
+                                  endif
+                                  call s:RefreshLine(l:lnum)
+                                endfor
+                              endif
+
+FUNCTION  signature#sign#Refresh()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-signature/autoload/signature/sign.vim:157
+Called 5 times
+Total time:   0.035917
+ Self time:   0.003895
+
+count  total (s)   self (s)
+                              " Description: Add signs for new marks/markers and remove signs for deleted marks/markers
+                              " Arguments:   Specify an argument to force a sign refresh
+                            
+    5   0.001987   0.000105   call s:InitializeVars(a:0 && a:1)
+                              " If Signature is not enabled, return
+    5              0.000022   if !b:sig_enabled | return | endif
+                            
+  260   0.008840   0.000440   for i in signature#mark#GetList('free', 'buf_curr')
+                                " ... remove it
+  255   0.016744   0.002508     call signature#sign#Remove(i, 0)
+  260              0.000209   endfor
+                            
+                              " Add signs for marks ...
+   10   0.007428   0.000097   for [l:mark, l:lnum, _] in signature#mark#GetList('used', 'buf_curr')
+                                " ... if mark is not present in our b:sig_marks list or if it is present but at the wrong line,
+                                " remove the old sign and add a new one
+    5              0.000107     if (  !has_key(b:sig_marks, l:lnum) || (b:sig_marks[l:lnum] !~# l:mark) || a:0 )
+                                  call signature#sign#Remove(l:mark, 0)
+                                  call signature#sign#Place (l:mark, l:lnum)
+    5              0.000004     endif
+   10              0.000013   endfor
+                            
+    5   0.000231   0.000059   call signature#sign#ToggleDummy()
+                            
+                              " We do not add signs for markers as SignRefresh is executed periodically and we don't have a way to determine if the
+                              " marker already has a sign or not
+
+FUNCTION  <SNR>138_get_delim_multi()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/delim.vim:43
+Called 10 times
+Total time:   0.006953
+ Self time:   0.001092
+
+count  total (s)   self (s)
+   10              0.000027   let l:best = {}
+   20              0.000112   for l:e in get(get(b:, 'matchup_active_engines', {}), a:opts.type, [])
+   10   0.006472   0.000611     let l:res = call(s:engines[l:e].get_delim, [a:opts])
+   10              0.000026     if empty(l:res)
+   10              0.000012       continue
+                                endif
+                                if a:opts.direction ==# 'current'
+                                  return l:res
+                                elseif a:opts.direction ==# 'next' && (empty(l:best) || matchup#pos#smaller(l:res, l:best))
+                                  let l:best = l:res
+                                elseif a:opts.direction ==# 'prev' && (empty(l:best) || matchup#pos#larger(l:res, l:best))
+                                  let l:best = l:res
+                                endif
+   10              0.000012   endfor
+   10              0.000017   return l:best
+
+FUNCTION  13()
+    Defined: /usr/share/nvim/runtime/autoload/provider/clipboard.vim:22
+Called 8 times
+Total time:   0.000219
+ Self time:   0.000219
+
+count  total (s)   self (s)
+                              " At this point this nvim instance might already have launched
+                              " a new provider instance. Don't drop ownership in this case.
+    8              0.000040   if self.owner == a:jobid
+    8              0.000029     let self.owner = 0
+    8              0.000011   endif
+    8              0.000020   if a:data != 0
+                                echohl WarningMsg
+                                echomsg 'clipboard: error invoking '.get(self.argv, 0, '?').': '.join(self.stderr)
+                                echohl None
+    8              0.000009   endif
+
+FUNCTION  14()
+    Defined: /usr/share/nvim/runtime/autoload/provider/clipboard.vim:153
+Called 1 time
+Total time:   0.000027
+ Self time:   0.000027
+
+count  total (s)   self (s)
+    1              0.000009   if type(s:paste[a:reg]) == v:t_func
+                                return s:paste[a:reg]()
+    1              0.000006   elseif s:selections[a:reg].owner > 0
+    1              0.000005     return s:selections[a:reg].data
+                              end
+                              return s:try_cmd(s:paste[a:reg])
+
+FUNCTION  15()
+    Defined: /usr/share/nvim/runtime/autoload/provider/clipboard.vim:162
+Called 8 times
+Total time:   0.049684
+ Self time:   0.049684
+
+count  total (s)   self (s)
+    8              0.000035   if a:reg == '"'
+                                call s:clipboard.set(a:lines,a:regtype,'+')
+                                if s:copy['*'] != s:copy['+']
+                                  call s:clipboard.set(a:lines,a:regtype,'*')
+                                end
+                                return 0
+    8              0.000006   end
+                            
+    8              0.000049   if type(s:copy[a:reg]) == v:t_func
+                                call s:copy[a:reg](a:lines, a:regtype)
+                                return 0
+    8              0.000006   end
+                            
+    8              0.000016   if s:cache_enabled == 0
+                                call s:try_cmd(s:copy[a:reg], a:lines)
+                                return 0
+    8              0.000005   end
+                            
+    8              0.000033   if s:selections[a:reg].owner > 0
+    8              0.000031     let prev_job = s:selections[a:reg].owner
+    8              0.000008   end
+    8              0.000069   let s:selections[a:reg] = copy(s:selection)
+    8              0.000027   let selection = s:selections[a:reg]
+    8              0.000033   let selection.data = [a:lines, a:regtype]
+    8              0.000027   let selection.argv = s:copy[a:reg]
+    8              0.000021   let selection.detach = s:cache_enabled
+    8              0.000021   let selection.cwd = "/"
+    8              0.047899   let jobid = jobstart(selection.argv, selection)
+    8              0.000106   if jobid > 0
+    8              0.000251     call jobsend(jobid, a:lines)
+    8              0.000055     call jobclose(jobid, 'stdin')
+                                " xclip does not close stdout when receiving input via stdin
+    8              0.000055     if selection.argv[0] ==# 'xclip'
+    8              0.000037       call jobclose(jobid, 'stdout')
+    8              0.000017     endif
+    8              0.000053     let selection.owner = jobid
+    8              0.000027     let ret = 1
+                              else
+                                echohl WarningMsg
+                                echomsg 'clipboard: failed to execute: '.(s:copy[a:reg])
+                                echohl None
+                                let ret = 1
+    8              0.000010   endif
+                            
+                              " The previous provider instance should exit when the new one takes
+                              " ownership, but kill it to be sure we don't fill up the job table.
+    8              0.000042   if exists('prev_job')
+    8              0.000264     call timer_start(1000, {... -> jobwait([prev_job], 0)[0] == -1 && jobstop(prev_job)})
+    8              0.000012   endif
+                            
+    8              0.000037   return ret
+
+FUNCTION  <SNR>41_try()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim/plugin/indent_blankline.vim:37
+Called 20 times
+Total time:   0.036170
+ Self time:   0.000713
+
+count  total (s)   self (s)
+   20              0.000040     try
+   20   0.036047   0.000590         execute a:cmd
+                                catch /E12/
+                                    return
+   20              0.000015     endtry
+
+FUNCTION  matchup#pos#equal()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/pos.vim:94
+Called 20 times
+Total time:   0.003218
+ Self time:   0.001482
+
+count  total (s)   self (s)
+   20   0.001142   0.000212   let l:pos1 = s:parse_args(a:p1)
+   20   0.001960   0.001154   let l:pos2 = s:parse_args(a:p2)
+   20              0.000086   return l:pos1[:1] == l:pos2[:1]
+
+FUNCTION  signature#sign#ToggleDummy()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-signature/autoload/signature/sign.vim:198
+Called 5 times
+Total time:   0.000173
+ Self time:   0.000173
+
+count  total (s)   self (s)
+                              " Description: Places a dummy sign to prevent flickering of the gutter when the mark is moved or the line containing
+                              "              a mark/marker is deleted and then the delete is undone
+                              " Arguments: (optional) 0 : force remove
+                              "                       1 : force place
+                            
+    5              0.000043   let l:place  = a:0 ?  a:1 : (len(b:sig_marks) + len(b:sig_markers) == 1) && !b:sig_DummyExists
+    5              0.000034   let l:remove = a:0 ? !a:1 : (len(b:sig_marks) + len(b:sig_markers) == 0) &&  b:sig_DummyExists
+                            
+    5              0.000009   if (l:place)
+                                sign define Signature_Dummy
+                                execute 'sign place 666 line=1 name=Signature_Dummy buffer=' . bufnr('%')
+                                let b:sig_DummyExists = 1
+    5              0.000009   elseif (l:remove)
+                                silent! execute 'sign unplace 666 buffer=' . bufnr('%')
+                                let b:sig_DummyExists = 0
+    5              0.000004   endif
+
+FUNCTION  10()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/matchparen.vim:338
+Called 20 times
+Total time:   0.018621
+ Self time:   0.005585
+
+count  total (s)   self (s)
+   20              0.000075   if !g:matchup_matchparen_enabled | return | endif
+                            
+   20              0.000146   if has('vim_starting') | return | endif
+                            
+   20              0.000082   if !g:matchup_matchparen_pumvisible && pumvisible() | return | endif
+                            
+   20              0.000120   if !get(b:, 'matchup_matchparen_enabled', 1) && get(b:, 'matchup_matchparen_fallback', 1) && s:pi_paren_sid()
+                                return call(s:pi_paren_fcn, [])
+   20              0.000013   endif
+                            
+   20              0.000079   if !get(b:, 'matchup_matchparen_enabled', 1) | return | endif
+                            
+   20              0.000086   let l:force_update    = a:0 >= 1 ? a:1 : 0
+   20              0.000063   let l:changing_insert = a:0 >= 2 ? a:2 : 0
+   20              0.000121   let l:real_mode = l:changing_insert ? v:insertmode : mode()
+                            
+   20   0.004307   0.000954   if !l:force_update && exists('w:last_changedtick') && exists('w:last_cursor') && matchup#pos#equal(w:last_cursor, matchup#pos#get_cursor()) && w:last_changedtick == b:changedtick
+   10              0.000010     return
+   10              0.000007   endif
+   10              0.000033   let w:last_changedtick = b:changedtick
+   10   0.000157   0.000114   let w:last_cursor = matchup#pos#get_cursor()
+                            
+   10   0.001545   0.001445   call matchup#perf#tic('matchparen.highlight')
+                            
+                              " request eventual clearing of stale matches
+   10              0.000026   let l:token = {}
+   10   0.001869   0.000088   call self.fade(0, [], l:token)
+                            
+   10              0.000030   let l:modes = g:matchup_matchparen_nomode
+   10              0.000035   if get(g:, 'matchup_matchparen_novisual', 0)  " deprecated option name
+                                let l:modes .= "vV\<c-v>"
+   10              0.000006   endif
+   10              0.000041   if stridx(l:modes, l:real_mode) >= 0
+                                return
+   10              0.000006   endif
+                            
+                              " prevent problems in visual block mode at the end of a line
+   10   0.000886   0.000829   if get(matchup#pos#get_cursor(), 4, 0) == 2147483647 && mode() ==? 'v'
+                                return
+   10              0.000006   endif
+                            
+                              " don't get matches when inside a closed fold
+   10              0.000039   if foldclosed(line('.')) > -1
+                                return
+   10              0.000006   endif
+                            
+                              " give up when cursor is far into a very long line
+   10              0.000048   if &synmaxcol && col('.') > &synmaxcol
+                                return
+   10              0.000006   endif
+                            
+                              " in insert mode, cursor is treated as being one behind
+   10              0.000032   let l:insertmode = l:real_mode ==# 'i'
+                            
+                              " start the timeout period
+   10              0.000109   let l:timeout = l:insertmode ? get(b:, 'matchup_matchparen_insert_timeout',           g:matchup_matchparen_insert_timeout) : get(b:, 'matchup_matchparen_timeout',           g:matchup_matchparen_timeout)
+   10   0.000231   0.000113   call matchup#perf#timeout_start(l:timeout)
+                            
+   10   0.007381   0.000170   let l:current = matchup#delim#get_current('all', 'both_all', { 'insertmode': l:insertmode,   'stopline': g:matchup_matchparen_stopline,   'highlighting': 1, })
+   10   0.000484   0.000113   call matchup#perf#toc('matchparen.highlight', 'get_current')
+                            
+   10              0.000042   if get(b:, 'matchup_matchparen_deferred', g:matchup_matchparen_deferred)
+                                let l:hsa = get(b:, 'matchup_matchparen_hi_surround_always', g:matchup_matchparen_hi_surround_always)
+                                if l:hsa > 0 && empty(l:current) || l:hsa > 1
+                                  call s:highlight_surrounding(l:insertmode, !empty(l:current))
+                                endif
+   10              0.000006   endif
+                            
+   10              0.000022   if empty(l:current)
+   10              0.000010     return
+                              endif
+                            
+                              let l:corrlist = matchup#delim#get_matching(l:current, { 'stopline': g:matchup_matchparen_stopline,   'highlighting': 1, })
+                              call matchup#perf#toc('matchparen.highlight', 'get_matching')
+                              if empty(l:corrlist) | return | endif
+                            
+                              if g:matchup_transmute_enabled
+                                if !exists('w:matchup_matchparen_context')
+                                  let w:matchup_matchparen_context = { 'normal': {   'current':   {},   'corrlist':  [],  }, 'prior': {}, 'counter': 0,}
+                                endif
+                            
+                                let w:matchup_matchparen_context.counter += 1
+                            
+                                if !l:insertmode
+                                  let w:matchup_matchparen_context.prior = copy(w:matchup_matchparen_context.normal)
+                            
+                                  let w:matchup_matchparen_context.normal.current = l:current
+                                  let w:matchup_matchparen_context.normal.corrlist = l:corrlist
+                                endif
+                            
+                                " if transmuted, highlight again (will reset timeout)
+                                if matchup#transmute#tick(l:insertmode)
+                                  " no force_update here because it would screw up prior
+                                  return s:matchparen.highlight(0, l:changing_insert)
+                                endif
+                              endif
+                            
+                              if !has_key(l:current, 'match_index') || len(l:corrlist) <= (l:current.side ==# 'mid' ? 2 : 1) && !g:matchup_matchparen_singleton
+                                " TODO this doesn't catch every case, needs refactor
+                                " TODO singleton doesn't work right for mids
+                                return
+                              endif
+                            
+                              " prepare for (possibly) new highlights
+                              let l:pos = [l:current.lnum, l:current.cnum]
+                              if self.fade(1, l:pos, l:token)
+                                return
+                              endif
+                            
+                              " store flag meaning highlighting is active
+                              let w:matchup_need_clear = 1
+                            
+                              " disable off-screen when scrolling with j/k
+                              let l:scrolling = get(g:matchup_matchparen_offscreen, 'scrolloff', 0) && winheight(0) > 2*&scrolloff && (line('.') == line('w$')-&scrolloff     && line('$') != line('w$')     || line('.') == line('w0')+&scrolloff)
+                            
+                              " show off-screen matches
+                              let l:method = get(g:matchup_matchparen_offscreen, 'method', '')
+                              if !empty(l:method) && l:method !=# 'none' && !l:current.skip && !l:scrolling && winheight(0) > 0
+                                call s:do_offscreen(l:current, l:method)
+                              endif
+                            
+                              " add highlighting matches
+                              call s:add_matches(l:corrlist, l:current)
+                            
+                              " highlight the background between parentheses
+                              if g:matchup_matchparen_hi_background >= 1
+                                call s:highlight_background(l:corrlist)
+                              endif
+                            
+                              " new highlights done, request fade away
+                              call self.fade(2, l:pos, l:token)
+                            
+                              call matchup#perf#toc('matchparen.highlight', 'end')
+
+FUNCTION  <SNR>138_get_delim()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/delim.vim:325
+Called 10 times
+Total time:   0.005862
+ Self time:   0.004386
+
+count  total (s)   self (s)
+                              " arguments: {{{2
+                              "   opts = {
+                              "     'direction'   : 'next' | 'prev' | 'current'
+                              "     'type'        : 'delim_tex'
+                              "                   | 'delim_all'
+                              "                   | 'all'
+                              "     'side'        : 'open'     | 'close'
+                              "                   | 'both'     | 'mid'
+                              "                   | 'both_all' | 'open_mid'
+                              "  }
+                              "
+                              "  }}}2
+                              " returns: {{{2
+                              "   delim = { (TODO update)
+                              "     type     : 'delim'
+                              "     lnum     : line number
+                              "     cnum     : column number
+                              "     match    : the actual text match
+                              "     augment  : how to match a corresponding open
+                              "     groups   : dict of captured groups
+                              "     side     : 'open' | 'close' | 'mid'
+                              "     class    : [ c1, c2 ] identifies the kind of match_words
+                              "     regexone : the regex item, like \1foo
+                              "     regextwo : the regex_capture item, like \(group\)foo
+                              "   }
+                              "
+                              " }}}2
+                            
+   10              0.000042   if !get(b:, 'matchup_delim_enabled', 0)
+                                return {}
+   10              0.000007   endif
+                            
+   10   0.001096   0.001026   call matchup#perf#tic('s:get_delim')
+                            
+   10   0.000139   0.000091   let l:save_pos = matchup#pos#get_cursor()
+                            
+   10   0.000620   0.000111   call matchup#loader#refresh_match_words()
+                            
+                              " this contains all the patterns for the specified type and side
+   10              0.000069   let l:re = b:matchup_delim_re[a:opts.type][a:opts.side]
+                            
+   10              0.000032   let l:cursorpos = col('.')
+                            
+   10              0.000039   let l:insertmode = get(a:opts, 'insertmode', 0)
+   10              0.000025   if l:cursorpos > 1 && l:insertmode
+                                let l:cursorpos -= 1
+   10              0.000006   endif
+   10              0.000061   if l:cursorpos > strlen(getline('.')) && stridx("vV\<c-v>", mode()) > -1
+                                let l:cursorpos -= 1
+   10              0.000006   endif
+                            
+   10              0.000027   let s:invert_skip = 0
+                            
+   10              0.000022   if a:opts.direction ==# 'current'
+   10              0.000087     let l:check_skip = get(a:opts, 'check_skip', g:matchup_delim_noskips >= 2 || g:matchup_delim_noskips >= 1     && getline(line('.'))[l:cursorpos-1] =~? '[^[:punct:]]')
+   10              0.000037     if l:check_skip && matchup#delim#skip(line('.'), l:cursorpos)
+                                  return {}
+   10              0.000007     endif
+                              else
+                                " check skip if cursor is not currently in skip
+                                let l:check_skip = get(a:opts, 'check_skip', !matchup#delim#skip(line('.'), l:cursorpos) || g:matchup_delim_noskips >= 2)
+   10              0.000007   endif
+                            
+   10              0.000029   let a:opts.cursorpos = l:cursorpos
+                            
+                              " for current, we want to find matches that end after the cursor
+                              " note: we expect this to give false-positives with \ze
+   10              0.000020   if a:opts.direction ==# 'current'
+   10              0.000051     let l:re .= '\%>'.(l:cursorpos).'c'
+                              "  let l:re = '\%<'.(l:cursorpos+1).'c' . l:re
+   10              0.000008   endif
+                            
+                              " allow overlapping delimiters
+                              " without this, the > in <tag> would not be found
+   10              0.000047   if b:matchup_delim_re[a:opts.type]._engine_info.has_zs[a:opts.side]
+                                let l:save_cpo = &cpo
+                                noautocmd set cpo-=c
+   10              0.000008   else
+                                " faster than changing cpo but doesn't work right with \zs
+   10              0.000051     let l:re .= '\&'
+   10              0.000007   endif
+                            
+                              " move cursor one left for searchpos if necessary
+   10              0.000053   let l:need_restore_cursor = 0
+   10              0.000014   if l:insertmode
+                                call matchup#pos#set_cursor(line('.'), col('.')-1)
+                                let l:need_restore_cursor = 1
+   10              0.000006   endif
+                            
+                              " stopline may depend on the current action
+   10              0.000042   let l:stopline = get(a:opts, 'stopline', s:stopline)
+                            
+                              " in the first pass, we get matching line and column numbers
+                              " this is intended to be as fast as possible, with no capture groups
+                              " we look for a match on this line (if direction == current)
+                              " or forwards or backwards (if direction == next or prev)
+                              " for current, we actually search leftwards from the cursor
+   10              0.000015   while 1
+   10   0.000142   0.000101     let l:to = matchup#perf#timeout()
+   10              0.000909     let [l:lnum, l:cnum] = a:opts.direction ==# 'next' ? searchpos(l:re, 'cnW', line('.') + l:stopline, l:to) : a:opts.direction ==# 'prev'   ? searchpos(l:re, 'bcnW',               max([line('.') - l:stopline, 1]), l:to)   : searchpos(l:re, 'bcnW', line('.'), l:to)
+   10              0.000041     if l:lnum == 0 | break | endif
+                            
+                                " note: the skip here should not be needed
+                                " in 'current' mode, but be explicit
+                                if a:opts.direction !=# 'current' && (l:check_skip || g:matchup_delim_noskips == 1     && getline(l:lnum)[l:cnum-1] =~? '[^[:punct:]]') && matchup#delim#skip(l:lnum, l:cnum) && (a:opts.direction ==# 'prev' ? (l:lnum > 1 || l:cnum > 1)     : (l:lnum < line('$') || l:cnum < len(getline('$'))))
+                            
+                                  " invalid match, move cursor and keep looking
+                                  call matchup#pos#set_cursor(a:opts.direction ==# 'next' ? matchup#pos#next(l:lnum, l:cnum) : matchup#pos#prev(l:lnum, l:cnum))
+                                  let l:need_restore_cursor = 1
+                                  continue
+                                endif
+                            
+                                break
+   10              0.000015   endwhile
+                            
+                              " restore cpo if necessary
+                              " note: this messes with cursor position
+   10              0.000028   if exists('l:save_cpo')
+                                noautocmd let &cpo = l:save_cpo
+                                let l:need_restore_cursor = 1
+   10              0.000007   endif
+                            
+                              " restore cursor
+   10              0.000016   if l:need_restore_cursor
+                                call matchup#pos#set_cursor(l:save_pos)
+   10              0.000006   endif
+                            
+   10   0.000542   0.000104   call matchup#perf#toc('s:get_delim', 'first_pass')
+                            
+                              " nothing found, leave now
+   10              0.000016   if l:lnum == 0
+   10   0.000461   0.000092     call matchup#perf#toc('s:get_delim', 'nothing_found')
+   10              0.000018     return {}
+                              endif
+                            
+                              if matchup#perf#timeout_check()
+                                return {}
+                              endif
+                            
+                              let l:skip_state = 0
+                              if !l:check_skip && (!&synmaxcol || l:cnum <= &synmaxcol)
+                                " XXX: workaround an apparent obscure vim bug where the
+                                " reported syntax id is incorrect on the first synID() call
+                                call matchup#delim#skip(l:lnum, l:cnum)
+                                if matchup#perf#timeout_check()
+                                  return {}
+                                endif
+                            
+                                let l:skip_state = matchup#delim#skip(l:lnum, l:cnum)
+                              endif
+                            
+                              " now we get more data about the match in this position
+                              " there may be capture groups which need to be stored
+                            
+                              " result stub, to be filled by the parser when there is a match
+                              let l:result = { 'lnum'     : l:lnum, 'cnum'     : l:cnum, 'type'     : '', 'match'    : '', 'augment'  : '', 'groups'   : '', 'side'     : '', 'class'    : [], 'regexone' : '', 'regextwo' : '', 'skip'     : l:skip_state,}
+                            
+                              for l:P in s:engines.classic.parsers[a:opts.type]
+                                let l:parser_result = l:P(l:lnum, l:cnum, a:opts)
+                                if !empty(l:parser_result)
+                                  let l:result = extend(l:parser_result, l:result, 'keep')
+                                  break
+                                endif
+                              endfor
+                            
+                              call matchup#perf#toc('s:get_delim', 'got_results')
+                            
+                              return empty(l:result.type) ? {} : l:result
+
+FUNCTION  signature#mark#GetList()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-signature/autoload/signature/mark.vim:281
+Called 10 times
+Total time:   0.015732
+ Self time:   0.015732
+
+count  total (s)   self (s)
+                              " Arguments: mode    = 'used'     : Returns list of [ [used marks, line no., buf no.] ]
+                              "                      'free'     : Returns list of [ free marks ]
+                              "            scope   = 'buf_curr' : Limits scope to current buffer i.e used/free marks in current buffer
+                              "                      'buf_all'  : Set scope to all buffers i.e used/free marks from all buffers
+                              "            [type]  = 'global'   : Return only global marks
+                            
+   10              0.000036   let l:marks_list = []
+   10              0.000040   let l:line_tot = line('$')
+   10              0.000050   let l:buf_curr = bufnr('%')
+   10              0.000035   let l:type     = (a:0 ? a:1 : "")
+                            
+                              " Respect order specified in g:SignatureIncludeMarks
+  530              0.001640   for i in split(b:SignatureIncludeMarks, '\zs')
+  520              0.001986     if (i =~# "[A-Z]")
+  260              0.001582       let [ l:buf, l:line, l:col, l:off ] = getpos( "'" . i )
+  260              0.001378       let l:marks_list = add(l:marks_list, [i, l:line, l:buf])
+  260              0.000597     elseif (l:type !=? "global")
+  260              0.002046       let l:marks_list = add(l:marks_list, [i, line("'" .i), l:buf_curr])
+  520              0.000402     endif
+  530              0.000401   endfor
+                            
+   10              0.000026   if (a:mode ==? 'used')
+    5              0.000012     if (a:scope ==? 'buf_curr')
+    5              0.000750       call filter( l:marks_list, '(v:val[2] == l:buf_curr) && (v:val[1] > 0)' )
+                                else
+                                  call filter( l:marks_list, 'v:val[1] > 0' )
+    5              0.000004     endif
+    5              0.000004   else
+    5              0.000012     if (a:scope ==? 'buf_all')
+                                  call filter( l:marks_list, 'v:val[1] == 0' )
+    5              0.000004     else
+    5              0.000579       call filter( l:marks_list, '(v:val[1] == 0) || (v:val[2] != l:buf_curr)' )
+    5              0.000005     endif
+    5              0.000318     call map( l:marks_list, 'v:val[0]' )
+   10              0.000008   endif
+                            
+   10              0.000020   return l:marks_list
+
+FUNCTION  matchup#perf#tic()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/perf.vim:15
+Called 20 times
+Total time:   0.000170
+ Self time:   0.000170
+
+count  total (s)   self (s)
+   20              0.000148   let s:time_start[a:context] = reltime()
+
+FUNCTION  <SNR>123_InitializeVars()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-signature/autoload/signature/sign.vim:343
+Called 5 times
+Total time:   0.001882
+ Self time:   0.000953
+
+count  total (s)   self (s)
+                              " Description: Initialize variables
+                              " Arguments:   Specify an argument to re-init
+                            
+    5              0.000033   if !exists('b:sig_marks')
+                                " b:sig_marks = { lnum => signs_str }
+                                let b:sig_marks = {}
+    5              0.000007   else
+                                " Lines can be removed using an external tool. Hence, we need to filter out marks placed on line numbers that are
+                                " now greater than the total number of lines in the file.
+    5              0.000036     let l:line_tot = line('$')
+    5              0.000069     call filter( b:sig_marks, 'v:key <= l:line_tot' )
+    5              0.000007   endif
+                            
+    5              0.000024   if !exists('b:sig_markers')
+                                " b:sig_markers = { lnum => marker }
+                                let b:sig_markers = {}
+    5              0.000006   else
+                                " Lines can be removed using an external tool. Hence, we need to filter out marks placed on line numbers that are
+                                " now greater than the total number of lines in the file.
+    5              0.000021     let l:line_tot = line('$')
+    5              0.000027     call filter( b:sig_markers, 'v:key <= l:line_tot' )
+    5              0.000006   endif
+                            
+    5   0.000247   0.000096   call signature#utils#Set('b:sig_DummyExists'         , 0                          , a:0 && a:1)
+    5   0.000200   0.000084   call signature#utils#Set('b:sig_enabled'             , g:SignatureEnabledAtStartup, a:0 && a:1)
+    5   0.000195   0.000077   call signature#utils#Set('b:SignatureIncludeMarks'   , g:SignatureIncludeMarks    , a:0 && a:1)
+    5   0.000191   0.000075   call signature#utils#Set('b:SignatureIncludeMarkers' , g:SignatureIncludeMarkers  , a:0 && a:1)
+    5   0.000198   0.000076   call signature#utils#Set('b:SignatureMarkOrder'      , g:SignatureMarkOrder       , a:0 && a:1)
+    5   0.000180   0.000075   call signature#utils#Set('b:SignaturePrioritizeMarks', g:SignaturePrioritizeMarks , a:0 && a:1)
+    5   0.000167   0.000066   call signature#utils#Set('b:SignatureDeferPlacement' , g:SignatureDeferPlacement  , a:0 && a:1)
+    5   0.000166   0.000065   call signature#utils#Set('b:SignatureWrapJumps'      , g:SignatureWrapJumps       , a:0 && a:1)
+
+FUNCTION  signature#utils#Set()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-signature/autoload/signature/utils.vim:4
+Called 40 times
+Total time:   0.000930
+ Self time:   0.000930
+
+count  total (s)   self (s)
+                              " Description: Assign value to var if var is unset or if an optional 3rd arg is provided to force
+                            
+   40              0.000263   if (!exists(a:var) || a:0 && a:1)
+                                if type(a:value)
+                                  execute 'let' a:var '=' string(a:value)
+                                else
+                                  execute 'let' a:var '=' a:value
+                                endif
+   40              0.000037   endif
+   40              0.000089   return a:var
+
+FUNCTION  <SNR>80_close_floating_win()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/matchparen.vim:748
+Called 10 times
+Total time:   0.000059
+ Self time:   0.000059
+
+count  total (s)   self (s)
+   10              0.000030   if !exists('s:float_id')
+   10              0.000012     return
+                              endif
+                              if win_id2win(s:float_id) > 0
+                                call nvim_win_close(s:float_id, 0)
+                              endif
+                              let s:float_id = 0
+
+FUNCTION  nvim_treesitter#foldexpr()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/nvim-treesitter/autoload/nvim_treesitter.vim:5
+Called 64 times
+Total time:   3.059897
+ Self time:   3.059897
+
+count  total (s)   self (s)
+   64              3.059816 	return luaeval(printf('require"nvim-treesitter.fold".get_fold_indic(%d)', v:lnum))
+
+FUNCTION  matchup#perf#timeout_start()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/perf.vim:84
+Called 10 times
+Total time:   0.000118
+ Self time:   0.000118
+
+count  total (s)   self (s)
+   10              0.000026   let s:timeout = a:timeout
+   10              0.000032   let s:timeout_enabled = (a:timeout == 0) ? 0 : 1
+   10              0.000047   let s:timeout_pulse_time = reltime()
+
+FUNCTION  matchup#loader#refresh_match_words()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/loader.vim:72
+Called 10 times
+Total time:   0.000509
+ Self time:   0.000509
+
+count  total (s)   self (s)
+   10              0.000079   if get(b:, 'match_words', ':') !~# ':'
+                                call matchup#perf#tic('refresh')
+                            
+                                " protect the cursor from the match_words function
+                                let l:save_pos = matchup#pos#get_cursor()
+                                let l:match_words = ''
+                                execute 'let l:match_words = ' b:match_words
+                                if l:save_pos != matchup#pos#get_cursor()
+                                  call matchup#pos#set_cursor(l:save_pos)
+                                endif
+                            
+                                call matchup#perf#toc('refresh', 'function')
+                            
+                                if has_key(s:match_word_cache, l:match_words)
+                                  let b:matchup_delim_lists = s:match_word_cache[l:match_words].delim_lists
+                                  let b:matchup_delim_re = s:match_word_cache[l:match_words].delim_regexes
+                                  call matchup#perf#toc('refresh', 'cache_hit')
+                                else
+                                  " re-parse match words
+                                  let b:matchup_delim_lists = s:init_delim_lists(1)
+                                  let b:matchup_delim_re = s:init_delim_regexes()
+                                  let s:match_word_cache[l:match_words] = { 'delim_lists'  : b:matchup_delim_lists, 'delim_regexes': b:matchup_delim_re,}
+                                  call matchup#perf#toc('refresh', 'parse')
+                                endif
+   10              0.000006   endif
+
+FUNCTION  <SNR>34_check_modified()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/barbar.nvim/plugin/bufferline.vim:183
+Called 3 times
+Total time:   0.001579
+ Self time:   0.000418
+
+count  total (s)   self (s)
+    3              0.000016    if (&modified != get(b:, 'checked'))
+    3              0.000008       let b:checked = &modified
+    3   0.001548   0.000387       call bufferline#update()
+    3              0.000002    end
+
+FUNCTION  matchup#perf#toc()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/perf.vim:19
+Called 30 times
+Total time:   0.001178
+ Self time:   0.001178
+
+count  total (s)   self (s)
+   30              0.000228   let l:elapsed = s:Reltimefloat(reltime(s:time_start[a:context]))
+                            
+   30              0.000106   let l:key = a:context.'#'.a:state
+   30              0.000114   if has_key(g:matchup#perf#times, l:key)
+   30              0.000118     if l:elapsed > g:matchup#perf#times[l:key].maximum
+                                  let g:matchup#perf#times[l:key].maximum = l:elapsed
+   30              0.000020     endif
+   30              0.000117     let g:matchup#perf#times[l:key].last = l:elapsed
+   30              0.000196     let g:matchup#perf#times[l:key].emavg = s:alpha*l:elapsed + (1-s:alpha)*g:matchup#perf#times[l:key].emavg
+                              else
+                                let g:matchup#perf#times[l:key] = { 'maximum' : l:elapsed, 'emavg'   : l:elapsed, 'last'    : l:elapsed,}
+   30              0.000019   endif
+
+FUNCTION  bufferline#render()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/barbar.nvim/plugin/bufferline.vim:135
+Called 3 times
+Total time:   0.001056
+ Self time:   0.000583
+
+count  total (s)   self (s)
+    3   0.001034   0.000561    let result = luaeval("require'bufferline.render'.render_safe(_A)", a:update_names)
+                            
+    3              0.000008    if result[0]
+    3              0.000007       return result[1]
+                               end
+                            
+                               let error = result[1]
+                            
+                               BarbarDisable
+                               echohl ErrorMsg
+                               echom "Barbar detected an error while running. Barbar disabled itself :/"
+                               echom "Include this in your report: " . string(error)
+                               echohl None
+
+FUNCTION  matchup#delim#get_current()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/delim.vim:28
+Called 10 times
+Total time:   0.007212
+ Self time:   0.000258
+
+count  total (s)   self (s)
+   10   0.007197   0.000243   return s:get_delim_multi(extend({ 'direction' : 'current', 'type' : a:type, 'side' : a:side,}, get(a:, '1', {})))
+
+FUNCTION  provider#clipboard#Call()
+    Defined: /usr/share/nvim/runtime/autoload/provider/clipboard.vim:218
+Called 9 times
+Total time:   0.050371
+ Self time:   0.000659
+
+count  total (s)   self (s)
+    9              0.000113   if get(s:, 'here', v:false)  " Clipboard provider must not recurse. #7184
+                                return 0
+    9              0.000012   endif
+    9              0.000043   let s:here = v:true
+    9              0.000014   try
+    9   0.050008   0.000297     return call(s:clipboard[a:method],a:args,s:clipboard)
+    9              0.000022   finally
+    9              0.000052     let s:here = v:false
+    9              0.000028   endtry
+
+FUNCTION  bufferline#update()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/barbar.nvim/plugin/bufferline.vim:122
+Called 3 times
+Total time:   0.001162
+ Self time:   0.000106
+
+count  total (s)   self (s)
+    3   0.001093   0.000038    let new_value = bufferline#render(a:0 > 0 ? a:1 : v:false)
+    3              0.000014    if new_value == s:last_tabline
+                                  return
+    3              0.000003    end
+    3              0.000036    let &tabline = new_value
+    3              0.000008    let s:last_tabline = new_value
+
+FUNCTION  matchup#pos#get_cursor()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-matchup/autoload/matchup/pos.vim:17
+Called 50 times
+Total time:   0.000285
+ Self time:   0.000285
+
+count  total (s)   self (s)
+   50              0.000248     return getcurpos()
+
+FUNCTION  indent_blankline#Refresh()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim/autoload/indent_blankline.vim:2
+Called 20 times
+Total time:   0.035457
+ Self time:   0.033933
+
+count  total (s)   self (s)
+   20              0.000020     try
+   20   0.035132   0.033608         lua require("indent_blankline").refresh()
+                                catch /E12/
+                                    return
+                                catch
+                                    if g:indent_blankline_debug
+                                        echohl Error
+                                        echom 'indent-blankline encountered an error on refresh: ' . v:exception
+                                        echohl None
+                                    endif
+   20              0.000022     endtry
+
+FUNCTION  <SNR>68_CursorHoldUpdate()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/vim-devicons/plugin/webdevicons.vim:399
+Called 5 times
+Total time:   0.000191
+ Self time:   0.000191
+
+count  total (s)   self (s)
+    5              0.000069   if g:NERDTreeUpdateOnCursorHold != 1 || g:NERDTreeGitStatusUpdateOnCursorHold != 1
+                                return
+    5              0.000011   endif
+                            
+    5              0.000062   if !exists('g:NERDTree') || !g:NERDTree.IsOpen()
+    5              0.000010     return
+                              endif
+                            
+                              " Do not update when a special buffer is selected
+                              if !empty(&l:buftype)
+                                return
+                              endif
+                            
+                              " winnr need to make focus go to opened file
+                              " CursorToTreeWin needed to avoid error on opening file
+                              let l:winnr = winnr()
+                              let l:altwinnr = winnr('#')
+                            
+                              call g:NERDTree.CursorToTreeWin()
+                              call b:NERDTree.root.refreshFlags()
+                              call NERDTreeRender()
+                            
+                              exec l:altwinnr . 'wincmd w'
+                              exec l:winnr . 'wincmd w'
+
+FUNCTION  bufferline#filter()
+    Defined: ~/.local/share/nvim/site/pack/packer/start/barbar.nvim/autoload/bufferline.vim:1
+Called 3 times
+Total time:   0.000473
+ Self time:   0.000473
+
+count  total (s)   self (s)
+    3              0.000037     let list = []
+   18              0.000151     for line in split(execute('ls!'), "\n")
+   15              0.000112         call add(list, 0+matchstr(line, '\v\d+'))
+   18              0.000015     endfor
+    6              0.000011     for a_expr in a:000
+    3              0.000006         let expr = a_expr
+    3              0.000041         let expr = substitute(expr, '&\w\+', 'getbufvar(v:val, "\0")', 'g')
+    3              0.000049         call filter(list, expr)
+    6              0.000005     endfor
+    3              0.000005     return list
+
+FUNCTIONS SORTED ON TOTAL TIME
+count  total (s)   self (s)  function
+   64   3.059897             nvim_treesitter#foldexpr()
+    9   0.050371   0.000659  provider#clipboard#Call()
+    8   0.049684             15()
+   20   0.036170   0.000713  <SNR>41_try()
+    5   0.035917   0.003895  signature#sign#Refresh()
+   20   0.035457   0.033933  indent_blankline#Refresh()
+   20   0.018941   0.000320  9()
+   20   0.018621   0.005585  10()
+   10   0.015732             signature#mark#GetList()
+  255   0.014236   0.012758  signature#sign#Remove()
+   10   0.007212   0.000258  matchup#delim#get_current()
+   10   0.006953   0.001092  <SNR>138_get_delim_multi()
+   10   0.005862   0.004386  <SNR>138_get_delim()
+   20   0.003218   0.001482  matchup#pos#equal()
+   80   0.002920   0.001736  <SNR>137_parse_args()
+    5   0.001882   0.000953  <SNR>123_InitializeVars()
+   10   0.001781   0.000190  8()
+   10   0.001592   0.001532  7()
+    3   0.001579   0.000418  <SNR>34_check_modified()
+   20   0.001524             indent_blankline#helper#GetListChar()
+
+FUNCTIONS SORTED ON SELF TIME
+count  total (s)   self (s)  function
+   64              3.059897  nvim_treesitter#foldexpr()
+    8              0.049684  15()
+   20   0.035457   0.033933  indent_blankline#Refresh()
+   10              0.015732  signature#mark#GetList()
+  255   0.014236   0.012758  signature#sign#Remove()
+   20   0.018621   0.005585  10()
+   10   0.005862   0.004386  <SNR>138_get_delim()
+    5   0.035917   0.003895  signature#sign#Refresh()
+   80   0.002920   0.001736  <SNR>137_parse_args()
+   10   0.001592   0.001532  7()
+   20              0.001524  indent_blankline#helper#GetListChar()
+   20   0.003218   0.001482  matchup#pos#equal()
+  255              0.001478  signature#utils#IsValidMarker()
+   30              0.001178  matchup#perf#toc()
+   10   0.006953   0.001092  <SNR>138_get_delim_multi()
+    5   0.001882   0.000953  <SNR>123_InitializeVars()
+   40              0.000930  signature#utils#Set()
+   20   0.036170   0.000713  <SNR>41_try()
+    9   0.050371   0.000659  provider#clipboard#Call()
+    3   0.001056   0.000583  bufferline#render()
+

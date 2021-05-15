@@ -16,13 +16,17 @@ double compute_distmatrix(instance inst);
 double compute_zstar(instance inst, solution sol);
 
 /* graphs utils */
-int reachable(int* link, int i, int j);
-int visitable(int* link, int nnodes);
+int reachable(int* succ, int i, int j);
+int visitable(int* succ, int nnodes);
+void reverse_path(int* succ, int nnodes, int start, int end);
+
+/* edges representation convertes */
 int* edges_tosucc(edge* edges, int nnodes);
 
 /* compare functions */
 int wedgecmp(const void* a, const void* b);
 int nodelexcmp(const void* a, const void* b);
+int pathcmp(const void* a, const void* b, void* data);
 
 /* computational geometry helpers */
 double cross(node a, node b);
@@ -42,6 +46,7 @@ double min(double a, double b);
 int maxi(int a, int b);
 int mini(int a, int b);
 void swap(int* x, int* y);
+void* intset(int* arr, int c, int n);
 void print_error(const char* err, ...);
 char** list_files(enum model_folders folder, int* nmodels);
 

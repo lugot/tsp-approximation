@@ -152,7 +152,6 @@ EXE	src/Makefile	/^EXE = tsp_approx$/;"	m
 EXPLICIT	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 EXTRA	include/globals.h	/^#define EXTRA /;"	d
 EXTRA_MILEAGE	include/tsp.h	/^    EXTRA_MILEAGE$/;"	e	enum:model_types
-EXTRA_MILEAGE	src/main.c	/^                                EXTRA_MILEAGE$/;"	e	enum:main::tests	file:
 FIXED_EDGE_SECTION	src/parsers.c	/^    FIXED_EDGE_SECTION,$/;"	e	enum:sections	file:
 GENERATE	include/parsers.h	/^    GENERATE,$/;"	e	enum:run_modes
 GENERATED	include/tsp.h	/^enum model_folders { TSPLIB, GENERATED };$/;"	e	enum:model_folders
@@ -165,6 +164,7 @@ GRASP	include/tsp.h	/^    GRASP,$/;"	e	enum:model_types
 GRASP_K	include/globals.h	/^#define GRASP_K /;"	d
 GRASP_MAX_ITERATION	include/globals.h	/^#define GRASP_MAX_ITERATION /;"	d
 GREEDY	include/tsp.h	/^    GREEDY,$/;"	e	enum:model_types
+GREEDY	src/main.c	/^                                GREEDY,$/;"	e	enum:main::tests	file:
 HARD_FIXING	include/tsp.h	/^    HARD_FIXING,$/;"	e	enum:model_types
 HEADERS	src/Makefile	/^HEADERS =$/;"	m
 HF_INITIAL_FRACTION_TIME	include/globals.h	/^#define HF_INITIAL_FRACTION_TIME /;"	d
@@ -221,6 +221,7 @@ UNHANDLED_SECTION	src/parsers.c	/^    UNHANDLED_SECTION,$/;"	e	enum:sections	fil
 UNHANDLED_WEIGHT_TYPE	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 VERBOSE	include/globals.h	/^#define VERBOSE /;"	d
 XSMALL	include/globals.h	/^#define XSMALL /;"	d
+_GNU_SOURCE	src/solvers.c	/^#define _GNU_SOURCE$/;"	d	file:
 __init__	results/perprof.py	/^	def __init__(self):$/;"	m	class:CmdLineParser
 addOption	results/perprof.py	/^	def addOption(self, *args, **kwargs):$/;"	m	class:CmdLineParser
 add_BENDERS_sec	src/model_builder.c	/^void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {$/;"	f	typeref:typename:void
@@ -337,10 +338,12 @@ instance_t	include/tsp.h	/^typedef struct instance_t {$/;"	s
 instance_type	include/tsp.h	/^    enum instance_types instance_type;$/;"	m	struct:instance_t	typeref:enum:instance_types
 instance_type_enumerator	src/parsers.c	/^enum instance_types instance_type_enumerator(char* section_param) {$/;"	f	typeref:enum:instance_types
 instance_types	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	g
+intset	src/utils.c	/^void* intset(int* arr, int c, int n) {$/;"	f	typeref:typename:void *
 j	include/tsp.h	/^    int i, j;$/;"	m	struct:edge_t	typeref:typename:int
 j	include/tsp.h	/^    int i, j;$/;"	m	struct:wedge_t	typeref:typename:int
 k	include/pqueue.h	/^    int k;$/;"	m	struct:topkqueue_t	typeref:typename:int
 key	include/pqueue.h	/^    double key;$/;"	m	struct:pqueue_node_t	typeref:typename:double
+kick	src/solvers.c	/^void kick(int* succ, int nnodes, int strength) {$/;"	f	typeref:typename:void
 l2dist	src/utils.c	/^double l2dist(size_t i, size_t j, instance inst) {$/;"	f	typeref:typename:double
 left	src/pqueue.c	/^int left(int i) { return 2 * i + 1; }$/;"	f	typeref:typename:int
 list_files	src/utils.c	/^char** list_files(enum model_folders folder, int* nmodels) {$/;"	f	typeref:typename:char **
@@ -392,6 +395,7 @@ parseArgs	results/perprof.py	/^	def parseArgs(self):$/;"	m	class:CmdLineParser
 parse_command_line	src/parsers.c	/^void parse_command_line(int argc, char** argv, cplex_params params,$/;"	f	typeref:typename:void
 parse_input_dir	src/parsers.c	/^instance* parse_input_dir(enum model_folders folder, char* file_extension,$/;"	f	typeref:typename:instance *
 parse_input_file	src/parsers.c	/^instance parse_input_file(char* model_name, char* file_extension,$/;"	f	typeref:typename:instance
+pathcmp	src/utils.c	/^int pathcmp(const void* a, const void* b, void* data) {$/;"	f	typeref:typename:int
 perform_BENDERS	src/model_builder.c	/^void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,$/;"	f	typeref:typename:void
 perform_HARD_FIXING	src/model_builder.c	/^void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,$/;"	f	typeref:typename:void
 perform_SOFT_FIXING	src/model_builder.c	/^void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,$/;"	f	typeref:typename:void
@@ -418,8 +422,9 @@ print_solution	src/tsp.c	/^void print_solution(solution sol, int print_data) {$/
 print_usage	src/parsers.c	/^void print_usage() {$/;"	f	typeref:typename:void
 randomseed	include/tsp.h	/^    int randomseed;$/;"	m	struct:cplex_params_t	typeref:typename:int
 rank	include/union_find.h	/^    int *p, *rank, *size_of_set;$/;"	m	struct:union_find_t	typeref:typename:int *
-reachable	src/utils.c	/^int reachable(int* link, int i, int j) {$/;"	f	typeref:typename:int
+reachable	src/utils.c	/^int reachable(int* succ, int i, int j) {$/;"	f	typeref:typename:int
 readTable	results/perprof.py	/^def readTable(fp, delimiter):$/;"	f
+reverse_path	src/utils.c	/^void reverse_path(int* succ, int nnodes, int start, int end) {$/;"	f	typeref:typename:void
 right	src/pqueue.c	/^int right(int i) { return 2 * i + 2; }$/;"	f	typeref:typename:int
 run_modes	include/parsers.h	/^enum run_modes {$/;"	g
 run_options	include/parsers.h	/^} * run_options;$/;"	t	typeref:struct:run_options_t *
@@ -464,7 +469,7 @@ tree_node	include/union_find.h	/^} * tree_node;$/;"	t	typeref:struct:tree_node_t
 tree_node_t	include/union_find.h	/^typedef struct tree_node_t {$/;"	s
 twoopt_move	src/solvers.c	/^void twoopt_move(int* succ, int nnodes, int a, int b) {$/;"	f	typeref:typename:void
 twoopt_pick	src/solvers.c	/^double twoopt_pick(instance inst, int* succ, int* a, int* b) {$/;"	f	typeref:typename:double
-twoopt_refinement	src/solvers.c	/^void twoopt_refinement(instance inst, solution sol) {$/;"	f	typeref:typename:void
+twoopt_refinement	src/solvers.c	/^double twoopt_refinement(instance inst, int* succ, int nnodes) {$/;"	f	typeref:typename:double
 uf_create	src/union_find.c	/^union_find uf_create(int N) {$/;"	f	typeref:typename:union_find
 uf_find_set	src/union_find.c	/^int uf_find_set(union_find uf, int i) {$/;"	f	typeref:typename:int
 uf_free	src/union_find.c	/^void uf_free(union_find uf) {$/;"	f	typeref:typename:void

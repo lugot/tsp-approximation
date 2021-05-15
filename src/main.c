@@ -24,9 +24,9 @@ int main(int argc, char** argv) {
                                 /* HARD_FIXING, */
                                 /* SOFT_FIXING, */
                                 /* MST, */
-                                /* GREEDY, */
+                                GREEDY,
                                 /* GRASP, */
-                                EXTRA_MILEAGE
+                                /* EXTRA_MILEAGE */
     };
 
     cplex_params params = create_params();
