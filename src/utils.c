@@ -351,6 +351,9 @@ char* model_type_tostring(enum model_types model_type) {
         case EXTRA_MILEAGE:
             snprintf(ans, bufsize, "extra_mileage");
             break;
+        case VNS:
+            snprintf(ans, bufsize, "vns_randomstart");
+            break;
     }
 
     return ans;

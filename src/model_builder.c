@@ -91,6 +91,7 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
         case GREEDY:
         case EXTRA_MILEAGE:
         case OPTIMAL_TOUR:
+        case VNS:
             print_error("unhandeled model type in variables");
     }
 

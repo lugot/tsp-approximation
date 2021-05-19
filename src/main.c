@@ -24,9 +24,10 @@ int main(int argc, char** argv) {
                                 /* HARD_FIXING, */
                                 /* SOFT_FIXING, */
                                 /* MST, */
-                                GREEDY,
+                                // GREEDY,
                                 /* GRASP, */
-                                /* EXTRA_MILEAGE */
+                                EXTRA_MILEAGE
+                                /* VNS */
     };
 
     cplex_params params = create_params();
@@ -43,7 +44,7 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = solve(inst, EXTRA_MILEAGE);
+            solution sol = solve(inst, VNS);
 
             /* single istance needs to be verbose */
             print_solution(sol, 1);
