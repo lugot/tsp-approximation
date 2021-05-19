@@ -22,14 +22,11 @@ double twoopt_refinement(instance inst, int* succ, int nnodes) {
     double delta = 1.0; /* using 0.0 as sentinel */
     a = b = 0;
 
-    printf("succ: ");
-    for (int i = 0; i < nnodes; i++) printf("%d ", succ[i]);
-    printf("\n");
-
     /* iterate over 2opt moves until not improvable */
     while ((delta = twoopt_pick(inst, succ, &a, &b)) != 0.0) {
-        if (EXTRA)
+        if (EXTRA) {
             printf("[VERBOSE] refinement on %d, %d delta %lf\n", a, b, delta);
+        }
 
         /* actually perform the move */
         twoopt_move(succ, nnodes, a, b);
@@ -88,9 +85,10 @@ double threeopt_refinement(instance inst, int* succ, int nnodes) {
 
     /* iterate over 2opt moves until not improvable */
     while ((delta = threeopt_pick(inst, succ, &a, &b, &c)) != 0.0) {
-        if (EXTRA)
+        if (EXTRA) {
             printf("[VERBOSE] refinement on %d, %d, %d delta %lf\n", a, b, c,
                    delta);
+        }
 
         /* actually perform the move */
         threeopt_move(succ, nnodes, a, b, c, inst);

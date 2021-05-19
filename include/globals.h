@@ -1,14 +1,14 @@
 #ifndef INCLUDE_GLOBALS_H_
 #define INCLUDE_GLOBALS_H_
 
-#define VERBOSE 1
+#define VERBOSE 0
 #define SUPPRESS_CALLBACK 1
-#define EXTRA 1
+#define EXTRA 0
 
 #define XSMALL 1e5
 #define EPSILON 1e-9
 
-#define GEN_NUM_NODES 50
+#define GEN_NUM_NODES 1000
 
 #define HF_PERCENTAGE 80
 #define HF_ITERATIONS 20
@@ -19,7 +19,7 @@
 #define SF_K_STEP 2
 #define SF_INITIAL_PERC_TIME 0.2
 
-#define GRASP_K 10
+#define GRASP_K 4
 #define GRASP_VNS_PERC_TIME 0.3
 
 #define VNS_K_START 5

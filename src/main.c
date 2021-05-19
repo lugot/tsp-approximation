@@ -13,7 +13,7 @@
 #include "../include/utils.h"
 
 int main(int argc, char** argv) {
-    int ntests = 1;
+    int ntests = 2;
     enum model_types tests[] = {/*MTZ_STATIC,*/
                                 /*MTZ_LAZY,*/
                                 /*GGLIT_STATIC,*/
@@ -23,11 +23,11 @@ int main(int argc, char** argv) {
                                 /* BENDERS_CALLBACK, */
                                 /* HARD_FIXING, */
                                 /* SOFT_FIXING, */
-                                /* MST, */
+                                // MST,
                                 // GREEDY,
-                                /* GRASP, */
-                                EXTRA_MILEAGE
-                                /* VNS */
+                                GRASP,
+                                // EXTRA_MILEAGE,
+                                VNS
     };
 
     cplex_params params = create_params();
@@ -69,6 +69,7 @@ int main(int argc, char** argv) {
 
                 for (int j = 0; j < ntests; j++) {
                     /* solve! */
+                    inst->params->timelimit = params->timelimit;
                     solution sol = solve(inst, tests[j]);
 
                     char* model_type_str = model_type_tostring(tests[j]);
@@ -76,7 +77,7 @@ int main(int argc, char** argv) {
                            inst->model_name, sol->zstar, sol->solve_time);
                     free(model_type_str);
 
-                    if (EXTRA) plot_graphviz(sol, NULL, j);
+                    plot_graphviz(sol, NULL, j);
                 }
 
                 if (VERBOSE) print_instance(inst, 1);

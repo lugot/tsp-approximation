@@ -512,7 +512,7 @@ solution TSPgrasp(instance inst) {
         obj += dist(next, start, inst);
 
         /* refine solution (2opt only)! */
-        obj += twoopt_refinement(inst, succ, nnodes);
+        // obj += twoopt_refinement(inst, succ, nnodes);
 
         if (VERBOSE) printf(" -> obj: %lf\n", obj);
 
@@ -525,34 +525,30 @@ solution TSPgrasp(instance inst) {
         }
 
         /* update timelimit */
-        timeleft -= stopwatch_n(&s, &e) / 1e9;
+        /* timeleft -= stopwatch_n(&s, &e) / 1e9; */
+        timeleft -= stopwatch(&s, &e) / 1e3;
     }
+    topkqueue_free(tk);
 
     /* refine it! */
     free(succ);
     if ((succ = edges_tosucc(sol->edges, nnodes)) == NULL) {
         print_error("solver didnt produced a tour");
     }
-    free(sol);
+    free_solution(sol);
     /* TODO(lugot): AVOID so many frees */
 
     /* update timelimit and refine using vns */
     inst->params->timelimit *= GRASP_VNS_PERC_TIME;
-    sol = TSPvns(inst, succ);
+    solution refined_sol = TSPvns(inst, succ);
 
-    /* store the succ as usual edges array */
-    for (int i = 0; i < nnodes; i++) {
-        sol->edges[i] = (edge){i, succ[i]};
-    }
+    refined_sol->model_type = GRASP;
     free(succ);
 
-    /* add the solution to the pool associated with it's instance */
-    add_solution(inst, sol);
+    /* no need to add, added by TSPvns function */
+    /* add_solution(inst, refined_sol); */
 
-    topkqueue_free(tk);
-    free(succ);
-
-    return sol;
+    return refined_sol;
 }
 
 solution TSPextramileage(instance inst) {
@@ -775,8 +771,11 @@ solution TSPvns(instance inst, int* succ) {
         if (EXTRA) printf("[VERBOSE] kicked objective: %lf\n", obj);
 
         /* find local optimum */
+        printf("%lf\n", timeleft);
         obj += twoopt_refinement(inst, succ, nnodes);
+        printf("%lf\n", timeleft);
         obj += threeopt_refinement(inst, succ, nnodes);
+        printf("%lf\n", timeleft);
 
         if (EXTRA) printf("[VERBOSE] refined objective: %lf\n", obj);
 
@@ -805,11 +804,12 @@ solution TSPvns(instance inst, int* succ) {
 
         /* update timelimit */
         timeleft -= stopwatch(&s, &e) / 1000.0;
+        printf("%lf\n", timeleft);
     }
+    if (succ_tofree) free(succ);
+
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
-
-    if (succ_tofree) free(succ);
 
     return sol;
 }

@@ -156,8 +156,8 @@ void free_instance(instance inst) {
 
     free(inst->nodes);
     if (inst->adjmatrix != NULL) {
-    for (int i = 0; i < inst->nnodes; i++) free(inst->adjmatrix[i]);
-    free(inst->adjmatrix);
+        for (int i = 0; i < inst->nnodes; i++) free(inst->adjmatrix[i]);
+        free(inst->adjmatrix);
     }
 
     for (int i = 0; i < inst->nsols; i++) free_solution(inst->sols[i]);
@@ -187,6 +187,8 @@ void add_solution(instance inst, solution sol) {
     inst->nsols++;
 }
 void free_solution(solution sol) {
+    char* model_type_str = model_type_tostring(sol->model_type);
+    free(model_type_str);
     free(sol->edges);
 
     free(sol);
@@ -424,7 +426,7 @@ void plot_graphviz(solution sol, int* edgecolors, int version) {
 void plot_profiler(instance* insts, int ninstances) {
     assert(insts != NULL);
     assert(insts[0] != NULL);
-    //ciao
+    // ciao
 
     /* remove and create new fresh csv */
     remove("../results/results.csv");
