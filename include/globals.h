@@ -1,15 +1,9 @@
 #ifndef INCLUDE_GLOBALS_H_
 #define INCLUDE_GLOBALS_H_
 
-#define VERBOSE 0
-#define SUPPRESS_CALLBACK 1
-#define EXTRA 0
-
 #define XSMALL 1e5
 #define EPSILON 1e-9
 #define INF 1e9
-
-#define GEN_NUM_NODES 50
 
 #define HF_PERCENTAGE 80
 #define HF_ITERATIONS 20
@@ -29,5 +23,10 @@
 
 #define TS_MAX_TENURE 100
 #define TS_MIN_TENURE 20
+
+extern int VERBOSE;
+extern int EXTRA;
+extern int SUPPRESS_CALLBACK;
+extern int GEN_NNODES;
 
 #endif  // INCLUDE_GLOBALS_H_

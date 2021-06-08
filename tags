@@ -126,7 +126,9 @@ $(OBJS)	src/Makefile	/^$(OBJS) : $(HEADERS)$/;"	t
 AR	src/Makefile	/^AR = ar rc$/;"	m
 ATT	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 BENDERS	include/tsp.h	/^    BENDERS,$/;"	e	enum:model_types
+BENDERS	src/main.c	/^        BENDERS,$/;"	e	enum:main::complete_tests	file:
 BENDERS_CALLBACK	include/tsp.h	/^    BENDERS_CALLBACK,$/;"	e	enum:model_types
+BENDERS_CALLBACK	src/main.c	/^        BENDERS_CALLBACK,$/;"	e	enum:main::complete_tests	file:
 CAPACITY	src/parsers.c	/^    CAPACITY,$/;"	e	enum:sections	file:
 CC	src/Makefile	/^CC = gcc$/;"	m
 CCDIR	src/Makefile	/^CCDIR = \/opt\/concorde$/;"	m
@@ -150,21 +152,28 @@ EPSILON	include/globals.h	/^#define EPSILON /;"	d
 EUC_2D	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 EXE	src/Makefile	/^EXE = tsp_approx$/;"	m
 EXPLICIT	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
-EXTRA	include/globals.h	/^#define EXTRA /;"	d
+EXTRA	src/globals.c	/^int EXTRA = 0;$/;"	v	typeref:typename:int
 EXTRA_MILEAGE	include/tsp.h	/^    EXTRA_MILEAGE,$/;"	e	enum:model_types
+EXTRA_MILEAGE	src/main.c	/^        EXTRA_MILEAGE,$/;"	e	enum:main::complete_tests	file:
 FIXED_EDGE_SECTION	src/parsers.c	/^    FIXED_EDGE_SECTION,$/;"	e	enum:sections	file:
 GENERATE	include/parsers.h	/^    GENERATE,$/;"	e	enum:run_modes
 GENERATED	include/tsp.h	/^enum model_folders { TSPLIB, GENERATED };$/;"	e	enum:model_folders
-GEN_NUM_NODES	include/globals.h	/^#define GEN_NUM_NODES /;"	d
+GEN_NNODES	src/globals.c	/^int GEN_NNODES = 50;$/;"	v	typeref:typename:int
 GEO	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 GGLECT_STATIC	include/tsp.h	/^    GGLECT_STATIC,$/;"	e	enum:model_types
+GGLECT_STATIC	src/main.c	/^        GGLECT_STATIC,$/;"	e	enum:main::complete_tests	file:
 GGLIT_LAZY	include/tsp.h	/^    GGLIT_LAZY,$/;"	e	enum:model_types
+GGLIT_LAZY	src/main.c	/^        GGLIT_LAZY,$/;"	e	enum:main::complete_tests	file:
 GGLIT_STATIC	include/tsp.h	/^    GGLIT_STATIC,$/;"	e	enum:model_types
+GGLIT_STATIC	src/main.c	/^        GGLIT_STATIC,$/;"	e	enum:main::complete_tests	file:
 GRASP	include/tsp.h	/^    GRASP,$/;"	e	enum:model_types
+GRASP	src/main.c	/^        GRASP,$/;"	e	enum:main::complete_tests	file:
 GRASP_K	include/globals.h	/^#define GRASP_K /;"	d
 GRASP_VNS_PERC_TIME	include/globals.h	/^#define GRASP_VNS_PERC_TIME /;"	d
 GREEDY	include/tsp.h	/^    GREEDY,$/;"	e	enum:model_types
+GREEDY	src/main.c	/^        GREEDY,$/;"	e	enum:main::complete_tests	file:
 HARD_FIXING	include/tsp.h	/^    HARD_FIXING,$/;"	e	enum:model_types
+HARD_FIXING	src/main.c	/^        HARD_FIXING,$/;"	e	enum:main::complete_tests	file:
 HEADERS	src/Makefile	/^HEADERS =$/;"	m
 HF_INITIAL_PERC_TIME	include/globals.h	/^#define HF_INITIAL_PERC_TIME /;"	d
 HF_ITERATIONS	include/globals.h	/^#define HF_ITERATIONS /;"	d
@@ -187,10 +196,11 @@ LOAD_DIR	include/parsers.h	/^    LOAD_DIR$/;"	e	enum:run_modes
 MAX_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
 MIN_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
 MST	include/tsp.h	/^    MST,$/;"	e	enum:model_types
+MST	src/main.c	/^        MST,$/;"	e	enum:main::complete_tests	file:
 MTZ_LAZY	include/tsp.h	/^    MTZ_LAZY,$/;"	e	enum:model_types
-MTZ_LAZY	src/main.c	/^        MTZ_LAZY,$/;"	e	enum:main::tests	file:
+MTZ_LAZY	src/main.c	/^        MTZ_LAZY,$/;"	e	enum:main::complete_tests	file:
 MTZ_STATIC	include/tsp.h	/^    MTZ_STATIC,$/;"	e	enum:model_types
-MTZ_STATIC	src/main.c	/^        MTZ_STATIC,$/;"	e	enum:main::tests	file:
+MTZ_STATIC	src/main.c	/^        MTZ_STATIC,$/;"	e	enum:main::complete_tests	file:
 N	include/adjlist.h	/^    int N;$/;"	m	struct:adjlist_t	typeref:typename:int
 N	include/union_find.h	/^    int N;$/;"	m	struct:union_find_t	typeref:typename:int
 NAME	src/parsers.c	/^    NAME,$/;"	e	enum:sections	file:
@@ -198,7 +208,7 @@ NODE_COORD_SECTION	src/parsers.c	/^    NODE_COORD_SECTION,$/;"	e	enum:sections	f
 NODE_COORD_TYPE	src/parsers.c	/^    NODE_COORD_TYPE,$/;"	e	enum:sections	file:
 NOSEC	include/tsp.h	/^    NOSEC,$/;"	e	enum:model_types
 NOT_SPECIFIED	include/parsers.h	/^    NOT_SPECIFIED,$/;"	e	enum:run_modes
-OBJS	src/Makefile	/^OBJS = main.o tsp.o parsers.o utils.o solvers.o union_find.o model_builder.o adjlist.o pqueue.o /;"	m
+OBJS	src/Makefile	/^OBJS = globals.o main.o tsp.o parsers.o utils.o solvers.o union_find.o model_builder.o adjlist.o/;"	m
 OPTIMAL_TOUR	include/tsp.h	/^    OPTIMAL_TOUR,$/;"	e	enum:model_types
 OS	src/Makefile	/^OS := $(shell uname)$/;"	m
 REAL	include/tsp.h	/^enum costs { INTEGER, REAL };$/;"	e	enum:costs
@@ -209,8 +219,10 @@ SF_K_STEP	include/globals.h	/^#define SF_K_STEP /;"	d
 SF_MAX_K	include/globals.h	/^#define SF_MAX_K /;"	d
 SINGLE_MODEL	include/parsers.h	/^    SINGLE_MODEL,$/;"	e	enum:run_modes
 SOFT_FIXING	include/tsp.h	/^    SOFT_FIXING,$/;"	e	enum:model_types
-SUPPRESS_CALLBACK	include/globals.h	/^#define SUPPRESS_CALLBACK /;"	d
+SOFT_FIXING	src/main.c	/^        SOFT_FIXING,$/;"	e	enum:main::complete_tests	file:
+SUPPRESS_CALLBACK	src/globals.c	/^int SUPPRESS_CALLBACK = 1;$/;"	v	typeref:typename:int
 TABU_SEACH	include/tsp.h	/^    TABU_SEACH$/;"	e	enum:model_types
+TABU_SEACH	src/main.c	/^        TABU_SEACH,$/;"	e	enum:main::complete_tests	file:
 TOUR	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
 TOUR_SECTION	src/parsers.c	/^    TOUR_SECTION,$/;"	e	enum:sections	file:
 TSP	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
@@ -233,9 +245,10 @@ TYPE	src/parsers.c	/^    TYPE,$/;"	e	enum:sections	file:
 UNHANDLED_INSTANCE_TYPE	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
 UNHANDLED_SECTION	src/parsers.c	/^    UNHANDLED_SECTION,$/;"	e	enum:sections	file:
 UNHANDLED_WEIGHT_TYPE	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
-VERBOSE	include/globals.h	/^#define VERBOSE /;"	d
+VERBOSE	src/globals.c	/^int VERBOSE = 0;$/;"	v	typeref:typename:int
 VNS	include/tsp.h	/^    VNS,$/;"	e	enum:model_types
 VNS	solvers.c	/^solution VNS(instance inst, solution sol)$/;"	f	typeref:typename:solution
+VNS	src/main.c	/^        VNS,$/;"	e	enum:main::complete_tests	file:
 VNS_K_MAX	include/globals.h	/^#define VNS_K_MAX /;"	d
 VNS_K_START	include/globals.h	/^#define VNS_K_START /;"	d
 VNS_K_STEP	include/globals.h	/^#define VNS_K_STEP /;"	d
@@ -293,6 +306,7 @@ capacity	include/union_find.h	/^    int capacity;$/;"	m	struct:tree_node_t	typer
 ccw	src/utils.c	/^int ccw(node a, node b, node c) {$/;"	f	typeref:typename:int
 clean	src/Makefile	/^clean:$/;"	t
 colors	results/perprof.py	/^colors = ['r', 'b', 'y', 'g', 'm', 'c']$/;"	v
+complete_tests	src/main.c	/^    enum model_types complete_tests[] = {$/;"	g	function:main	file:
 compute_distmatrix	src/utils.c	/^double compute_distmatrix(instance inst) {$/;"	f	typeref:typename:double
 compute_zstar	src/utils.c	/^double compute_zstar(instance inst, solution sol) {$/;"	f	typeref:typename:double
 context	include/tsp.h	/^    CPXCALLBACKCONTEXTptr context;$/;"	m	struct:doit_fn_input_t	typeref:typename:CPXCALLBACKCONTEXTptr
@@ -477,7 +491,7 @@ stopwatch	src/utils.c	/^int64_t stopwatch(struct timespec* s, struct timespec* e
 stopwatch_n	src/utils.c	/^int64_t stopwatch_n(struct timespec* s, struct timespec* e) {$/;"	f	typeref:typename:int64_t
 swap	src/utils.c	/^void swap(int* x, int* y) {$/;"	f	typeref:typename:void
 swap_node	src/pqueue.c	/^void swap_node(pqueue_node* n, pqueue_node* m) {$/;"	f	typeref:typename:void
-tests	src/main.c	/^    enum model_types tests[] = {$/;"	g	function:main	file:
+tests	include/parsers.h	/^    int tests;$/;"	m	struct:run_options_t	typeref:typename:int
 threeopt_move	solvers.c	/^void threeopt_move(int* succ, int nnodes, int a, int b, int c, instance inst) {$/;"	f	typeref:typename:void
 threeopt_move	src/refinements.c	/^void threeopt_move(int* succ, int nnodes, int a, int b, int c, instance inst) {$/;"	f	typeref:typename:void
 threeopt_pick	solvers.c	/^double threeopt_pick(instance inst, int* succ, int* a, int* b, int* c) {$/;"	f	typeref:typename:double

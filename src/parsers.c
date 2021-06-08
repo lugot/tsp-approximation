@@ -71,10 +71,14 @@ void parse_command_line(int argc, char** argv, cplex_params params,
     assert(options != NULL);
 
     static struct option long_options[] = {
-        {"verbose", no_argument, NULL, 'v'},
+        {"verbose", no_argument, NULL, 'V'},
+        {"extra", no_argument, NULL, 'E'},
+        {"suppress", no_argument, NULL, 'S'},
+        {"gen_nnodes", no_argument, NULL, 'N'},
         {"model_name", required_argument, NULL, 'm'},
         {"generate", required_argument, NULL, 'g'},
         {"load_directory", required_argument, NULL, 'l'},
+        {"tests", required_argument, NULL, 'W'},
         {"time_limit", required_argument, NULL, 't'},
         {"cplex_seed", required_argument, NULL, 's'},
         {"threads", required_argument, NULL, 'T'},
@@ -85,10 +89,21 @@ void parse_command_line(int argc, char** argv, cplex_params params,
 
     int long_index, opt;
     long_index = opt = 0;
-    while ((opt = getopt_long(argc, argv, "vm:g:l:b:t:s:T:M:i:h", long_options,
+    while ((opt = getopt_long(argc, argv, "VESN:m:g:l:W:b:t:s:T:M:i:h", long_options,
                               &long_index)) != -1) {
         switch (opt) {
-            case 'v':
+            case 'V':
+                VERBOSE = 1;
+                break;
+            case 'E':
+                EXTRA = 1;
+                break;
+            case 'S':
+                SUPPRESS_CALLBACK = 0;
+                break;
+            case 'N':
+                GEN_NNODES = atoi(optarg);
+                assert(GEN_NNODES > 5);
                 break;
             case 'm':
                 options->mode = SINGLE_MODEL;
@@ -109,6 +124,10 @@ void parse_command_line(int argc, char** argv, cplex_params params,
                 else
                     print_error("wrong folder");
 
+                break;
+            case 'W':
+                options->tests = atoi(optarg);
+                assert(GEN_NNODES > 5);
                 break;
             case 't':
                 params->timelimit = atof(optarg);

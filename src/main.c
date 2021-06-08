@@ -13,28 +13,39 @@
 #include "../include/utils.h"
 
 int main(int argc, char** argv) {
-    int ntests = 1;
-    enum model_types tests[] = {
+    enum model_types complete_tests[] = {
         MTZ_STATIC,
         MTZ_LAZY,
-        // GGLIT_STATIC,
-        // GGLECT_STATIC,
-        // GGLIT_LAZY,
-        // BENDERS,
-        // BENDERS_CALLBACK,
-        /* HARD_FIXING, */
-        /* SOFT_FIXING, */
-        // MST,
-        // GREEDY,
-        // GRASP,
-        // EXTRA_MILEAGE,
-        // VNS,
-        // TABU_SEACH,
+        GGLIT_STATIC,
+        GGLECT_STATIC,
+        GGLIT_LAZY,
+        BENDERS,
+        BENDERS_CALLBACK,
+        HARD_FIXING,
+        SOFT_FIXING,
+        MST,
+        GREEDY,
+        GRASP,
+        EXTRA_MILEAGE,
+        VNS,
+        TABU_SEACH,
     };
 
     cplex_params params = create_params();
     run_options options = create_options();
     parse_command_line(argc, argv, params, options);
+
+    int ntests = 0;
+    enum model_types tests[16];
+
+    int testsint = options->tests;
+    int i = 0;
+    while (testsint > 0) {
+        if (testsint % 2 == 1) tests[ntests++] = complete_tests[i];
+
+        i++;
+        testsint /= 2;
+    }
 
     switch (options->mode) {
         case SINGLE_MODEL: {
@@ -61,7 +72,7 @@ int main(int argc, char** argv) {
 
             /* generate and solve the instances */
             instance* insts =
-                generate_random_instances(options->battery_test, GEN_NUM_NODES);
+                generate_random_instances(options->battery_test, GEN_NNODES);
             for (int i = 0; i < options->battery_test; i++) {
                 printf("battery %d:\n", i + 1);
 
