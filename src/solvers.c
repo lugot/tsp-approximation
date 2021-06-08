@@ -28,6 +28,13 @@ solution TSPvns(instance inst, int* succ);
 solution TSPtabusearch(instance inst, int* succ);
 
 solution solve(instance inst, enum model_types model_type) {
+    /* initialize total wall-clock time of execution */
+    struct timespec s, e;
+    s.tv_sec = e.tv_sec = -1;
+    stopwatch(&s, &e);
+
+    solution sol;
+
     switch (model_type) {
         case NOSEC:
         case MTZ_STATIC:
@@ -39,39 +46,42 @@ solution solve(instance inst, enum model_types model_type) {
         case BENDERS_CALLBACK:
         case HARD_FIXING:
         case SOFT_FIXING:
-            return TSPopt(inst, model_type);
+            sol = TSPopt(inst, model_type);
             break;
 
         case MST:
-            return TSPminspantree(inst);
+            sol = TSPminspantree(inst);
             break;
 
         case GREEDY:
-            return TSPgreedy(inst);
+            sol = TSPgreedy(inst);
             break;
 
         case GRASP:
-            return TSPgrasp(inst);
+            sol = TSPgrasp(inst);
             break;
 
         case EXTRA_MILEAGE:
-            return TSPextramileage(inst);
+            sol = TSPextramileage(inst);
             break;
 
         case VNS:
-            return TSPvns(inst, NULL);
+            sol = TSPvns(inst, NULL);
             break;
 
         case TABU_SEACH:
-            return TSPtabusearch(inst, NULL);
+            sol = TSPtabusearch(inst, NULL);
             break;
 
         case OPTIMAL_TOUR:
+            sol = NULL;
             assert(model_type != OPTIMAL_TOUR &&
                    "tried to solve an optimal tour instance");
             break;
     }
-    return NULL;
+    sol->solve_time = stopwatch(&s, &e);
+
+    return sol;
 }
 
 solution TSPopt(instance inst, enum model_types model_type) {
@@ -162,11 +172,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
             break;
     }
 
-    /* initialize total wall-clock time of execution and track deterministic
-     * time */
-    struct timespec s, e;
-    s.tv_sec = e.tv_sec = -1;
-    stopwatch(&s, &e);
+    /* track deterministic time */
     CPXgetdettime(env, &sol->start);
 
     /* solve! */
@@ -184,10 +190,14 @@ solution TSPopt(instance inst, enum model_types model_type) {
             get_symmsol(xstar, sol);
             break;
 
-        case BENDERS:
+        case BENDERS: {
+            struct timespec s, e;
+            s.tv_sec = e.tv_sec = -1;
+            stopwatch(&s, &e);
             perform_BENDERS(env, lp, inst, xstar, s, e);
             get_symmsol(xstar, sol);
             break;
+        }
 
         case HARD_FIXING:
             perform_HARD_FIXING(env, lp, inst, xstar, HF_PERCENTAGE);
@@ -226,7 +236,6 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
     /* retreive the time, in ticks and wall-clock */
     CPXgetdettime(env, &sol->end);
-    sol->solve_time = stopwatch(&s, &e);
 
     /* retreive the min cost */
     CPXgetobjval(env, lp, &sol->zstar);
@@ -250,11 +259,6 @@ solution TSPminspantree(instance inst) {
 
     solution sol = create_solution(inst, MST, nnodes);
     sol->distance_time = 0.0;
-
-    /* initialize total wall-clock time of execution time */
-    struct timespec s, e;
-    s.tv_sec = e.tv_sec = -1;
-    stopwatch(&s, &e);
 
     /* build weighted edge list and sort it */
     wedge* wedges = (wedge*)malloc(nedges * sizeof(struct wedge_t));
@@ -309,9 +313,6 @@ solution TSPminspantree(instance inst) {
         sol->edges[j] = (edge){j, succ[j]};
     }
     free(succ);
-
-    /* track the solve time */
-    sol->solve_time = stopwatch(&s, &e);
 
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
@@ -374,12 +375,6 @@ solution TSPgreedy(instance inst) {
     sol->distance_time = 0.0;
     sol->zstar = DBL_MAX;
 
-    /* initialize total wall-clock time of execution and track deterministic
-     * time */
-    struct timespec s, e;
-    s.tv_sec = e.tv_sec = -1;
-    stopwatch(&s, &e);
-
     /* succ used as visited: if -1 means not visited */
     int* succ = (int*)malloc(nnodes * sizeof(int));
 
@@ -440,9 +435,6 @@ solution TSPgreedy(instance inst) {
     }
     /* refine it! (apply also 3opt) */
     sol->zstar += threeopt_refinement(inst, succ, nnodes);
-
-    /* track the solve time */
-    sol->solve_time = stopwatch(&s, &e);
 
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
@@ -529,7 +521,6 @@ solution TSPgrasp(instance inst) {
         }
 
         /* update timelimit */
-        /* timeleft -= stopwatch_n(&s, &e) / 1e9; */
         timeleft -= stopwatch(&s, &e) / 1e3;
     }
     topkqueue_free(tk);
@@ -565,12 +556,6 @@ solution TSPextramileage(instance inst) {
     solution sol = create_solution(inst, EXTRA_MILEAGE, nnodes);
     sol->distance_time = 0.0;
     sol->zstar = 0.0;
-
-    /* initialize total wall-clock time of execution and track deterministic
-     * time */
-    struct timespec s, e;
-    s.tv_sec = e.tv_sec = -1;
-    stopwatch(&s, &e);
 
     /* andew's monothone chain algorithm for convex */
     int k = 0;
@@ -671,9 +656,6 @@ solution TSPextramileage(instance inst) {
         sol->edges[i] = (edge){i, succ[i]};
     }
     free(succ);
-
-    /* track the solve time */
-    sol->solve_time = stopwatch(&s, &e);
 
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
@@ -865,7 +847,7 @@ solution TSPtabusearch(instance inst, int* succ) {
 
         /* update timelimit */
         timeleft -= stopwatch(&s, &e) / 1000.0;
-        printf("timeleft: %lf\n", timeleft);
+        // printf("timeleft: %lf\n", timeleft);
         /* update iteration counter */
         k++;
     }
