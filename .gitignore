@@ -1,5 +1,4 @@
 *.o
-src/tsp_approx
 src/.cache/*
 src/*.log
 src/vgcore.*

@@ -268,6 +268,38 @@ int* edges_tosucc(edge* edges, int nnodes) {
     return succ;
 }
 
+int* randomtour(int nnodes, unsigned int seedp) {
+    int* succ = (int*)malloc(nnodes * sizeof(int));
+
+    int left_nodes = nnodes;
+    int* pool = (int*)malloc(nnodes * sizeof(int));
+    for (int i = 0; i < nnodes; i++) pool[i] = i;
+
+    int start, act, next;
+    int pool_pick;
+
+    pool_pick = rand_r(&seedp) % left_nodes;
+    start = act = pool[pool_pick];
+    swap(&pool[pool_pick], &pool[left_nodes - 1]);
+    left_nodes--;
+
+    while (left_nodes > 0) {
+        pool_pick = rand_r(&seedp) % left_nodes;
+        next = pool[pool_pick];
+        swap(&pool[pool_pick], &pool[left_nodes - 1]);
+
+        succ[act] = next;
+        act = next;
+
+        left_nodes--;
+    }
+    succ[next] = start;
+
+    free(pool);
+
+    return succ;
+}
+
 /* edge comparator for kruskal */
 int wedgecmp(const void* a, const void* b) {
     double wa = ((wedge*)a)->w;
@@ -353,6 +385,9 @@ char* model_type_tostring(enum model_types model_type) {
             break;
         case VNS:
             snprintf(ans, bufsize, "vns_randomstart");
+            break;
+        case TABU_SEACH:
+            snprintf(ans, bufsize, "tabu_search_randomstart");
             break;
     }
 

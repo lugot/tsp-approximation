@@ -7,8 +7,9 @@
 
 #define XSMALL 1e5
 #define EPSILON 1e-9
+#define INF 1e9
 
-#define GEN_NUM_NODES 1000
+#define GEN_NUM_NODES 50
 
 #define HF_PERCENTAGE 80
 #define HF_ITERATIONS 20
@@ -25,5 +26,8 @@
 #define VNS_K_START 5
 #define VNS_K_MAX 20
 #define VNS_K_STEP 1
+
+#define TS_MAX_TENURE 100
+#define TS_MIN_TENURE 20
 
 #endif  // INCLUDE_GLOBALS_H_

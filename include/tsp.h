@@ -70,7 +70,8 @@ enum model_types {
     GREEDY,
     GRASP,
     EXTRA_MILEAGE,
-    VNS
+    VNS,
+    TABU_SEACH
 };
 typedef struct solution_t {
     struct instance_t* inst;

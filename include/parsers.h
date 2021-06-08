@@ -4,6 +4,7 @@
 #include "../include/tsp.h"
 
 enum run_modes {
+    NOT_SPECIFIED,
     SINGLE_MODEL,
     GENERATE,
     LOAD_DIR

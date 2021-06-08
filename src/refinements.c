@@ -1,19 +1,19 @@
 #define _GNU_SOURCE
 
+#include "../include/refinements.h"
+
 #include <assert.h>
 #include <stdlib.h>
 #include <time.h>
 
 #include "../include/globals.h"
-#include "../include/refinements.h"
-#include "../include/utils.h"
 #include "../include/union_find.h"
+#include "../include/utils.h"
 
-double twoopt_pick(instance inst, int* succ, int* a, int* b);
-void twoopt_move(int* succ, int nnodes, int a, int b);
-double threeopt_refinement(instance inst, int* succ, int nnodes);
-double threeopt_pick(instance inst, int* succ, int* a, int* b, int* c);
-void threeopt_move(int* succ, int nnodes, int a, int b, int c, instance inst);
+double twoopt_delta(instance inst, int* succ, int i, int j) {
+    return dist(i, j, inst) + dist(succ[i], succ[j], inst) -
+           (dist(i, succ[i], inst) + dist(j, succ[j], inst));
+}
 
 double twoopt_refinement(instance inst, int* succ, int nnodes) {
     double improvement = 0.0;
@@ -23,14 +23,13 @@ double twoopt_refinement(instance inst, int* succ, int nnodes) {
     a = b = 0;
 
     /* iterate over 2opt moves until not improvable */
-    while ((delta = twoopt_pick(inst, succ, &a, &b)) != 0.0) {
+    while ((delta = twoopt_pick(inst, succ, &a, &b)) < EPSILON) {
         if (EXTRA) {
             printf("[VERBOSE] refinement on %d, %d delta %lf\n", a, b, delta);
         }
 
         /* actually perform the move */
         twoopt_move(succ, nnodes, a, b);
-
         /* update the objective */
         improvement += delta; /* delta should be negative */
     }
@@ -44,13 +43,39 @@ double twoopt_pick(instance inst, int* succ, int* a, int* b) {
     nnodes = nedges = inst->nnodes;
 
     double deltabest;
-    deltabest = 0.0;
+    deltabest = INF; /* select also positive delta */
     *a = *b = 0;
 
     for (int i = 0; i < nnodes; i++) {
         for (int j = i + 1; j < nnodes; j++) {
-            double delta = dist(i, j, inst) + dist(succ[i], succ[j], inst) -
-                           (dist(i, succ[i], inst) + dist(j, succ[j], inst));
+            double delta = twoopt_delta(inst, succ, i, j);
+
+            if (delta < deltabest) {
+                deltabest = delta;
+                *a = i;
+                *b = j;
+            }
+        }
+    }
+
+    return deltabest;
+}
+
+double twoopt_tabu_pick(instance inst, int* succ, int* tabu_nodes, int tenure,
+                        int k, int* a, int* b) {
+    assert(inst != NULL);
+    int nnodes, nedges;
+    nnodes = nedges = inst->nnodes;
+
+    double deltabest;
+    deltabest = INF; /* select also positive delta */
+    *a = *b = 0;
+    for (int i = 0; i < nnodes; i++) {
+        if (k <= tabu_nodes[i] + tenure) continue;
+        for (int j = i + 1; j < nnodes; j++) {
+            if (k <= tabu_nodes[j] + tenure) continue;
+
+            double delta = twoopt_delta(inst, succ, i, j);
 
             if (delta < deltabest) {
                 deltabest = delta;

@@ -1,4 +1,3 @@
-
 #include "../include/solvers.h"
 
 #include <assert.h>
@@ -26,6 +25,7 @@ solution TSPgreedy(instance inst);
 solution TSPgrasp(instance inst);
 solution TSPextramileage(instance inst);
 solution TSPvns(instance inst, int* succ);
+solution TSPtabusearch(instance inst, int* succ);
 
 solution solve(instance inst, enum model_types model_type) {
     switch (model_type) {
@@ -60,6 +60,10 @@ solution solve(instance inst, enum model_types model_type) {
 
         case VNS:
             return TSPvns(inst, NULL);
+            break;
+
+        case TABU_SEACH:
+            return TSPtabusearch(inst, NULL);
             break;
 
         case OPTIMAL_TOUR:
@@ -213,8 +217,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
         case GRASP:
         case EXTRA_MILEAGE:
         case VNS:
-            assert(model_type != GREEDY && model_type != GRASP &&
-                   "tried to solve a metaheuristic");
+        case TABU_SEACH:
+            assert(0 == 1 && "tried to solve a metaheuristic");
             break;
     }
 
@@ -720,35 +724,8 @@ solution TSPvns(instance inst, int* succ) {
     /* if no successor array passed, create a random solution */
     int succ_tofree = 0;
     if (succ == NULL) {
-        succ = (int*)malloc(nnodes * sizeof(int));
-
-        int left_nodes = nnodes;
-        int* pool = (int*)malloc(nnodes * sizeof(int));
-        for (int i = 0; i < nnodes; i++) pool[i] = i;
-
-        int start, act, next;
-        int pool_pick;
-
-        pool_pick = rand_r(&seedp) % left_nodes;
-        start = act = pool[pool_pick];
-        swap(&pool[pool_pick], &pool[left_nodes - 1]);
-        left_nodes--;
-
-        while (left_nodes > 0) {
-            pool_pick = rand_r(&seedp) % left_nodes;
-            next = pool[pool_pick];
-            swap(&pool[pool_pick], &pool[left_nodes - 1]);
-
-            succ[act] = next;
-            act = next;
-
-            left_nodes--;
-        }
-
-        succ[next] = start;
-
+        succ = randomtour(nnodes, seedp);
         succ_tofree = 1;
-        free(pool);
     }
 
     /* start the iteration! */
@@ -814,6 +791,92 @@ solution TSPvns(instance inst, int* succ) {
     return sol;
 }
 
+solution TSPtabusearch(instance inst, int* succ) {
+    assert(inst != NULL);
+    assert(inst->instance_type == TSP && "need TSP instance");
+
+    int nnodes = inst->nnodes;
+    srand(time(NULL));
+    unsigned int seedp = time(NULL);
+
+    /* track the best solution up to this point */
+    solution sol = create_solution(inst, TABU_SEACH, nnodes);
+    sol->distance_time = 0.0;
+    sol->zstar = DBL_MAX;
+
+    int* tabu_nodes = (int*)malloc(nnodes * sizeof(int));
+    intset(tabu_nodes, -INF, nnodes);
+    int tenure = TS_MAX_TENURE;
+
+    /* if no successor array passed, create a random solution */
+    int succ_tofree = 0;
+    if (succ == NULL) {
+        succ = randomtour(nnodes, seedp);
+        succ_tofree = 1;
+    }
+
+    /* compute obj: it will be updated throught iterations */
+    double obj = 0.0;
+    for (int i = 0; i < nnodes; i++) obj += dist(i, succ[i], inst);
+
+    /* start the iterations! */
+    int k = 0; /* iteration counter */
+    double timeleft = inst->params->timelimit;
+    while (timeleft > 0) {
+        /* track the time for the current iteration */
+        struct timespec s, e;
+        s.tv_sec = e.tv_sec = -1;
+        stopwatch(&s, &e);
+
+        int a, b;
+        double delta =
+            twoopt_tabu_pick(inst, succ, tabu_nodes, tenure, k, &a, &b);
+        if (EXTRA) {
+            printf("[EXTRA] iteration %d: delta %lf\n", k, delta);
+        }
+
+        /* actually perform the move, even if delta positive */
+        twoopt_move(succ, nnodes, a, b);
+        /* update the objective */
+        obj += delta;
+
+        if (delta > EPSILON) {
+            /* climbing,  need to register nodes in tabulist */
+            tabu_nodes[a] = tabu_nodes[b] = k;
+        } else {
+            /* downhill, update best solution if necessary */
+            if (obj < sol->zstar) {
+                /* store the succ as usual edges array */
+                for (int i = 0; i < nnodes; i++) {
+                    sol->edges[i] = (edge){i, succ[i]};
+                }
+
+                if (EXTRA) {
+                    printf(
+                        "[VERBOSE] Improved solution! last opt: %lf -> new "
+                        "opt: %lf\n",
+                        sol->zstar, obj);
+                    // sleep(0.5);
+                }
+                /* update objective */
+                sol->zstar = obj;
+            }
+        }
+
+        /* update timelimit */
+        timeleft -= stopwatch(&s, &e) / 1000.0;
+        printf("timeleft: %lf\n", timeleft);
+        /* update iteration counter */
+        k++;
+    }
+    if (succ_tofree) free(succ);
+
+    /* add the solution to the pool associated with it's instance */
+    add_solution(inst, sol);
+
+    return sol;
+}
+
 void get_symmsol(double* xstar, solution sol) {
     /* index over selected edges */
     int k = 0;
@@ -841,7 +904,7 @@ void get_asymmsol(double* xstar, solution sol) {
     /* check for edges i, j if is selected */
     for (int i = 0; i < sol->nedges; i++) {
         for (int j = 0; j < sol->nedges; j++) {
-            if (xstar[xpos(i, j, sol->nedges)] > 0.5) {
+            if (xstar[xxpos(i, j, sol->nedges)] > 0.5) {
                 /* then store it in the solution*/
                 sol->edges[k] = (edge){i, j};
 

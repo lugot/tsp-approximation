@@ -13,21 +13,23 @@
 #include "../include/utils.h"
 
 int main(int argc, char** argv) {
-    int ntests = 2;
-    enum model_types tests[] = {/*MTZ_STATIC,*/
-                                /*MTZ_LAZY,*/
-                                /*GGLIT_STATIC,*/
-                                /*GGLECT_STATIC,*/
-                                /*GGLIT_LAZY,*/
-                                /* BENDERS, */
-                                /* BENDERS_CALLBACK, */
-                                /* HARD_FIXING, */
-                                /* SOFT_FIXING, */
-                                // MST,
-                                // GREEDY,
-                                GRASP,
-                                // EXTRA_MILEAGE,
-                                VNS
+    int ntests = 1;
+    enum model_types tests[] = {
+        MTZ_STATIC,
+        MTZ_LAZY,
+        // GGLIT_STATIC,
+        // GGLECT_STATIC,
+        // GGLIT_LAZY,
+        // BENDERS,
+        // BENDERS_CALLBACK,
+        /* HARD_FIXING, */
+        /* SOFT_FIXING, */
+        // MST,
+        // GREEDY,
+        // GRASP,
+        // EXTRA_MILEAGE,
+        // VNS,
+        // TABU_SEACH,
     };
 
     cplex_params params = create_params();
@@ -44,7 +46,7 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = solve(inst, VNS);
+            solution sol = solve(inst, MTZ_STATIC);
 
             /* single istance needs to be verbose */
             print_solution(sol, 1);
@@ -73,8 +75,9 @@ int main(int argc, char** argv) {
                     solution sol = solve(inst, tests[j]);
 
                     char* model_type_str = model_type_tostring(tests[j]);
-                    printf("\tsolving %s on instance %s: %lf %lf\n", model_type_str,
-                           inst->model_name, sol->zstar, sol->solve_time);
+                    printf("\tsolving %s on instance %s: %lf %lf\n",
+                           model_type_str, inst->model_name, sol->zstar,
+                           sol->solve_time);
                     free(model_type_str);
 
                     plot_graphviz(sol, NULL, j);
@@ -107,8 +110,9 @@ int main(int argc, char** argv) {
                     solution sol = solve(inst, tests[j]);
 
                     char* model_type_str = model_type_tostring(tests[j]);
-                    printf("\tsolving %s on instance %s: %lf %lf\n", model_type_str,
-                           inst->model_name, sol->zstar, sol->solve_time);
+                    printf("\tsolving %s on instance %s: %lf %lf\n",
+                           model_type_str, inst->model_name, sol->zstar,
+                           sol->solve_time);
                     free(model_type_str);
 
                     if (EXTRA) plot_graphviz(sol, NULL, j);
@@ -123,6 +127,8 @@ int main(int argc, char** argv) {
 
             break;
         }
+        case NOT_SPECIFIED:
+            break;
     }
 
     free_options(options);

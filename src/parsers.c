@@ -40,6 +40,7 @@ enum weight_types weight_type_enumerator(char* section_param);
 
 run_options create_options() {
     run_options options = (run_options)calloc(1, sizeof(struct run_options_t));
+    options->mode = NOT_SPECIFIED;
 
     return options;
 }
@@ -129,6 +130,11 @@ void parse_command_line(int argc, char** argv, cplex_params params,
                 printf("opt: %c, optarg: %s\n", opt, optarg);
                 assert(opt != '?' && "unknown option");
         }
+    }
+    if (options->mode == NOT_SPECIFIED) {
+        print_usage();
+        printf("opt: %c, optarg: %s\n", opt, optarg);
+        assert(options->mode != NOT_SPECIFIED && "use a mode");
     }
 }
 

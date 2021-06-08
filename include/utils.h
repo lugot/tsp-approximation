@@ -23,6 +23,9 @@ void reverse_path(int* succ, int nnodes, int start, int end);
 /* edges representation convertes */
 int* edges_tosucc(edge* edges, int nnodes);
 
+/* generate random solution */
+int* randomtour(int nnodes, unsigned int seedp);
+
 /* compare functions */
 int wedgecmp(const void* a, const void* b);
 int nodelexcmp(const void* a, const void* b);
