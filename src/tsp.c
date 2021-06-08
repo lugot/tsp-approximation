@@ -137,7 +137,7 @@ void save_instance(instance inst) {
     fprintf(fp, "TYPE : TSP\n");
     fprintf(fp, "DIMENSION : %d\n", inst->nnodes);
     fprintf(fp, "EDGE_WEIGHT_TYPE : EUC_2D\n");
-    fprintf(fp, "NODE_COORD_SECTION");
+    fprintf(fp, "NODE_COORD_SECTION\n");
     for (int i = 0; i < inst->nnodes; i++) {
         fprintf(fp, "%d %f %f\n", i + 1, inst->nodes[i].x, inst->nodes[i].y);
     }

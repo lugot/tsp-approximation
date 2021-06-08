@@ -387,7 +387,8 @@ instance* parse_input_dir(enum model_folders folder, char* file_extension,
             parse_input_file(model_names[i], file_extension, folder);
 
         if (nodes_lb <= inst->nnodes && inst->nnodes < nodes_ub) {
-            insts[(*ninstances)++] = inst;
+            insts[*ninstances] = inst;
+            *ninstances = *ninstances + 1;
         }
 
         free(model_names[i]);
@@ -399,7 +400,6 @@ instance* parse_input_dir(enum model_folders folder, char* file_extension,
     if (tmp == NULL) {
         free(insts);
         assert(tmp != NULL);
-        /* now you can die pacefully */
 
     } else {
         insts = tmp;

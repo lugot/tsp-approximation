@@ -14,21 +14,10 @@
 
 int main(int argc, char** argv) {
     enum model_types complete_tests[] = {
-        MTZ_STATIC,
-        MTZ_LAZY,
-        GGLIT_STATIC,
-        GGLECT_STATIC,
-        GGLIT_LAZY,
-        BENDERS,
-        BENDERS_CALLBACK,
-        HARD_FIXING,
-        SOFT_FIXING,
-        MST,
-        GREEDY,
-        GRASP,
-        EXTRA_MILEAGE,
-        VNS,
-        TABU_SEACH,
+        MTZ_STATIC,    MTZ_LAZY, GGLIT_STATIC,     GGLECT_STATIC,
+        GGLIT_LAZY,    BENDERS,  BENDERS_CALLBACK, HARD_FIXING,
+        SOFT_FIXING,   MST,      GREEDY,           GRASP,
+        EXTRA_MILEAGE, VNS,      TABU_SEACH,
     };
 
     cplex_params params = create_params();
@@ -109,7 +98,7 @@ int main(int argc, char** argv) {
 
             int ninstances;
             instance* insts =
-                parse_input_dir(options->folder, "tsp", &ninstances, 0, 40);
+                parse_input_dir(options->folder, "tsp", &ninstances, 0, 4000);
 
             for (int i = 0; i < ninstances; i++) {
                 instance inst = insts[i];
