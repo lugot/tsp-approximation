@@ -125,10 +125,8 @@ $(OBJS)	src/Makefile	/^$(OBJS) : $(HEADERS)$/;"	t
 9	compile_commands.json	/^      "-o",$/;"	s	array:8.arguments
 AR	src/Makefile	/^AR = ar rc$/;"	m
 ATT	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
-BENDERS	include/tsp.h	/^    BENDERS,$/;"	e	enum:model_types
-BENDERS	src/main.c	/^        GGLIT_LAZY,    BENDERS,  BENDERS_CALLBACK, HARD_FIXING,$/;"	e	enum:main::complete_tests	file:
-BENDERS_CALLBACK	include/tsp.h	/^    BENDERS_CALLBACK,$/;"	e	enum:model_types
-BENDERS_CALLBACK	src/main.c	/^        GGLIT_LAZY,    BENDERS,  BENDERS_CALLBACK, HARD_FIXING,$/;"	e	enum:main::complete_tests	file:
+BENDERS	include/tsp.h	/^    BENDERS,           \/\/ 8$/;"	e	enum:model_types
+BENDERS_CALLBACK	include/tsp.h	/^    BENDERS_CALLBACK,  \/\/ 9$/;"	e	enum:model_types
 CAPACITY	src/parsers.c	/^    CAPACITY,$/;"	e	enum:sections	file:
 CC	src/Makefile	/^CC = gcc$/;"	m
 CCDIR	src/Makefile	/^CCDIR = \/opt\/concorde$/;"	m
@@ -153,27 +151,20 @@ EUC_2D	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED
 EXE	src/Makefile	/^EXE = tsp_approx$/;"	m
 EXPLICIT	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 EXTRA	src/globals.c	/^int EXTRA = 0;$/;"	v	typeref:typename:int
-EXTRA_MILEAGE	include/tsp.h	/^    EXTRA_MILEAGE,$/;"	e	enum:model_types
-EXTRA_MILEAGE	src/main.c	/^        EXTRA_MILEAGE, VNS,      TABU_SEACH,$/;"	e	enum:main::complete_tests	file:
+EXTRA_MILEAGE	include/tsp.h	/^    EXTRA_MILEAGE,     \/\/ 15$/;"	e	enum:model_types
 FIXED_EDGE_SECTION	src/parsers.c	/^    FIXED_EDGE_SECTION,$/;"	e	enum:sections	file:
 GENERATE	include/parsers.h	/^    GENERATE,$/;"	e	enum:run_modes
 GENERATED	include/tsp.h	/^enum model_folders { TSPLIB, GENERATED };$/;"	e	enum:model_folders
 GEN_NNODES	src/globals.c	/^int GEN_NNODES = 50;$/;"	v	typeref:typename:int
 GEO	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
-GGLECT_STATIC	include/tsp.h	/^    GGLECT_STATIC,$/;"	e	enum:model_types
-GGLECT_STATIC	src/main.c	/^        MTZ_STATIC,    MTZ_LAZY, GGLIT_STATIC,     GGLECT_STATIC,$/;"	e	enum:main::complete_tests	file:
-GGLIT_LAZY	include/tsp.h	/^    GGLIT_LAZY,$/;"	e	enum:model_types
-GGLIT_LAZY	src/main.c	/^        GGLIT_LAZY,    BENDERS,  BENDERS_CALLBACK, HARD_FIXING,$/;"	e	enum:main::complete_tests	file:
-GGLIT_STATIC	include/tsp.h	/^    GGLIT_STATIC,$/;"	e	enum:model_types
-GGLIT_STATIC	src/main.c	/^        MTZ_STATIC,    MTZ_LAZY, GGLIT_STATIC,     GGLECT_STATIC,$/;"	e	enum:main::complete_tests	file:
-GRASP	include/tsp.h	/^    GRASP,$/;"	e	enum:model_types
-GRASP	src/main.c	/^        SOFT_FIXING,   MST,      GREEDY,           GRASP,$/;"	e	enum:main::complete_tests	file:
+GGLECT_STATIC	include/tsp.h	/^    GGLECT_STATIC,     \/\/ 6$/;"	e	enum:model_types
+GGLIT_LAZY	include/tsp.h	/^    GGLIT_LAZY,        \/\/ 7$/;"	e	enum:model_types
+GGLIT_STATIC	include/tsp.h	/^    GGLIT_STATIC,      \/\/ 5$/;"	e	enum:model_types
+GRASP	include/tsp.h	/^    GRASP,             \/\/ 14$/;"	e	enum:model_types
 GRASP_K	include/globals.h	/^#define GRASP_K /;"	d
 GRASP_VNS_PERC_TIME	include/globals.h	/^#define GRASP_VNS_PERC_TIME /;"	d
-GREEDY	include/tsp.h	/^    GREEDY,$/;"	e	enum:model_types
-GREEDY	src/main.c	/^        SOFT_FIXING,   MST,      GREEDY,           GRASP,$/;"	e	enum:main::complete_tests	file:
-HARD_FIXING	include/tsp.h	/^    HARD_FIXING,$/;"	e	enum:model_types
-HARD_FIXING	src/main.c	/^        GGLIT_LAZY,    BENDERS,  BENDERS_CALLBACK, HARD_FIXING,$/;"	e	enum:main::complete_tests	file:
+GREEDY	include/tsp.h	/^    GREEDY,            \/\/ 13$/;"	e	enum:model_types
+HARD_FIXING	include/tsp.h	/^    HARD_FIXING,       \/\/ 10$/;"	e	enum:model_types
 HEADERS	src/Makefile	/^HEADERS =$/;"	m
 HF_INITIAL_PERC_TIME	include/globals.h	/^#define HF_INITIAL_PERC_TIME /;"	d
 HF_ITERATIONS	include/globals.h	/^#define HF_ITERATIONS /;"	d
@@ -195,21 +186,19 @@ LIBS	src/Makefile	/^LIBS = -L${CPLEX_HOME}\/lib\/x86-64_linux\/static_pic -L. -l
 LOAD_DIR	include/parsers.h	/^    LOAD_DIR$/;"	e	enum:run_modes
 MAX_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
 MIN_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
-MST	include/tsp.h	/^    MST,$/;"	e	enum:model_types
-MST	src/main.c	/^        SOFT_FIXING,   MST,      GREEDY,           GRASP,$/;"	e	enum:main::complete_tests	file:
-MTZ_LAZY	include/tsp.h	/^    MTZ_LAZY,$/;"	e	enum:model_types
-MTZ_LAZY	src/main.c	/^        MTZ_STATIC,    MTZ_LAZY, GGLIT_STATIC,     GGLECT_STATIC,$/;"	e	enum:main::complete_tests	file:
-MTZ_STATIC	include/tsp.h	/^    MTZ_STATIC,$/;"	e	enum:model_types
-MTZ_STATIC	src/main.c	/^        MTZ_STATIC,    MTZ_LAZY, GGLIT_STATIC,     GGLECT_STATIC,$/;"	e	enum:main::complete_tests	file:
+MST	include/tsp.h	/^    MST,               \/\/ 12$/;"	e	enum:model_types
+MTZ_INDICATOR	include/tsp.h	/^    MTZ_INDICATOR,     \/\/ 4 -> MTZ: 28$/;"	e	enum:model_types
+MTZ_LAZY	include/tsp.h	/^    MTZ_LAZY,          \/\/ 3$/;"	e	enum:model_types
+MTZ_STATIC	include/tsp.h	/^    MTZ_STATIC,        \/\/ 2$/;"	e	enum:model_types
 N	include/adjlist.h	/^    int N;$/;"	m	struct:adjlist_t	typeref:typename:int
 N	include/union_find.h	/^    int N;$/;"	m	struct:union_find_t	typeref:typename:int
 NAME	src/parsers.c	/^    NAME,$/;"	e	enum:sections	file:
 NODE_COORD_SECTION	src/parsers.c	/^    NODE_COORD_SECTION,$/;"	e	enum:sections	file:
 NODE_COORD_TYPE	src/parsers.c	/^    NODE_COORD_TYPE,$/;"	e	enum:sections	file:
-NOSEC	include/tsp.h	/^    NOSEC,$/;"	e	enum:model_types
+NOSEC	include/tsp.h	/^    NOSEC,             \/\/ 1$/;"	e	enum:model_types
 NOT_SPECIFIED	include/parsers.h	/^    NOT_SPECIFIED,$/;"	e	enum:run_modes
 OBJS	src/Makefile	/^OBJS = globals.o main.o tsp.o parsers.o utils.o solvers.o union_find.o model_builder.o adjlist.o/;"	m
-OPTIMAL_TOUR	include/tsp.h	/^    OPTIMAL_TOUR,$/;"	e	enum:model_types
+OPTIMAL_TOUR	include/tsp.h	/^    OPTIMAL_TOUR,      \/\/ 0$/;"	e	enum:model_types
 OS	src/Makefile	/^OS := $(shell uname)$/;"	m
 REAL	include/tsp.h	/^enum costs { INTEGER, REAL };$/;"	e	enum:costs
 RM	src/Makefile	/^RM = rm -rf$/;"	m
@@ -218,11 +207,9 @@ SF_INITIAL_PERC_TIME	include/globals.h	/^#define SF_INITIAL_PERC_TIME /;"	d
 SF_K_STEP	include/globals.h	/^#define SF_K_STEP /;"	d
 SF_MAX_K	include/globals.h	/^#define SF_MAX_K /;"	d
 SINGLE_MODEL	include/parsers.h	/^    SINGLE_MODEL,$/;"	e	enum:run_modes
-SOFT_FIXING	include/tsp.h	/^    SOFT_FIXING,$/;"	e	enum:model_types
-SOFT_FIXING	src/main.c	/^        SOFT_FIXING,   MST,      GREEDY,           GRASP,$/;"	e	enum:main::complete_tests	file:
+SOFT_FIXING	include/tsp.h	/^    SOFT_FIXING,       \/\/ 11$/;"	e	enum:model_types
 SUPPRESS_CALLBACK	src/globals.c	/^int SUPPRESS_CALLBACK = 1;$/;"	v	typeref:typename:int
-TABU_SEACH	include/tsp.h	/^    TABU_SEACH$/;"	e	enum:model_types
-TABU_SEACH	src/main.c	/^        EXTRA_MILEAGE, VNS,      TABU_SEACH,$/;"	e	enum:main::complete_tests	file:
+TABU_SEACH	include/tsp.h	/^    TABU_SEACH         \/\/ 17$/;"	e	enum:model_types
 TOUR	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
 TOUR_SECTION	src/parsers.c	/^    TOUR_SECTION,$/;"	e	enum:sections	file:
 TSP	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
@@ -246,9 +233,8 @@ UNHANDLED_INSTANCE_TYPE	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDL
 UNHANDLED_SECTION	src/parsers.c	/^    UNHANDLED_SECTION,$/;"	e	enum:sections	file:
 UNHANDLED_WEIGHT_TYPE	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 VERBOSE	src/globals.c	/^int VERBOSE = 0;$/;"	v	typeref:typename:int
-VNS	include/tsp.h	/^    VNS,$/;"	e	enum:model_types
+VNS	include/tsp.h	/^    VNS,               \/\/ 16$/;"	e	enum:model_types
 VNS	solvers.c	/^solution VNS(instance inst, solution sol)$/;"	f	typeref:typename:solution
-VNS	src/main.c	/^        EXTRA_MILEAGE, VNS,      TABU_SEACH,$/;"	e	enum:main::complete_tests	file:
 VNS_K_MAX	include/globals.h	/^#define VNS_K_MAX /;"	d
 VNS_K_START	include/globals.h	/^#define VNS_K_START /;"	d
 VNS_K_STEP	include/globals.h	/^#define VNS_K_STEP /;"	d
@@ -264,6 +250,7 @@ add_BENDERS_sec_callback_relaxation	src/model_builder.c	/^int CPXPUBLIC add_BEND
 add_GGlect_static_sec	src/model_builder.c	/^void add_GGlect_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_GGlit_lazy_sec	src/model_builder.c	/^void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_GGlit_static_sec	src/model_builder.c	/^void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_MTZ_indicator_sec	src/model_builder.c	/^void add_MTZ_indicator_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_MTZ_lazy_sec	src/model_builder.c	/^void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_MTZ_static_sec	src/model_builder.c	/^void add_MTZ_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_asymm_constraints	src/model_builder.c	/^void add_asymm_constraints(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
@@ -306,7 +293,6 @@ capacity	include/union_find.h	/^    int capacity;$/;"	m	struct:tree_node_t	typer
 ccw	src/utils.c	/^int ccw(node a, node b, node c) {$/;"	f	typeref:typename:int
 clean	src/Makefile	/^clean:$/;"	t
 colors	results/perprof.py	/^colors = ['r', 'b', 'y', 'g', 'm', 'c']$/;"	v
-complete_tests	src/main.c	/^    enum model_types complete_tests[] = {$/;"	g	function:main	file:
 compute_distmatrix	src/utils.c	/^double compute_distmatrix(instance inst) {$/;"	f	typeref:typename:double
 compute_zstar	src/utils.c	/^double compute_zstar(instance inst, solution sol) {$/;"	f	typeref:typename:double
 context	include/tsp.h	/^    CPXCALLBACKCONTEXTptr context;$/;"	m	struct:doit_fn_input_t	typeref:typename:CPXCALLBACKCONTEXTptr

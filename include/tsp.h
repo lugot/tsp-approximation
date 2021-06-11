@@ -55,23 +55,24 @@ typedef struct doit_fn_input_t {
 } * doit_fn_input;
 
 enum model_types {
-    OPTIMAL_TOUR,
-    NOSEC,
-    MTZ_STATIC,
-    MTZ_LAZY,
-    GGLIT_STATIC,
-    GGLECT_STATIC,
-    GGLIT_LAZY,
-    BENDERS,
-    BENDERS_CALLBACK,
-    HARD_FIXING,
-    SOFT_FIXING,
-    MST,
-    GREEDY,
-    GRASP,
-    EXTRA_MILEAGE,
-    VNS,
-    TABU_SEACH
+    OPTIMAL_TOUR,      // 0
+    NOSEC,             // 1
+    MTZ_STATIC,        // 2
+    MTZ_LAZY,          // 3
+    MTZ_INDICATOR,     // 4 -> MTZ: 28
+    GGLIT_STATIC,      // 5
+    GGLECT_STATIC,     // 6
+    GGLIT_LAZY,        // 7
+    BENDERS,           // 8
+    BENDERS_CALLBACK,  // 9
+    HARD_FIXING,       // 10
+    SOFT_FIXING,       // 11
+    MST,               // 12
+    GREEDY,            // 13
+    GRASP,             // 14
+    EXTRA_MILEAGE,     // 15
+    VNS,               // 16
+    TABU_SEACH         // 17
 };
 typedef struct solution_t {
     struct instance_t* inst;
@@ -102,7 +103,8 @@ void save_instance(instance inst);
 void free_instance();
 
 /* solution manipulators */
-solution create_solution(instance inst, enum model_types model_type, int nedges);
+solution create_solution(instance inst, enum model_types model_type,
+                         int nedges);
 void add_solution(instance inst, solution sol);
 void free_solution(solution sol);
 

@@ -13,27 +13,27 @@
 #include "../include/utils.h"
 
 int main(int argc, char** argv) {
-    enum model_types complete_tests[] = {
-        MTZ_STATIC,    MTZ_LAZY, GGLIT_STATIC,     GGLECT_STATIC,
-        GGLIT_LAZY,    BENDERS,  BENDERS_CALLBACK, HARD_FIXING,
-        SOFT_FIXING,   MST,      GREEDY,           GRASP,
-        EXTRA_MILEAGE, VNS,      TABU_SEACH,
-    };
-
     cplex_params params = create_params();
     run_options options = create_options();
     parse_command_line(argc, argv, params, options);
 
     int ntests = 0;
-    enum model_types tests[16];
+    enum model_types tests[100];
 
     int testsint = options->tests;
     int i = 0;
     while (testsint > 0) {
-        if (testsint % 2 == 1) tests[ntests++] = complete_tests[i];
+        if (testsint % 2 == 1) tests[ntests++] = (enum model_types)i;
 
         i++;
         testsint /= 2;
+    }
+
+    printf("execution on:\n");
+    for (int i = 0; i < ntests; i++) {
+        char* model_type_str = model_type_tostring(tests[i]);
+        printf("\t%s\n", model_type_tostring(tests[i]));
+        free(model_type_str);
     }
 
     switch (options->mode) {
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
             add_params(inst, params);
 
             print_instance(inst, 1);
-            solution sol = solve(inst, MTZ_STATIC);
+            solution sol = solve(inst, tests[0]);
 
             /* single istance needs to be verbose */
             print_solution(sol, 1);
