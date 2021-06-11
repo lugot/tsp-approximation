@@ -159,7 +159,7 @@ GEN_NNODES	src/globals.c	/^int GEN_NNODES = 50;$/;"	v	typeref:typename:int
 GEO	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 GGLECT_STATIC	include/tsp.h	/^    GGLECT_STATIC,     \/\/ 6$/;"	e	enum:model_types
 GGLIT_LAZY	include/tsp.h	/^    GGLIT_LAZY,        \/\/ 7$/;"	e	enum:model_types
-GGLIT_STATIC	include/tsp.h	/^    GGLIT_STATIC,      \/\/ 5$/;"	e	enum:model_types
+GGLIT_STATIC	include/tsp.h	/^    GGLIT_STATIC,      \/\/ not counf from here$/;"	e	enum:model_types
 GRASP	include/tsp.h	/^    GRASP,             \/\/ 14$/;"	e	enum:model_types
 GRASP_K	include/globals.h	/^#define GRASP_K /;"	d
 GRASP_VNS_PERC_TIME	include/globals.h	/^#define GRASP_VNS_PERC_TIME /;"	d
@@ -187,8 +187,9 @@ LOAD_DIR	include/parsers.h	/^    LOAD_DIR$/;"	e	enum:run_modes
 MAX_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
 MIN_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
 MST	include/tsp.h	/^    MST,               \/\/ 12$/;"	e	enum:model_types
-MTZ_INDICATOR	include/tsp.h	/^    MTZ_INDICATOR,     \/\/ 4 -> MTZ: 28$/;"	e	enum:model_types
+MTZ_INDICATOR	include/tsp.h	/^    MTZ_INDICATOR,     \/\/ 5$/;"	e	enum:model_types
 MTZ_LAZY	include/tsp.h	/^    MTZ_LAZY,          \/\/ 3$/;"	e	enum:model_types
+MTZ_LAZY_NO2	include/tsp.h	/^    MTZ_LAZY_NO2,      \/\/ 4$/;"	e	enum:model_types
 MTZ_STATIC	include/tsp.h	/^    MTZ_STATIC,        \/\/ 2$/;"	e	enum:model_types
 N	include/adjlist.h	/^    int N;$/;"	m	struct:adjlist_t	typeref:typename:int
 N	include/union_find.h	/^    int N;$/;"	m	struct:union_find_t	typeref:typename:int
@@ -251,6 +252,7 @@ add_GGlect_static_sec	src/model_builder.c	/^void add_GGlect_static_sec(CPXENVptr
 add_GGlit_lazy_sec	src/model_builder.c	/^void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_GGlit_static_sec	src/model_builder.c	/^void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_MTZ_indicator_sec	src/model_builder.c	/^void add_MTZ_indicator_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_MTZ_lazy_no2_sec	src/model_builder.c	/^void add_MTZ_lazy_no2_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_MTZ_lazy_sec	src/model_builder.c	/^void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_MTZ_static_sec	src/model_builder.c	/^void add_MTZ_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_asymm_constraints	src/model_builder.c	/^void add_asymm_constraints(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
