@@ -39,7 +39,8 @@ solution solve(instance inst, enum model_types model_type) {
         case NOSEC:
         case MTZ_STATIC:
         case MTZ_LAZY:
-        case MTZ_LAZY_NO2:
+        case MTZ_LAZY_DEG2:
+        case MTZ_LAZY_DEG3:
         case MTZ_INDICATOR:
         case GGLIT_STATIC:
         case GGLECT_STATIC:
@@ -213,7 +214,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
         case MTZ_STATIC:
         case MTZ_LAZY:
-        case MTZ_LAZY_NO2:
+        case MTZ_LAZY_DEG2:
+        case MTZ_LAZY_DEG3:
         case MTZ_INDICATOR:
         case GGLIT_STATIC:
         case GGLECT_STATIC:
@@ -247,6 +249,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
+    char solfile[] = "solution.xml";
+    CPXsolwrite(env, lp, solfile);
 
     CPXfreeprob(env, &lp);
     CPXcloseCPLEX(&env);

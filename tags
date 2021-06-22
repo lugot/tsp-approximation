@@ -187,9 +187,10 @@ LOAD_DIR	include/parsers.h	/^    LOAD_DIR$/;"	e	enum:run_modes
 MAX_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
 MIN_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
 MST	include/tsp.h	/^    MST,               \/\/ 12$/;"	e	enum:model_types
-MTZ_INDICATOR	include/tsp.h	/^    MTZ_INDICATOR,     \/\/ 5$/;"	e	enum:model_types
+MTZ_INDICATOR	include/tsp.h	/^    MTZ_INDICATOR,     \/\/ 6$/;"	e	enum:model_types
 MTZ_LAZY	include/tsp.h	/^    MTZ_LAZY,          \/\/ 3$/;"	e	enum:model_types
-MTZ_LAZY_NO2	include/tsp.h	/^    MTZ_LAZY_NO2,      \/\/ 4$/;"	e	enum:model_types
+MTZ_LAZY_DEG2	include/tsp.h	/^    MTZ_LAZY_DEG2,     \/\/ 4$/;"	e	enum:model_types
+MTZ_LAZY_DEG3	include/tsp.h	/^    MTZ_LAZY_DEG3,     \/\/ 5$/;"	e	enum:model_types
 MTZ_STATIC	include/tsp.h	/^    MTZ_STATIC,        \/\/ 2$/;"	e	enum:model_types
 N	include/adjlist.h	/^    int N;$/;"	m	struct:adjlist_t	typeref:typename:int
 N	include/union_find.h	/^    int N;$/;"	m	struct:union_find_t	typeref:typename:int
@@ -252,7 +253,8 @@ add_GGlect_static_sec	src/model_builder.c	/^void add_GGlect_static_sec(CPXENVptr
 add_GGlit_lazy_sec	src/model_builder.c	/^void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_GGlit_static_sec	src/model_builder.c	/^void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_MTZ_indicator_sec	src/model_builder.c	/^void add_MTZ_indicator_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
-add_MTZ_lazy_no2_sec	src/model_builder.c	/^void add_MTZ_lazy_no2_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_MTZ_lazy_deg2_sec	src/model_builder.c	/^void add_MTZ_lazy_deg2_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
+add_MTZ_lazy_deg3_sec	src/model_builder.c	/^void add_MTZ_lazy_deg3_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_MTZ_lazy_sec	src/model_builder.c	/^void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_MTZ_static_sec	src/model_builder.c	/^void add_MTZ_static_sec(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
 add_asymm_constraints	src/model_builder.c	/^void add_asymm_constraints(CPXENVptr env, CPXLPptr lp, instance inst) {$/;"	f	typeref:typename:void
@@ -450,6 +452,7 @@ randomtour	src/utils.c	/^int* randomtour(int nnodes, unsigned int seedp) {$/;"	f
 rank	include/union_find.h	/^    int *p, *rank, *size_of_set;$/;"	m	struct:union_find_t	typeref:typename:int *
 reachable	src/utils.c	/^int reachable(int* succ, int i, int j) {$/;"	f	typeref:typename:int
 readTable	results/perprof.py	/^def readTable(fp, delimiter):$/;"	f
+rev	results/utils.py	/^def rev(nnodes, fun, target):$/;"	f
 reverse_path	src/utils.c	/^void reverse_path(int* succ, int nnodes, int start, int end) {$/;"	f	typeref:typename:void
 right	src/pqueue.c	/^int right(int i) { return 2 * i + 2; }$/;"	f	typeref:typename:int
 run_modes	include/parsers.h	/^enum run_modes {$/;"	g
@@ -517,6 +520,7 @@ uf_set_size	src/union_find.c	/^int uf_set_size(union_find uf, int i) {$/;"	f	typ
 uf_union_set	src/union_find.c	/^void uf_union_set(union_find uf, int i, int j) {$/;"	f	typeref:typename:void
 union_find	include/union_find.h	/^} * union_find;$/;"	t	typeref:struct:union_find_t *
 union_find_t	include/union_find.h	/^typedef struct union_find_t {$/;"	s
+upos	results/utils.py	/^def upos(i, nnodes):$/;"	f
 upos	src/utils.c	/^int upos(int i, int nnodes) { return (nnodes * nnodes) + i - 1; }$/;"	f	typeref:typename:int
 val	include/pqueue.h	/^    int val;$/;"	m	struct:pqueue_node_t	typeref:typename:int
 visitable	src/utils.c	/^int visitable(int* link, int nnodes) {$/;"	f	typeref:typename:int
@@ -532,9 +536,12 @@ weight_types	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNH
 who	src/Makefile	/^who:$/;"	t
 wow	src/Makefile	/^wow:$/;"	t
 x	include/tsp.h	/^    double x, y;$/;"	m	struct:node_t	typeref:typename:double
+xpos	results/utils.py	/^def xpos(i, j, nnodes):$/;"	f
 xpos	src/utils.c	/^int xpos(int i, int j, int nnodes) {$/;"	f	typeref:typename:int
 xpos_inverse	src/utils.c	/^edge xpos_inverse(int pos, int nnodes) {$/;"	f	typeref:typename:edge
+xxpos	results/utils.py	/^def xxpos(i, j, nnodes):$/;"	f
 xxpos	src/utils.c	/^int xxpos(int i, int j, int nnodes) {$/;"	f	typeref:typename:int
 y	include/tsp.h	/^    double x, y;$/;"	m	struct:node_t	typeref:typename:double
+ypos	results/utils.py	/^def ypos(i, j, nnodes):$/;"	f
 ypos	src/utils.c	/^int ypos(int i, int j, int nnodes) {$/;"	f	typeref:typename:int
 zstar	include/tsp.h	/^    double zstar;$/;"	m	struct:solution_t	typeref:typename:double

@@ -59,8 +59,9 @@ enum model_types {
     NOSEC,             // 1
     MTZ_STATIC,        // 2
     MTZ_LAZY,          // 3
-    MTZ_LAZY_NO2,      // 4
-    MTZ_INDICATOR,     // 5
+    MTZ_LAZY_DEG2,     // 4
+    MTZ_LAZY_DEG3,     // 5
+    MTZ_INDICATOR,     // 6
     GGLIT_STATIC,      // not counf from here
     GGLECT_STATIC,     // 6
     GGLIT_LAZY,        // 7

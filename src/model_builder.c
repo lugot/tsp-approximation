@@ -24,8 +24,10 @@ void add_asymm_constraints(CPXENVptr env, CPXLPptr lp, instance inst);
 
 void add_MTZ_static_sec(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst);
-void add_MTZ_lazy_no2_sec(CPXENVptr env, CPXLPptr lp, instance inst);
+void add_MTZ_lazy_deg2_sec(CPXENVptr env, CPXLPptr lp, instance inst);
+void add_MTZ_lazy_deg3_sec(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_MTZ_indicator_sec(CPXENVptr env, CPXLPptr lp, instance inst);
+
 void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_GGlect_static_sec(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_GGlit_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst);
@@ -72,10 +74,15 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
             add_asymm_constraints(env, lp, inst);
             add_MTZ_lazy_sec(env, lp, inst);
             break;
-        case MTZ_LAZY_NO2:
+        case MTZ_LAZY_DEG2:
             add_asymm_variables(env, lp, inst);
             add_asymm_constraints(env, lp, inst);
-            add_MTZ_lazy_no2_sec(env, lp, inst);
+            add_MTZ_lazy_deg2_sec(env, lp, inst);
+            break;
+        case MTZ_LAZY_DEG3:
+            add_asymm_variables(env, lp, inst);
+            add_asymm_constraints(env, lp, inst);
+            add_MTZ_lazy_deg3_sec(env, lp, inst);
             break;
         case MTZ_INDICATOR:
             add_asymm_variables(env, lp, inst);
@@ -466,32 +473,11 @@ void add_MTZ_lazy_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
         }
     }
 
-    /* add lazy constraints 1.0 * x_ij + 1.0 * x_ji <= 1
-     * for each arc (i,j) with i < j */
-    rhs = 1.0;
-    nnz = 2;
-    for (int i = 0; i < nnodes; i++) {
-        for (int j = i + 1; j < nnodes; j++) {
-            snprintf(cname[0], strlen(cname[0]), "SEC on node pair (%d,%d)",
-                     i + 1, j + 1);
-
-            /* build constraint equation */
-            index[0] = xxpos(i, j, nnodes);
-            value[0] = 1.0;
-            index[1] = xxpos(j, i, nnodes);
-            value[1] = 1.0;
-            if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero,
-                                      index, value, cname)) {
-                print_error("wrong CPXlazyconstraints on 2-node SECs");
-            }
-        }
-    }
-
     free(cname[0]);
     free(cname);
 }
 
-void add_MTZ_lazy_no2_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
+void add_MTZ_lazy_deg2_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
     int nnodes = inst->nnodes;
     /* new continuous variables (integer does not matter here!)
      * upper bound equal to m-1 for big-M constraint */
@@ -550,6 +536,151 @@ void add_MTZ_lazy_no2_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
             if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero,
                                       index, value, cname)) {
                 print_error("wrong CPXlazyconstraints() for u-consistency");
+            }
+        }
+    }
+
+    /* add lazy constraints 1.0 * x_ij + 1.0 * x_ji <= 1
+     * for each arc (i,j) with i < j */
+    rhs = 1.0;
+    nnz = 2;
+    for (int i = 0; i < nnodes; i++) {
+        for (int j = i + 1; j < nnodes; j++) {
+            snprintf(cname[0], strlen(cname[0]), "SEC on node pair (%d,%d)",
+                     i + 1, j + 1);
+
+            /* build constraint equation */
+            index[0] = xxpos(i, j, nnodes);
+            value[0] = 1.0;
+            index[1] = xxpos(j, i, nnodes);
+            value[1] = 1.0;
+            if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero,
+                                      index, value, cname)) {
+                print_error("wrong CPXlazyconstraints on 2-node SECs");
+            }
+        }
+    }
+
+    free(cname[0]);
+    free(cname);
+}
+
+void add_MTZ_lazy_deg3_sec(CPXENVptr env, CPXLPptr lp, instance inst) {
+    int nnodes = inst->nnodes;
+    /* new continuous variables (integer does not matter here!)
+     * upper bound equal to m-1 for big-M constraint */
+    char continuous = 'I';
+    double lb = 1.0;
+    double ub = nnodes - 1;
+
+    /* ColumnNAME: array of array used to inject variables in CPLEX */
+    char** cname = (char**)calloc(1, sizeof(char*));
+    cname[0] = (char*)calloc(100, sizeof(char));
+
+    /* new variables associated with nodes, only n */
+    for (int i = 1; i < nnodes; i++) {
+        /* cost is zero for new variables, they matter for new constraints only
+         */
+        snprintf(cname[0], strlen(cname[0]), "u(%d)", i + 1);
+        double obj = 0;
+
+        /* inject variable and test it's position (upos) inside CPLEX */
+        if (CPXnewcols(env, lp, 1, &obj, &lb, &ub, &continuous, cname)) {
+            print_error("wrong CPXnewcols on x var.s");
+        }
+        if (CPXgetnumcols(env, lp) - 1 != upos(i, nnodes)) {
+            print_error(" wrong position for x var.s");
+        }
+    }
+
+    /* update the number of columns */
+    inst->ncols += nnodes;
+
+    int izero = 0;
+    int index[3];
+    double value[3];
+    double big_M = nnodes - 1.0;
+    double rhs = big_M - 1.0;
+    char sense = 'L';
+    int nnz = 3;
+
+    /* add lazy constraints  1.0 * u_i - 1.0 * u_j + M * x_ij <= M - 1
+     * for each arc (i,j) not touching node 0 */
+    for (int i = 1; i < nnodes; i++) {
+        for (int j = 1; j < nnodes; j++) {
+            if (i == j) continue;
+
+            snprintf(cname[0], strlen(cname[0]),
+                     "u-consistency for arc (%d,%d)", i + 1, j + 1);
+
+            /* build constraint equation */
+            index[0] = upos(i, nnodes);
+            value[0] = 1.0;
+            index[1] = upos(j, nnodes);
+            value[1] = -1.0;
+            index[2] = xxpos(i, j, nnodes);
+            value[2] = big_M;
+
+            if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero,
+                                      index, value, cname)) {
+                print_error("wrong CPXlazyconstraints() for u-consistency");
+            }
+        }
+    }
+
+    /* add lazy constraints 1.0 * x_ij + 1.0 * x_ji <= 1
+     * for each arc (i,j) with i < j */
+    rhs = 1.0;
+    nnz = 2;
+    for (int i = 0; i < nnodes; i++) {
+        for (int j = i + 1; j < nnodes; j++) {
+            snprintf(cname[0], strlen(cname[0]), "SEC on node pair (%d,%d)",
+                     i + 1, j + 1);
+
+            /* build constraint equation */
+            index[0] = xxpos(i, j, nnodes);
+            value[0] = 1.0;
+            index[1] = xxpos(j, i, nnodes);
+            value[1] = 1.0;
+            if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero,
+                                      index, value, cname)) {
+                print_error("wrong CPXlazyconstraints on 2-node SECs");
+            }
+        }
+    }
+
+    /* degree3 consts */
+    rhs = 2.0;
+    nnz = 3;
+    for (int i = 0; i < nnodes; i++) {
+        for (int j = i + 1; j < nnodes; j++) {
+            for (int k = j + 1; k < nnodes; k++) {
+                snprintf(cname[0], strlen(cname[0]),
+                         "SEC on node triplet (%d,%d,%d)", i + 1, j + 1, k + 1);
+
+                /* build constraint equation */
+                index[0] = xxpos(i, j, nnodes);
+                value[0] = 1.0;
+                index[1] = xxpos(j, k, nnodes);
+                value[1] = 1.0;
+                index[2] = xxpos(k, i, nnodes);
+                value[2] = 1.0;
+                if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero,
+                                          index, value, cname)) {
+                    print_error("wrong CPXlazyconstraints on 3-node SECs");
+                }
+
+                /* build constraint equation, inverse */
+                index[0] = xxpos(i, k, nnodes);
+                value[0] = 1.0;
+                index[1] = xxpos(k, j, nnodes);
+                value[1] = 1.0;
+                index[2] = xxpos(j, i, nnodes);
+                value[2] = 1.0;
+                if (CPXaddlazyconstraints(env, lp, 1, nnz, &rhs, &sense, &izero,
+                                          index, value, cname)) {
+                    print_error("wrong CPXlazyconstraints on 3-node SECs");
+                }
             }
         }
     }

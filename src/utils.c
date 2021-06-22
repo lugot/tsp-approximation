@@ -350,8 +350,11 @@ char* model_type_tostring(enum model_types model_type) {
         case MTZ_LAZY:
             snprintf(ans, bufsize, "mtz_lazy");
             break;
-        case MTZ_LAZY_NO2:
-            snprintf(ans, bufsize, "mtz_lazy_no2");
+        case MTZ_LAZY_DEG2:
+            snprintf(ans, bufsize, "mtz_lazy_deg2");
+            break;
+        case MTZ_LAZY_DEG3:
+            snprintf(ans, bufsize, "mtz_lazy_deg3");
             break;
         case MTZ_INDICATOR:
             snprintf(ans, bufsize, "mtz_indicator");

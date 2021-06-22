@@ -351,7 +351,7 @@ void print_solution(solution sol, int print_data) {
 
 /* plotters */
 void plot_graphviz(solution sol, int* edgecolors, int version) {
-    double box_size = 20.0;
+    double box_size = 5.0;
     double max_coord = 0.0;
 
     instance inst = sol->inst;
