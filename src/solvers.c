@@ -45,6 +45,8 @@ solution solve(instance inst, enum model_types model_type) {
         case GGLIT_STATIC:
         case GGLECT_STATIC:
         case GGLIT_LAZY:
+        case GGLECT_LAZY:
+        case GGLIT_STATIC_DEG2:
         case BENDERS:
         case BENDERS_CALLBACK:
         case HARD_FIXING:
@@ -220,6 +222,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
         case GGLIT_STATIC:
         case GGLECT_STATIC:
         case GGLIT_LAZY:
+        case GGLECT_LAZY:
+        case GGLIT_STATIC_DEG2:
             get_asymmsol(xstar, sol);
             break;
 

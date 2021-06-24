@@ -55,16 +55,18 @@ typedef struct doit_fn_input_t {
 } * doit_fn_input;
 
 enum model_types {
-    OPTIMAL_TOUR,      // 0
-    NOSEC,             // 1
-    MTZ_STATIC,        // 2
-    MTZ_LAZY,          // 3
-    MTZ_LAZY_DEG2,     // 4
-    MTZ_LAZY_DEG3,     // 5
-    MTZ_INDICATOR,     // 6
-    GGLIT_STATIC,      // not counf from here
-    GGLECT_STATIC,     // 6
-    GGLIT_LAZY,        // 7
+    OPTIMAL_TOUR,      // 0 1
+    NOSEC,             // 1 3
+    MTZ_STATIC,        // 2 7
+    MTZ_LAZY,          // 3 15
+    MTZ_LAZY_DEG2,     // 4 31
+    MTZ_LAZY_DEG3,     // 5 63
+    MTZ_INDICATOR,     // 6 127
+    GGLIT_STATIC,      // 7 255
+    GGLECT_STATIC,     // 8 511
+    GGLIT_LAZY,        // 9 1023
+    GGLECT_LAZY,       // 10 2047
+    GGLIT_STATIC_DEG2, // 11 4095
     BENDERS,           // 8
     BENDERS_CALLBACK,  // 9
     HARD_FIXING,       // 10

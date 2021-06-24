@@ -368,6 +368,12 @@ char* model_type_tostring(enum model_types model_type) {
         case GGLIT_LAZY:
             snprintf(ans, bufsize, "gglit_lazy");
             break;
+        case GGLECT_LAZY:
+            snprintf(ans, bufsize, "gglect_lazy");
+            break;
+        case GGLIT_STATIC_DEG2:
+            snprintf(ans, bufsize, "gglit_static_deg2");
+            break;
         case BENDERS:
             snprintf(ans, bufsize, "benders");
             break;

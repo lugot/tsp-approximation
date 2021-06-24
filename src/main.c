@@ -96,6 +96,24 @@ int main(int argc, char** argv) {
         case LOAD_DIR: {
             printf("loading from directory\n");
 
+            FILE* emergency_res;
+            emergency_res = fopen("emergency_res.csv", "a");
+            assert(emergency_res != NULL && "file not found while saving emer");
+
+            fprintf(emergency_res, "%d,", ntests);
+            for (int j = 0; j < ntests; j++) {
+                if (j == ntests - 1) {
+                    char* model_type_str = model_type_tostring(tests[j]);
+                    fprintf(emergency_res, "%s\n", model_type_str);
+                    free(model_type_str);
+                } else {
+                    char* model_type_str = model_type_tostring(tests[j]);
+                    fprintf(emergency_res, "%s,", model_type_str);
+                    free(model_type_str);
+                }
+            }
+            fclose(emergency_res);
+
             int ninstances;
             instance* insts =
                 parse_input_dir(options->folder, "tsp", &ninstances, 0, 4000);
@@ -104,6 +122,14 @@ int main(int argc, char** argv) {
                 instance inst = insts[i];
                 add_params(inst, params);
                 printf("instance %s:\n", inst->model_name);
+
+                FILE* emergency_res;
+                emergency_res = fopen("emergency_res.csv", "a");
+                assert(emergency_res != NULL &&
+                       "file not found while saving emer");
+
+                fprintf(emergency_res, "%s,", inst->model_name);
+                fclose(emergency_res);
 
                 for (int j = 0; j < ntests; j++) {
                     /* solve! */
@@ -114,6 +140,18 @@ int main(int argc, char** argv) {
                            model_type_str, inst->model_name, sol->zstar,
                            sol->solve_time);
                     free(model_type_str);
+
+                    FILE* emergency_res;
+                    emergency_res = fopen("emergency_res.csv", "a");
+                    assert(emergency_res != NULL &&
+                           "file not found while saving emer");
+
+                    if (j == ntests - 1) {
+                        fprintf(emergency_res, "%lf\n", sol->solve_time);
+                    } else {
+                        fprintf(emergency_res, "%lf,", sol->solve_time);
+                    }
+                    fclose(emergency_res);
 
                     if (EXTRA) plot_graphviz(sol, NULL, j);
                 }

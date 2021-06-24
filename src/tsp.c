@@ -8,7 +8,7 @@
 
 #include "../include/string.h"
 #include "../include/utils.h"
-#include "globals.h"
+#include "../include/globals.h"
 
 /* cplex param manipulators */
 cplex_params create_params() {
@@ -102,7 +102,11 @@ instance* generate_random_instances(int ninstances, int nnodes) {
 
     for (int i = 0; i < ninstances; i++) {
         /* between 0 and RAND_MAX (2^31 or smht here) */
-        insts[i] = generate_random_instance(rand_r(&seedp), nnodes);
+        int nfigures = 1 + (int) log10(nnodes);
+        int rand_id = rand_r(&seedp) % (1 << 16);
+        rand_id = rand_id * nfigures * 10 + nnodes;
+
+        insts[i] = generate_random_instance(rand_id, nnodes);
     }
 
     return insts;
