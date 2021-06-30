@@ -6,9 +6,9 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "../include/globals.h"
 #include "../include/string.h"
 #include "../include/utils.h"
-#include "../include/globals.h"
 
 /* cplex param manipulators */
 cplex_params create_params() {
@@ -82,7 +82,7 @@ instance generate_random_instance(int id, int nnodes) {
     inst->weight_type = ATT;
     inst->nnodes = nnodes;
 
-    int box_size = 20.0;
+    int box_size = 40.0;
     inst->nodes = (node*)calloc(nnodes, sizeof(struct node_t));
     for (int i = 0; i < nnodes; i++) {
         inst->nodes[i].x = (double)rand() / ((double)RAND_MAX / box_size);
@@ -102,7 +102,7 @@ instance* generate_random_instances(int ninstances, int nnodes) {
 
     for (int i = 0; i < ninstances; i++) {
         /* between 0 and RAND_MAX (2^31 or smht here) */
-        int nfigures = 1 + (int) log10(nnodes);
+        int nfigures = 1 + (int)log10(nnodes);
         int rand_id = rand_r(&seedp) % (1 << 16);
         rand_id = rand_id * nfigures * 10 + nnodes;
 
@@ -179,6 +179,8 @@ solution create_solution(instance inst, enum model_types model_type,
     sol->nedges = nedges;
     sol->edges = (edge*)calloc(nedges, sizeof(struct edge_t));
 
+    sol->t = tracker_create();
+
     return sol;
 }
 void add_solution(instance inst, solution sol) {
@@ -195,6 +197,7 @@ void free_solution(solution sol) {
     free(model_type_str);
     free(sol->edges);
 
+    tracker_free(sol->t);
     free(sol);
 }
 
@@ -411,31 +414,22 @@ void plot_graphviz(solution sol, int* edgecolors, int version) {
     }
     fprintf(fp, "}");
 
-    /* TODO(lugot): FIX */
-    /* bsize = 200; */
-    /* char* command = (char*)calloc(bsize, sizeof(char)); */
-    /* snprintf(command, bsize, */
-    /*          "(cd ../data_%s/%s && dot -Kneato %s.%d.dot -Tpng > %s.%d.png)",
-     */
-    /*          model_folder_tostring(inst->model_folder), inst->model_name, */
-    /*          inst->model_name, version, inst->model_name, version); */
-
-    /* printf("command: |%s|\n", command); */
-    /* system(command); */
-    /* free(command); */
-
     fclose(fp);
     free(fname);
 }
-void plot_profiler(instance* insts, int ninstances) {
+void plot_profiler(instance* insts, int ninstances, int optdist) {
     assert(insts != NULL);
     assert(insts[0] != NULL);
-    // ciao
+
+    char* filepath;
+    int bsize = 100;
+    filepath = (char*)calloc(bsize, sizeof(char));
+    snprintf(filepath, bsize, "../results/results%d.csv", optdist);
 
     /* remove and create new fresh csv */
-    remove("../results/results.csv");
+    remove(filepath);
     FILE* fp;
-    fp = fopen("../results/results.csv", "w");
+    fp = fopen(filepath, "w");
     assert(fp != NULL && "file not found while saving .csv");
 
     /* save the data */
@@ -450,10 +444,11 @@ void plot_profiler(instance* insts, int ninstances) {
         fprintf(fp, "%s", model_name_str);
         free(model_name_str);
 
-        if (i < nmodels - 1)
+        if (i < nmodels - 1) {
             fprintf(fp, ",");
-        else
+        } else {
             fprintf(fp, "\n");
+        }
     }
 
     for (int i = 0; i < ninstances; i++) {
@@ -465,18 +460,23 @@ void plot_profiler(instance* insts, int ninstances) {
         for (int j = 0; j < nmodels; j++) {
             assert(inst->sols[j]->model_type == insts[0]->sols[j]->model_type);
 
-            if (j < nmodels - 1)
-                fprintf(fp, "%lf,", inst->sols[j]->solve_time);
-            else
-                fprintf(fp, "%lf\n", inst->sols[j]->solve_time);
+            double time;
+            switch (optdist) {
+                case 0:
+                    time = inst->sols[j]->solve_time;
+                    break;
+                default:
+                    time = inst->sols[j]->heur_time[optdist - 1];
+                    break;
+            }
+
+            if (j < nmodels - 1) {
+                fprintf(fp, "%lf,", time);
+            } else {
+                fprintf(fp, "%lf\n", time);
+            }
         }
     }
 
     fclose(fp);
-
-    /* generate the plot */
-    // TODO(lugot): adjust timelimit
-    system(
-        "python3 ../results/perprof.py -D , -T 3600 -S 2 -M 2 "
-        "../results/results.csv ../results/pp.pdf -P 'model comparisons'");
 }

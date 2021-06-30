@@ -3,6 +3,8 @@
 
 #include <cplex.h>
 
+#include "../include/tracker.h"
+
 struct solution_t;
 
 enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };
@@ -55,28 +57,30 @@ typedef struct doit_fn_input_t {
 } * doit_fn_input;
 
 enum model_types {
-    OPTIMAL_TOUR,      // 0 1
-    NOSEC,             // 1 3
-    MTZ_STATIC,        // 2 7
-    MTZ_LAZY,          // 3 15
-    MTZ_LAZY_DEG2,     // 4 31
-    MTZ_LAZY_DEG3,     // 5 63
-    MTZ_INDICATOR,     // 6 127
-    GGLIT_STATIC,      // 7 255
-    GGLECT_STATIC,     // 8 511
-    GGLIT_LAZY,        // 9 1023
-    GGLECT_LAZY,       // 10 2047
-    GGLIT_STATIC_DEG2, // 11 4095
-    BENDERS,           // 8
-    BENDERS_CALLBACK,  // 9
-    HARD_FIXING,       // 10
-    SOFT_FIXING,       // 11
-    MST,               // 12
-    GREEDY,            // 13
-    GRASP,             // 14
-    EXTRA_MILEAGE,     // 15
-    VNS,               // 16
-    TABU_SEACH         // 17
+    OPTIMAL_TOUR,
+    NOSEC,
+    MTZ_STATIC,
+    MTZ_LAZY,
+    MTZ_LAZY_DEG2,
+    MTZ_LAZY_DEG3,
+    MTZ_INDICATOR,
+    GGLIT_STATIC,
+    GGLECT_STATIC,
+    GGLIT_LAZY,
+    GGLECT_LAZY,
+    GGLIT_STATIC_DEG2,
+    BENDERS,
+    BENDERS_TWOPHASES,
+    BENDERS_CALLBACK,
+    HARD_FIXING,
+    SOFT_FIXING,
+    MST,
+    GREEDY,
+    GRASP,
+    EXTRA_MILEAGE,
+    VNS_RANDOM,
+    VNS_GREEDY,
+    TABU_SEACH
 };
 typedef struct solution_t {
     struct instance_t* inst;
@@ -91,6 +95,9 @@ typedef struct solution_t {
     double distance_time;
     double build_time;
     double solve_time;
+
+    tracker t;
+    double heur_time[3];
 } * solution;
 
 /* cplex param manipulators */
@@ -119,6 +126,6 @@ void print_solution(solution sol, int print_data);
 
 /* plotters */
 void plot_graphviz(solution sol, int* edgecolors, int version);
-void plot_profiler(instance* insts, int ninstances);
+void plot_profiler(instance* insts, int ninstances, int optdist);
 
 #endif  // INCLUDE_TSP_H_

@@ -1,12 +1,12 @@
-#include "../include/models/fixing.h"
+#include "../../include/models/fixing.h"
 
 #include <assert.h>
 #include <string.h>
 
-#include "../include/adjlist.h"
-#include "../include/globals.h"
-#include "../include/solvers.h"
-#include "../include/utils.h"
+#include "../../include/adjlist.h"
+#include "../../include/globals.h"
+#include "../../include/solvers.h"
+#include "../../include/utils.h"
 
 void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
                          double* xstar, int perc) {

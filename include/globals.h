@@ -5,6 +5,11 @@
 #define EPSILON 1e-9
 #define INF 1e9
 
+#define BENDERS2P_PHASE2PERC 80
+#define BENDERS2P_NODELIM 3
+#define BENDERSCALLBACK_RANDOMPERC 50
+// #define BENDERSCALLBACK_NODELIM 6
+
 #define HF_PERCENTAGE 80
 #define HF_ITERATIONS 20
 #define HF_INITIAL_PERC_TIME 0.1
@@ -28,5 +33,7 @@ extern int VERBOSE;
 extern int EXTRA;
 extern int SUPPRESS_CALLBACK;
 extern int GEN_NNODES;
+
+extern int hook;
 
 #endif  // INCLUDE_GLOBALS_H_

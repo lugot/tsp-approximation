@@ -12,6 +12,8 @@
 
 #include "../include/globals.h"
 #include "../include/model_builder.h"
+#include "../include/models/benders.h"
+#include "../include/models/fixing.h"
 #include "../include/pqueue.h"
 #include "../include/refinements.h"
 #include "../include/tsp.h"
@@ -48,6 +50,7 @@ solution solve(instance inst, enum model_types model_type) {
         case GGLECT_LAZY:
         case GGLIT_STATIC_DEG2:
         case BENDERS:
+        case BENDERS_TWOPHASES:
         case BENDERS_CALLBACK:
         case HARD_FIXING:
         case SOFT_FIXING:
@@ -70,7 +73,11 @@ solution solve(instance inst, enum model_types model_type) {
             sol = TSPextramileage(inst);
             break;
 
-        case VNS:
+        case VNS_RANDOM:
+            sol = TSPvns(inst, NULL);
+            break;
+
+        case VNS_GREEDY:
             sol = TSPvns(inst, NULL);
             break;
 
@@ -110,20 +117,39 @@ solution TSPopt(instance inst, enum model_types model_type) {
      * - EpRightHandSide: the less or equal satisfied up to this tollerance,
      * usually 1e-5, with bigM 1e-9 */
     CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit);
-    CPXsetdblparam(env, CPX_PARAM_EPINT, 0.0);
+    double epint = 0.0; /*  suppress warning on lazy constraints GG */
+    if (model_type == GGLIT_LAZY || model_type == GGLECT_LAZY ||
+        model_type == MTZ_LAZY || model_type == MTZ_LAZY_DEG2 ||
+        model_type == MTZ_LAZY_DEG3) {
+        /* double the EPRHS, but even with bigM, this is safe because our M is
+         * O(n) */
+        epint = 2e-9;
+    }
+    CPXsetdblparam(env, CPX_PARAM_EPINT, epint);
     CPXsetdblparam(env, CPX_PARAM_EPRHS, 1e-9);
+
     // CPXsetintparam(env, CPX_PARAM_RANDOMSEED, seed); todo: add a seed to
     // Cplexrun (Passed by TSP opt?) TODO
 
     /* save the log of the execution */
-    char logfile[] = "execution.log";
-    CPXsetlogfilename(env, logfile, "w");
+    int bufsize = 100;
+    char* logfile = (char*)malloc(bufsize * sizeof(char));
+    char* model_type_str = model_type_tostring(model_type);
+    snprintf(logfile, bufsize, "execution_%s_%s.log", inst->model_name,
+             model_type_str);
+    CPXsetlogfilename(env, logfile, "a");
+    free(model_type_str);
+    free(logfile);
 
     /* populate enviorment with model data */
     sol->build_time = build_tsp_model(env, lp, inst, model_type);
 
     /* model preprocessing: add some callbacks or set params before execution */
     switch (model_type) {
+        case BENDERS_TWOPHASES: {
+            CPXsetdblparam(env, CPX_PARAM_NODELIM, BENDERS2P_NODELIM);
+        } break;
+
         case BENDERS_CALLBACK: {
             CPXLONG contextid =
                 CPX_CALLBACKCONTEXT_CANDIDATE | CPX_CALLBACKCONTEXT_RELAXATION;
@@ -199,7 +225,16 @@ solution TSPopt(instance inst, enum model_types model_type) {
             struct timespec s, e;
             s.tv_sec = e.tv_sec = -1;
             stopwatch(&s, &e);
-            perform_BENDERS(env, lp, inst, xstar, s, e);
+            perform_BENDERS(env, lp, inst, xstar, s, e, 2);
+            get_symmsol(xstar, sol);
+            break;
+        }
+
+        case BENDERS_TWOPHASES: {
+            struct timespec s, e;
+            s.tv_sec = e.tv_sec = -1;
+            stopwatch(&s, &e);
+            perform_BENDERS(env, lp, inst, xstar, s, e, 1);
             get_symmsol(xstar, sol);
             break;
         }
@@ -236,7 +271,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
         case GREEDY:
         case GRASP:
         case EXTRA_MILEAGE:
-        case VNS:
+        case VNS_RANDOM:
+        case VNS_GREEDY:
         case TABU_SEACH:
             assert(0 == 1 && "tried to solve a metaheuristic");
             break;
@@ -253,8 +289,8 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
-    char solfile[] = "solution.xml";
-    CPXsolwrite(env, lp, solfile);
+    /* char solfile[] = "solution.xml"; */
+    /* CPXsolwrite(env, lp, solfile); */
 
     CPXfreeprob(env, &lp);
     CPXcloseCPLEX(&env);
@@ -306,8 +342,6 @@ solution TSPminspantree(instance inst) {
 
             i++;
         }
-
-        prev = next;
     }
     /* do not forget to close the loop! */
     sol->edges[i] = (edge){prev, sol->edges[0].i};
@@ -318,8 +352,8 @@ solution TSPminspantree(instance inst) {
     if ((succ = edges_tosucc(sol->edges, nnodes)) == NULL) {
         print_error("solver didnt produced a tour");
     }
-    sol->zstar += twoopt_refinement(inst, succ, nnodes);
-    sol->zstar += threeopt_refinement(inst, succ, nnodes);
+    // sol->zstar += twoopt_refinement(inst, succ, nnodes);
+    /* sol->zstar += threeopt_refinement(inst, succ, nnodes); */
     /* store the succ as usual edges array */
     for (int j = 0; j < nnodes; j++) {
         sol->edges[j] = (edge){j, succ[j]};
@@ -390,8 +424,15 @@ solution TSPgreedy(instance inst) {
     /* succ used as visited: if -1 means not visited */
     int* succ = (int*)malloc(nnodes * sizeof(int));
 
+    /* initialize total wall-clock time */
+    struct timespec s, e;
+    s.tv_sec = e.tv_sec = -1;
+    stopwatch(&s, &e);
+
     /* iterate over staring point (all possibilities) */
-    for (int start = 0; start < 1; start++) {
+    for (int start = 0;
+         start < nnodes && stopwatch(&s, &e) < inst->params->timelimit;
+         start++) {
         /* reset succ: -1 means not visited*/
         memset(succ, -1, nnodes * sizeof(int));
 
@@ -432,9 +473,6 @@ solution TSPgreedy(instance inst) {
         succ[next] = start;
         obj += dist(next, start, inst);
 
-        /* refine solution! (2opt only) */
-        obj += twoopt_refinement(inst, succ, nnodes);
-
         if (VERBOSE) printf("\tfinish selecting, obj: %lf\n", obj);
 
         /* select best tour */
@@ -443,10 +481,10 @@ solution TSPgreedy(instance inst) {
                 sol->edges[i] = (edge){i, succ[i]};
             }
             sol->zstar = obj;
+
+            tracker_add(sol->t, stopwatch(&s, &e), obj);
         }
     }
-    /* refine it! (apply also 3opt) */
-    sol->zstar += threeopt_refinement(inst, succ, nnodes);
 
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
@@ -476,14 +514,13 @@ solution TSPgrasp(instance inst) {
     /* succ used as visited: if -1 means not visited */
     int* succ = (int*)malloc(nnodes * sizeof(int));
 
-    /* iterate over staring point (randomly) until timelimit */
-    double timeleft = inst->params->timelimit * (1.0 - GRASP_VNS_PERC_TIME);
-    while (timeleft > 0) {
-        /* initialize total wall-clock time for iteration */
-        struct timespec s, e;
-        s.tv_sec = e.tv_sec = -1;
-        stopwatch_n(&s, &e);
+    /* initialize total wall-clock time */
+    struct timespec s, e;
+    s.tv_sec = e.tv_sec = -1;
+    stopwatch(&s, &e);
 
+    /* iterate over staring point (randomly) until timelimit */
+    while (stopwatch(&s, &e) / 1000.0 < inst->params->timelimit) {
         /* reset succ */
         memset(succ, -1, nnodes * sizeof(int));
 
@@ -519,9 +556,6 @@ solution TSPgrasp(instance inst) {
         succ[next] = start;
         obj += dist(next, start, inst);
 
-        /* refine solution (2opt only)! */
-        // obj += twoopt_refinement(inst, succ, nnodes);
-
         if (VERBOSE) printf(" -> obj: %lf\n", obj);
 
         /* select best tour */
@@ -530,32 +564,18 @@ solution TSPgrasp(instance inst) {
                 sol->edges[i] = (edge){i, succ[i]};
             }
             sol->zstar = obj;
+
+            tracker_add(sol->t, stopwatch(&s, &e), obj);
         }
-
-        /* update timelimit */
-        timeleft -= stopwatch(&s, &e) / 1e3;
     }
+
+    /* add the solution to the pool associated with it's instance */
+    add_solution(inst, sol);
+
     topkqueue_free(tk);
-
-    /* refine it! */
-    free(succ);
-    if ((succ = edges_tosucc(sol->edges, nnodes)) == NULL) {
-        print_error("solver didnt produced a tour");
-    }
-    free_solution(sol);
-    /* TODO(lugot): AVOID so many frees */
-
-    /* update timelimit and refine using vns */
-    inst->params->timelimit *= GRASP_VNS_PERC_TIME;
-    solution refined_sol = TSPvns(inst, succ);
-
-    refined_sol->model_type = GRASP;
     free(succ);
 
-    /* no need to add, added by TSPvns function */
-    /* add_solution(inst, refined_sol); */
-
-    return refined_sol;
+    return sol;
 }
 
 solution TSPextramileage(instance inst) {
@@ -656,19 +676,6 @@ solution TSPextramileage(instance inst) {
                    oldj + 1);
     }
 
-    /* refine it! */
-    int* succ;
-    if ((succ = edges_tosucc(sol->edges, nnodes)) == NULL) {
-        print_error("solver didnt produced a tour");
-    }
-    sol->zstar += twoopt_refinement(inst, succ, nnodes);
-    sol->zstar += threeopt_refinement(inst, succ, nnodes);
-    /* store the succ as usual edges array */
-    for (int i = 0; i < nnodes; i++) {
-        sol->edges[i] = (edge){i, succ[i]};
-    }
-    free(succ);
-
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
 
@@ -711,7 +718,7 @@ solution TSPvns(instance inst, int* succ) {
     unsigned int seedp = time(NULL);
 
     /* track the best solution up to this point */
-    solution sol = create_solution(inst, VNS, nnodes);
+    solution sol = create_solution(inst, VNS_RANDOM, nnodes);
     sol->distance_time = 0.0;
     sol->zstar = DBL_MAX;
 

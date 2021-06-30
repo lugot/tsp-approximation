@@ -151,6 +151,8 @@ int* adjlist_get_subtour(adjlist l, int* subsize) {
         l->i++;
     if (l->i == N) {
         *subsize = 0;
+        free(subtour);
+        free(q);
         return NULL;
     }
 
@@ -178,14 +180,21 @@ int* adjlist_get_subtour(adjlist l, int* subsize) {
             subtour[(*subsize)++] = v;
         }
     }
+
     free(q);
 
-    return *subsize == N ? NULL : subtour;
+    if (*subsize == N) {
+        free(subtour);
+        return NULL;
+    } else {
+        return subtour;
+    }
 }
 
 int adjlist_single_tour(adjlist l) {
     int subsize;
-    adjlist_get_subtour(l, &subsize);
+    int* subtour = adjlist_get_subtour(l, &subsize);
+    free(subtour);
 
     adjlist_reset(l);
 

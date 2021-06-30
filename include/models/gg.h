@@ -3,7 +3,7 @@
 
 #include <cplex.h>
 
-#include "../include/model_builder.h"
+#include "../../include/model_builder.h"
 
 void add_GG_variables(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_GGlit_static_sec(CPXENVptr env, CPXLPptr lp, instance inst);

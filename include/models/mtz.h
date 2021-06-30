@@ -3,7 +3,7 @@
 
 #include <cplex.h>
 
-#include "../include/tsp.h"
+#include "../../include/tsp.h"
 
 void add_MTZ_variables(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_MTZ_static_sec(CPXENVptr env, CPXLPptr lp, instance inst);

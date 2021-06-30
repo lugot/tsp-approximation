@@ -3,7 +3,7 @@
 
 #include <cplex.h>
 
-#include "../include/tsp.h"
+#include "../../include/tsp.h"
 
 void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
                          double* xstar, int perc);

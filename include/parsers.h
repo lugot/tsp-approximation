@@ -16,6 +16,7 @@ typedef struct run_options_t {
     int battery_test;
     enum model_folders folder;
     int tests;
+    int load_optimal;
 } * run_options;
 
 run_options create_options();

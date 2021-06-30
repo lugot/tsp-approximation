@@ -322,6 +322,9 @@ int pathcmp(const void* a, const void* b, void* data) {
     if (pathlenghts[*((int*)a)] < pathlenghts[*((int*)b)]) return -1;
     return 1;
 }
+int stringcmp(const void* p1, const void* p2) {
+    return strcmp(*(const char**)p1, *(const char**)p2);
+}
 
 /* computational geometry helpers */
 double cross(node a, node b) { return a.x * b.y - a.y * b.x; }
@@ -377,6 +380,9 @@ char* model_type_tostring(enum model_types model_type) {
         case BENDERS:
             snprintf(ans, bufsize, "benders");
             break;
+        case BENDERS_TWOPHASES:
+            snprintf(ans, bufsize, "benders_twophases");
+            break;
         case BENDERS_CALLBACK:
             snprintf(ans, bufsize, "benders_callback");
             break;
@@ -398,8 +404,11 @@ char* model_type_tostring(enum model_types model_type) {
         case EXTRA_MILEAGE:
             snprintf(ans, bufsize, "extra_mileage");
             break;
-        case VNS:
+        case VNS_RANDOM:
             snprintf(ans, bufsize, "vns_randomstart");
+            break;
+        case VNS_GREEDY:
+            snprintf(ans, bufsize, "vns_greedystart");
             break;
         case TABU_SEACH:
             snprintf(ans, bufsize, "tabu_search_randomstart");
@@ -515,6 +524,8 @@ char** list_files(enum model_folders folder, int* nmodels) {
         i++;
     }
     closedir(dp);
+
+    qsort(model_names, *nmodels, sizeof(char*), stringcmp);
 
     return model_names;
 }

@@ -51,6 +51,10 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
             add_symm_variables(env, lp, inst);
             add_symm_constraints(env, lp, inst);
             break;
+        case BENDERS_TWOPHASES:
+            add_symm_variables(env, lp, inst);
+            add_symm_constraints(env, lp, inst);
+            break;
         case BENDERS_CALLBACK:
             add_symm_variables(env, lp, inst);
             add_symm_constraints(env, lp, inst);
@@ -134,7 +138,8 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
         case GREEDY:
         case EXTRA_MILEAGE:
         case OPTIMAL_TOUR:
-        case VNS:
+        case VNS_RANDOM:
+        case VNS_GREEDY:
         case TABU_SEACH:
             print_error("unhandeled model type in variables");
     }
@@ -143,26 +148,28 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
     char* filename;
     int bufsize = 100;
     filename = (char*)calloc(bufsize, sizeof(char));
-    if (inst->model_folder == TSPLIB)
+    if (inst->model_folder == TSPLIB) {
         snprintf(filename, bufsize, "../data_tsplib/%s/%s.", inst->model_name,
                  inst->model_name);
-    if (inst->model_folder == GENERATED)
+    }
+    if (inst->model_folder == GENERATED) {
         snprintf(filename, bufsize, "../data_generated/%s/%s.",
                  inst->model_name, inst->model_name);
+    }
 
     /* filename depend on model type */
     char* model_type_str = model_type_tostring(model_type);
     snprintf(filename + strlen(filename), bufsize, "%s.lp", model_type_str);
     CPXwriteprob(env, lp, filename, "LP");
 
+    free(model_type_str);
+    free(filename);
+
     /* save build time */
     gettimeofday(&end, NULL);
     int64_t seconds = (end.tv_sec - start.tv_sec);
     int64_t micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
     return micros / 1000.0;
-
-    free(model_type_str);
-    free(filename);
 }
 
 void add_symm_variables(CPXENVptr env, CPXLPptr lp, instance inst) {

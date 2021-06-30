@@ -30,6 +30,7 @@ int* randomtour(int nnodes, unsigned int seedp);
 int wedgecmp(const void* a, const void* b);
 int nodelexcmp(const void* a, const void* b);
 int pathcmp(const void* a, const void* b, void* data);
+int stringcmp(const void* p1, const void* p2);
 
 /* computational geometry helpers */
 double cross(node a, node b);

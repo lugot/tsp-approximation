@@ -1,8 +1,8 @@
-#include "../include/models/mtz.h"
+#include "../../include/models/mtz.h"
 
 #include <string.h>
 
-#include "../include/utils.h"
+#include "../../include/utils.h"
 
 void add_MTZ_variables(CPXENVptr env, CPXLPptr lp, instance inst) {
     int nnodes = inst->nnodes;

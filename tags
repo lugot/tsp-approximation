@@ -125,10 +125,14 @@ $(OBJS)	src/Makefile	/^$(OBJS) : $(HEADERS)$/;"	t
 9	compile_commands.json	/^      "-o",$/;"	s	array:8.arguments
 AR	src/Makefile	/^AR = ar rc$/;"	m
 ATT	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
-BENDERS	include/tsp.h	/^    BENDERS,           \/\/ 8$/;"	e	enum:model_types
-BENDERS_CALLBACK	include/tsp.h	/^    BENDERS_CALLBACK,  \/\/ 9$/;"	e	enum:model_types
+BENDERS	include/tsp.h	/^    BENDERS,$/;"	e	enum:model_types
+BENDERS2P_NODELIM	include/globals.h	/^#define BENDERS2P_NODELIM /;"	d
+BENDERS2P_PHASE2PERC	include/globals.h	/^#define BENDERS2P_PHASE2PERC /;"	d
+BENDERSCALLBACK_RANDOMPERC	include/globals.h	/^#define BENDERSCALLBACK_RANDOMPERC /;"	d
+BENDERS_CALLBACK	include/tsp.h	/^    BENDERS_CALLBACK,$/;"	e	enum:model_types
+BENDERS_TWOPHASES	include/tsp.h	/^    BENDERS_TWOPHASES,$/;"	e	enum:model_types
 CAPACITY	src/parsers.c	/^    CAPACITY,$/;"	e	enum:sections	file:
-CC	src/Makefile	/^CC = gcc -static$/;"	m
+CC	src/Makefile	/^CC = gcc$/;"	m
 CCDIR	src/Makefile	/^CCDIR = \/opt\/concorde$/;"	m
 CFLAGS	src/Makefile	/^CFLAGS = -Wall -O0 -g$/;"	m
 COMMENT	src/parsers.c	/^    COMMENT,$/;"	e	enum:sections	file:
@@ -151,22 +155,22 @@ EUC_2D	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED
 EXE	src/Makefile	/^EXE = tsp_approx$/;"	m
 EXPLICIT	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 EXTRA	src/globals.c	/^int EXTRA = 0;$/;"	v	typeref:typename:int
-EXTRA_MILEAGE	include/tsp.h	/^    EXTRA_MILEAGE,     \/\/ 15$/;"	e	enum:model_types
+EXTRA_MILEAGE	include/tsp.h	/^    EXTRA_MILEAGE,$/;"	e	enum:model_types
 FIXED_EDGE_SECTION	src/parsers.c	/^    FIXED_EDGE_SECTION,$/;"	e	enum:sections	file:
 GENERATE	include/parsers.h	/^    GENERATE,$/;"	e	enum:run_modes
 GENERATED	include/tsp.h	/^enum model_folders { TSPLIB, GENERATED };$/;"	e	enum:model_folders
 GEN_NNODES	src/globals.c	/^int GEN_NNODES = 50;$/;"	v	typeref:typename:int
 GEO	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
-GGLECT_LAZY	include/tsp.h	/^    GGLECT_LAZY,       \/\/ 10 2047$/;"	e	enum:model_types
-GGLECT_STATIC	include/tsp.h	/^    GGLECT_STATIC,     \/\/ 8 511$/;"	e	enum:model_types
-GGLIT_LAZY	include/tsp.h	/^    GGLIT_LAZY,        \/\/ 9 1023$/;"	e	enum:model_types
-GGLIT_STATIC	include/tsp.h	/^    GGLIT_STATIC,      \/\/ 7 255$/;"	e	enum:model_types
-GGLIT_STATIC_DEG2	include/tsp.h	/^    GGLIT_STATIC_DEG2, \/\/ 11 4095$/;"	e	enum:model_types
-GRASP	include/tsp.h	/^    GRASP,             \/\/ 14$/;"	e	enum:model_types
+GGLECT_LAZY	include/tsp.h	/^    GGLECT_LAZY,$/;"	e	enum:model_types
+GGLECT_STATIC	include/tsp.h	/^    GGLECT_STATIC,$/;"	e	enum:model_types
+GGLIT_LAZY	include/tsp.h	/^    GGLIT_LAZY,$/;"	e	enum:model_types
+GGLIT_STATIC	include/tsp.h	/^    GGLIT_STATIC,$/;"	e	enum:model_types
+GGLIT_STATIC_DEG2	include/tsp.h	/^    GGLIT_STATIC_DEG2,$/;"	e	enum:model_types
+GRASP	include/tsp.h	/^    GRASP,$/;"	e	enum:model_types
 GRASP_K	include/globals.h	/^#define GRASP_K /;"	d
 GRASP_VNS_PERC_TIME	include/globals.h	/^#define GRASP_VNS_PERC_TIME /;"	d
-GREEDY	include/tsp.h	/^    GREEDY,            \/\/ 13$/;"	e	enum:model_types
-HARD_FIXING	include/tsp.h	/^    HARD_FIXING,       \/\/ 10$/;"	e	enum:model_types
+GREEDY	include/tsp.h	/^    GREEDY,$/;"	e	enum:model_types
+HARD_FIXING	include/tsp.h	/^    HARD_FIXING,$/;"	e	enum:model_types
 HEADERS	src/Makefile	/^HEADERS =$/;"	m
 HF_INITIAL_PERC_TIME	include/globals.h	/^#define HF_INITIAL_PERC_TIME /;"	d
 HF_ITERATIONS	include/globals.h	/^#define HF_ITERATIONS /;"	d
@@ -183,6 +187,7 @@ INCLUDE_PARSERS_H_	include/parsers.h	/^#define INCLUDE_PARSERS_H_$/;"	d
 INCLUDE_PQUEUE_H_	include/pqueue.h	/^#define INCLUDE_PQUEUE_H_$/;"	d
 INCLUDE_REFINEMENTS_H_	include/refinements.h	/^#define INCLUDE_REFINEMENTS_H_$/;"	d
 INCLUDE_SOLVERS_H_	include/solvers.h	/^#define INCLUDE_SOLVERS_H_$/;"	d
+INCLUDE_TRACKER_H_	include/tracker.h	/^#define INCLUDE_TRACKER_H_$/;"	d
 INCLUDE_TSP_H_	include/tsp.h	/^#define INCLUDE_TSP_H_$/;"	d
 INCLUDE_UNION_FIND_H_	include/union_find.h	/^#define INCLUDE_UNION_FIND_H_$/;"	d
 INCLUDE_UTILS_H_	include/utils.h	/^#define INCLUDE_UTILS_H_$/;"	d
@@ -193,21 +198,21 @@ LIBS	src/Makefile	/^LIBS = -L${CPLEX_HOME}\/lib\/x86-64_linux\/static_pic -L. -l
 LOAD_DIR	include/parsers.h	/^    LOAD_DIR$/;"	e	enum:run_modes
 MAX_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
 MIN_HEAP	include/pqueue.h	/^enum modes { MAX_HEAP, MIN_HEAP };$/;"	e	enum:modes
-MST	include/tsp.h	/^    MST,               \/\/ 12$/;"	e	enum:model_types
-MTZ_INDICATOR	include/tsp.h	/^    MTZ_INDICATOR,     \/\/ 6 127$/;"	e	enum:model_types
-MTZ_LAZY	include/tsp.h	/^    MTZ_LAZY,          \/\/ 3 15$/;"	e	enum:model_types
-MTZ_LAZY_DEG2	include/tsp.h	/^    MTZ_LAZY_DEG2,     \/\/ 4 31$/;"	e	enum:model_types
-MTZ_LAZY_DEG3	include/tsp.h	/^    MTZ_LAZY_DEG3,     \/\/ 5 63$/;"	e	enum:model_types
-MTZ_STATIC	include/tsp.h	/^    MTZ_STATIC,        \/\/ 2 7$/;"	e	enum:model_types
+MST	include/tsp.h	/^    MST,$/;"	e	enum:model_types
+MTZ_INDICATOR	include/tsp.h	/^    MTZ_INDICATOR,$/;"	e	enum:model_types
+MTZ_LAZY	include/tsp.h	/^    MTZ_LAZY,$/;"	e	enum:model_types
+MTZ_LAZY_DEG2	include/tsp.h	/^    MTZ_LAZY_DEG2,$/;"	e	enum:model_types
+MTZ_LAZY_DEG3	include/tsp.h	/^    MTZ_LAZY_DEG3,$/;"	e	enum:model_types
+MTZ_STATIC	include/tsp.h	/^    MTZ_STATIC,$/;"	e	enum:model_types
 N	include/adjlist.h	/^    int N;$/;"	m	struct:adjlist_t	typeref:typename:int
 N	include/union_find.h	/^    int N;$/;"	m	struct:union_find_t	typeref:typename:int
 NAME	src/parsers.c	/^    NAME,$/;"	e	enum:sections	file:
 NODE_COORD_SECTION	src/parsers.c	/^    NODE_COORD_SECTION,$/;"	e	enum:sections	file:
 NODE_COORD_TYPE	src/parsers.c	/^    NODE_COORD_TYPE,$/;"	e	enum:sections	file:
-NOSEC	include/tsp.h	/^    NOSEC,             \/\/ 1 3$/;"	e	enum:model_types
+NOSEC	include/tsp.h	/^    NOSEC,$/;"	e	enum:model_types
 NOT_SPECIFIED	include/parsers.h	/^    NOT_SPECIFIED,$/;"	e	enum:run_modes
 OBJS	src/Makefile	/^OBJS = globals.o main.o tsp.o parsers.o utils.o solvers.o union_find.o model_builder.o models\/m/;"	m
-OPTIMAL_TOUR	include/tsp.h	/^    OPTIMAL_TOUR,      \/\/ 0 1$/;"	e	enum:model_types
+OPTIMAL_TOUR	include/tsp.h	/^    OPTIMAL_TOUR,$/;"	e	enum:model_types
 OS	src/Makefile	/^OS := $(shell uname)$/;"	m
 REAL	include/tsp.h	/^enum costs { INTEGER, REAL };$/;"	e	enum:costs
 RM	src/Makefile	/^RM = rm -rf$/;"	m
@@ -216,10 +221,10 @@ SF_INITIAL_PERC_TIME	include/globals.h	/^#define SF_INITIAL_PERC_TIME /;"	d
 SF_K_STEP	include/globals.h	/^#define SF_K_STEP /;"	d
 SF_MAX_K	include/globals.h	/^#define SF_MAX_K /;"	d
 SINGLE_MODEL	include/parsers.h	/^    SINGLE_MODEL,$/;"	e	enum:run_modes
-SOFT_FIXING	include/tsp.h	/^    SOFT_FIXING,       \/\/ 11$/;"	e	enum:model_types
+SOFT_FIXING	include/tsp.h	/^    SOFT_FIXING,$/;"	e	enum:model_types
 STATIC	include/model_builder.h	/^    STATIC,$/;"	e	enum:modes_t
 SUPPRESS_CALLBACK	src/globals.c	/^int SUPPRESS_CALLBACK = 1;$/;"	v	typeref:typename:int
-TABU_SEACH	include/tsp.h	/^    TABU_SEACH         \/\/ 17$/;"	e	enum:model_types
+TABU_SEACH	include/tsp.h	/^    TABU_SEACH$/;"	e	enum:model_types
 TOUR	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
 TOUR_SECTION	src/parsers.c	/^    TOUR_SECTION,$/;"	e	enum:sections	file:
 TSP	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };$/;"	e	enum:instance_types
@@ -243,17 +248,18 @@ UNHANDLED_INSTANCE_TYPE	include/tsp.h	/^enum instance_types { TSP, TOUR, UNHANDL
 UNHANDLED_SECTION	src/parsers.c	/^    UNHANDLED_SECTION,$/;"	e	enum:sections	file:
 UNHANDLED_WEIGHT_TYPE	include/tsp.h	/^enum weight_types { ATT, EUC_2D, GEO, EXPLICIT, UNHANDLED_WEIGHT_TYPE };$/;"	e	enum:weight_types
 VERBOSE	src/globals.c	/^int VERBOSE = 0;$/;"	v	typeref:typename:int
-VNS	include/tsp.h	/^    VNS,               \/\/ 16$/;"	e	enum:model_types
 VNS	solvers.c	/^solution VNS(instance inst, solution sol)$/;"	f	typeref:typename:solution
+VNS_GREEDY	include/tsp.h	/^    VNS_GREEDY,$/;"	e	enum:model_types
 VNS_K_MAX	include/globals.h	/^#define VNS_K_MAX /;"	d
 VNS_K_START	include/globals.h	/^#define VNS_K_START /;"	d
 VNS_K_STEP	include/globals.h	/^#define VNS_K_STEP /;"	d
+VNS_RANDOM	include/tsp.h	/^    VNS_RANDOM,$/;"	e	enum:model_types
 XSMALL	include/globals.h	/^#define XSMALL /;"	d
 _GNU_SOURCE	solvers.c	/^#define _GNU_SOURCE$/;"	d	file:
 _GNU_SOURCE	src/refinements.c	/^#define _GNU_SOURCE$/;"	d	file:
 __init__	results/perprof.py	/^	def __init__(self):$/;"	m	class:CmdLineParser
 addOption	results/perprof.py	/^	def addOption(self, *args, **kwargs):$/;"	m	class:CmdLineParser
-add_BENDERS_sec	src/models/benders.c	/^void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {$/;"	f	typeref:typename:void
+add_BENDERS_sec	src/models/benders.c	/^int add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {$/;"	f	typeref:typename:int
 add_BENDERS_sec_callback_candidate	src/models/benders.c	/^int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,$/;"	f	typeref:typename:int CPXPUBLIC
 add_BENDERS_sec_callback_driver	src/models/benders.c	/^int CPXPUBLIC add_BENDERS_sec_callback_driver(CPXCALLBACKCONTEXTptr context,$/;"	f	typeref:typename:int CPXPUBLIC
 add_BENDERS_sec_callback_relaxation	src/models/benders.c	/^int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr context,$/;"	f	typeref:typename:int CPXPUBLIC
@@ -304,6 +310,7 @@ bit	include/adjlist.h	/^    int bit;$/;"	m	struct:adjlist_t	typeref:typename:int
 build_time	include/tsp.h	/^    double build_time;$/;"	m	struct:solution_t	typeref:typename:double
 build_tsp_model	src/model_builder.c	/^double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,$/;"	f	typeref:typename:double
 capacity	include/pqueue.h	/^    int capacity;$/;"	m	struct:pqueue_t	typeref:typename:int
+capacity	include/tracker.h	/^    int capacity;$/;"	m	struct:tracker_t	typeref:typename:int
 capacity	include/union_find.h	/^    int capacity;$/;"	m	struct:tree_node_t	typeref:typename:int
 ccw	src/utils.c	/^int ccw(node a, node b, node c) {$/;"	f	typeref:typename:int
 clean	src/Makefile	/^clean:$/;"	t
@@ -366,6 +373,8 @@ get_asymmsol	solvers.c	/^void get_asymmsol(double* xstar, solution sol) {$/;"	f	
 get_asymmsol	src/solvers.c	/^void get_asymmsol(double* xstar, solution sol) {$/;"	f	typeref:typename:void
 get_symmsol	solvers.c	/^void get_symmsol(double* xstar, solution sol) {$/;"	f	typeref:typename:void
 get_symmsol	src/solvers.c	/^void get_symmsol(double* xstar, solution sol) {$/;"	f	typeref:typename:void
+heur_time	include/tsp.h	/^    double heur_time[3];$/;"	m	struct:solution_t	typeref:typename:double[3]
+hook	src/globals.c	/^int hook = 0;$/;"	v	typeref:typename:int
 i	include/adjlist.h	/^    int i;$/;"	m	struct:adjlist_t	typeref:typename:int
 i	include/tsp.h	/^    int i, j;$/;"	m	struct:edge_t	typeref:typename:int
 i	include/tsp.h	/^    int i, j;$/;"	m	struct:wedge_t	typeref:typename:int
@@ -385,6 +394,7 @@ kick	src/refinements.c	/^void kick(int* succ, int nnodes, int strength) {$/;"	f	
 l2dist	src/utils.c	/^double l2dist(size_t i, size_t j, instance inst) {$/;"	f	typeref:typename:double
 left	src/pqueue.c	/^int left(int i) { return 2 * i + 1; }$/;"	f	typeref:typename:int
 list_files	src/utils.c	/^char** list_files(enum model_folders folder, int* nmodels) {$/;"	f	typeref:typename:char **
+load_optimal	include/parsers.h	/^    int load_optimal;$/;"	m	struct:run_options_t	typeref:typename:int
 main	results/perprof.py	/^def main():$/;"	f
 main	src/main.c	/^int main(int argc, char** argv) {$/;"	f	typeref:typename:int
 markers	results/perprof.py	/^markers = ['+', 'x', 's', '^', 'o', 'd']$/;"	v
@@ -419,6 +429,7 @@ np	results/perprof.py	/^import numpy as np$/;"	I	nameref:module:numpy
 nsets	include/union_find.h	/^    int nsets;$/;"	m	struct:union_find_t	typeref:typename:int
 nsols	include/tsp.h	/^    int nsols;$/;"	m	struct:instance_t	typeref:typename:int
 num_threads	include/tsp.h	/^    int num_threads;$/;"	m	struct:cplex_params_t	typeref:typename:int
+objs	include/tracker.h	/^    double* objs;$/;"	m	struct:tracker_t	typeref:typename:double *
 output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:0
 output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:1
 output	compile_commands.json	/^    "output": "\/home\/lugot\/documents\/university\/master\/52\/operation_research_2\/project\//;"	s	object:2
@@ -440,7 +451,7 @@ perform_BENDERS	src/models/benders.c	/^void perform_BENDERS(CPXENVptr env, CPXLP
 perform_HARD_FIXING	src/models/fixing.c	/^void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,$/;"	f	typeref:typename:void
 perform_SOFT_FIXING	src/models/fixing.c	/^void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,$/;"	f	typeref:typename:void
 plot_graphviz	src/tsp.c	/^void plot_graphviz(solution sol, int* edgecolors, int version) {$/;"	f	typeref:typename:void
-plot_profiler	src/tsp.c	/^void plot_profiler(instance* insts, int ninstances) {$/;"	f	typeref:typename:void
+plot_profiler	src/tsp.c	/^void plot_profiler(instance* insts, int ninstances, int optdist) {$/;"	f	typeref:typename:void
 plt	results/perprof.py	/^import matplotlib.pyplot as plt$/;"	I	nameref:module:matplotlib.pyplot
 pq	include/pqueue.h	/^    pqueue pq;$/;"	m	struct:topkqueue_t	typeref:typename:pqueue
 pqueue	include/pqueue.h	/^} * pqueue;$/;"	t	typeref:struct:pqueue_t *
@@ -480,6 +491,7 @@ shiftdown	src/pqueue.c	/^void shiftdown(pqueue pq, int i) {$/;"	f	typeref:typena
 shiftup	src/pqueue.c	/^void shiftup(pqueue pq, int i) {$/;"	f	typeref:typename:void
 si	include/union_find.h	/^    int si; \/* stack index *\/$/;"	m	struct:union_find_t	typeref:typename:int
 size	include/pqueue.h	/^    int size;$/;"	m	struct:pqueue_t	typeref:typename:int
+size	include/tracker.h	/^    int size;$/;"	m	struct:tracker_t	typeref:typename:int
 size	include/union_find.h	/^    int size;$/;"	m	struct:tree_node_t	typeref:typename:int
 size_of_set	include/union_find.h	/^    int *p, *rank, *size_of_set;$/;"	m	struct:union_find_t	typeref:typename:int *
 sols	include/tsp.h	/^    struct solution_t** sols;$/;"	m	struct:instance_t	typeref:struct:solution_t **
@@ -493,8 +505,10 @@ stack	include/union_find.h	/^    int* stack;$/;"	m	struct:union_find_t	typeref:t
 start	include/tsp.h	/^    double start;$/;"	m	struct:solution_t	typeref:typename:double
 stopwatch	src/utils.c	/^int64_t stopwatch(struct timespec* s, struct timespec* e) {$/;"	f	typeref:typename:int64_t
 stopwatch_n	src/utils.c	/^int64_t stopwatch_n(struct timespec* s, struct timespec* e) {$/;"	f	typeref:typename:int64_t
+stringcmp	src/utils.c	/^int stringcmp(const void* p1, const void* p2) {$/;"	f	typeref:typename:int
 swap	src/utils.c	/^void swap(int* x, int* y) {$/;"	f	typeref:typename:void
 swap_node	src/pqueue.c	/^void swap_node(pqueue_node* n, pqueue_node* m) {$/;"	f	typeref:typename:void
+t	include/tsp.h	/^    tracker t;$/;"	m	struct:solution_t	typeref:typename:tracker
 tests	include/parsers.h	/^    int tests;$/;"	m	struct:run_options_t	typeref:typename:int
 threeopt_move	solvers.c	/^void threeopt_move(int* succ, int nnodes, int a, int b, int c, instance inst) {$/;"	f	typeref:typename:void
 threeopt_move	src/refinements.c	/^void threeopt_move(int* succ, int nnodes, int a, int b, int c, instance inst) {$/;"	f	typeref:typename:void
@@ -503,6 +517,7 @@ threeopt_pick	src/refinements.c	/^double threeopt_pick(instance inst, int* succ,
 threeopt_refinement	solvers.c	/^double threeopt_refinement(instance inst, int* succ, int nnodes) {$/;"	f	typeref:typename:double
 threeopt_refinement	src/refinements.c	/^double threeopt_refinement(instance inst, int* succ, int nnodes) {$/;"	f	typeref:typename:double
 timelimit	include/tsp.h	/^    double timelimit;$/;"	m	struct:cplex_params_t	typeref:typename:double
+times	include/tracker.h	/^    double* times;$/;"	m	struct:tracker_t	typeref:typename:double *
 tn_add_son	src/union_find.c	/^void tn_add_son(tree_node tn, int s) {$/;"	f	typeref:typename:void
 tn_create	src/union_find.c	/^tree_node tn_create() {$/;"	f	typeref:typename:tree_node
 tn_free	src/union_find.c	/^void tn_free(tree_node tn) {$/;"	f	typeref:typename:void
@@ -514,6 +529,12 @@ topkqueue_print	src/pqueue.c	/^void topkqueue_print(topkqueue tk) { pqueue_print
 topkqueue_push	src/pqueue.c	/^void topkqueue_push(topkqueue tk, double key, int val) {$/;"	f	typeref:typename:void
 topkqueue_randompick	src/pqueue.c	/^int topkqueue_randompick(topkqueue tk) {$/;"	f	typeref:typename:int
 topkqueue_t	include/pqueue.h	/^typedef struct topkqueue_t {$/;"	s
+tracker	include/tracker.h	/^} * tracker;$/;"	t	typeref:struct:tracker_t *
+tracker_add	src/tracker.c	/^void tracker_add(tracker t, double time, double obj) {$/;"	f	typeref:typename:void
+tracker_create	src/tracker.c	/^tracker tracker_create() {$/;"	f	typeref:typename:tracker
+tracker_find	src/tracker.c	/^double tracker_find(tracker t, double obj) {$/;"	f	typeref:typename:double
+tracker_free	src/tracker.c	/^void tracker_free(tracker t) {$/;"	f	typeref:typename:void
+tracker_t	include/tracker.h	/^typedef struct tracker_t {$/;"	s
 tree_node	include/union_find.h	/^} * tree_node;$/;"	t	typeref:struct:tree_node_t *
 tree_node_t	include/union_find.h	/^typedef struct tree_node_t {$/;"	s
 twoopt_delta	src/refinements.c	/^double twoopt_delta(instance inst, int* succ, int i, int j) {$/;"	f	typeref:typename:double

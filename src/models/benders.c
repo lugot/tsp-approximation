@@ -1,10 +1,11 @@
-#include "../include/models/benders.h"
+#include "../../include/models/benders.h"
 
 #include <concorde.h>
 #include <string.h>
 
-#include "../include/globals.h"
-#include "../include/utils.h"
+#include "../../include/globals.h"
+#include "../../include/solvers.h"
+#include "../../include/utils.h"
 
 int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,
                                                  solution sol);
@@ -13,7 +14,7 @@ int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr context,
 int doit_fn_concorde(double cutval, int cutcount, int* cut, void* in);
 
 void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,
-                     struct timespec s, struct timespec e) {
+                     struct timespec s, struct timespec e, int phase) {
     int nedges = inst->nnodes;
 
     /* create an adjacency list to track the edges .. */
@@ -28,22 +29,51 @@ void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,
         }
     }
 
+    int phase2_time = inst->params->timelimit * 100.0 / (BENDERS2P_PHASE2PERC);
     /* iterate and add SEC until we obtain a singe tour */
     while (!adjlist_single_tour(l)) {
-        /* add the constraints */
-        add_BENDERS_sec(env, lp, l);
+        if (EXTRA) {
+            solution toplot = create_solution(inst, BENDERS, inst->nnodes);
+            get_symmsol(xstar, toplot);
+            toplot->inst = inst;
+            plot_graphviz(toplot, NULL, 200 + hook++);
+        }
 
         /* some time has passed, update the timelimit the timelimit
          * we have to pass time in second! */
         long restime = inst->params->timelimit - stopwatch(&s, &e) / 1000.0;
         CPXsetdblparam(env, CPX_PARAM_TILIM, restime);
 
+        /* add the constraints */
+        int nsubtours = add_BENDERS_sec(env, lp, l);
+        if (VERBOSE) {
+            printf("[VERBOSE] added %d SEC (phase %d, %ld)\n", nsubtours, phase,
+                   restime);
+        }
+
+        /* if a single subtour has been reached or it's time, switch to phase2,
+         * the function expect that a new xstar is prodived, so we need to
+         * reoptimize */
+        int switch_phase = 0;
+        if (phase == 1 && (restime < phase2_time || nsubtours <= 1)) {
+            switch_phase = 1;
+            /* we have to reoptimize but first let's restore nodelim */
+            CPXsetdblparam(env, CPX_PARAM_NODELIM, 9223372036800000000L);
+        }
+
         /* solve again! */
         if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
 
         /* store the optimal solution found by CPLEX */
         if (CPXgetx(env, lp, xstar, 0, CPXgetnumcols(env, lp) - 1)) {
-            print_error("CPXgetx() error\n");
+            printf("CPXgetx() in benders loop error\n");
+            return;
+        }
+
+        /* safe switch phase */
+        if (switch_phase) {
+            adjlist_free(l);
+            return perform_BENDERS(env, lp, inst, xstar, s, e, 2);
         }
 
         /* completely reset the adjacency list without recreating the object and
@@ -56,6 +86,22 @@ void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,
                 }
             }
         }
+    }
+    if (phase == 1) {
+        /* if reached single tour without leaving phase 1, reoptimize and move
+         * to phase 2 */
+        CPXsetdblparam(env, CPX_PARAM_NODELIM, 9223372036800000000L);
+
+        /* solve again! */
+        if (CPXmipopt(env, lp)) print_error("CPXmipopt() error");
+        /* store the optimal solution found by CPLEX */
+        if (CPXgetx(env, lp, xstar, 0, CPXgetnumcols(env, lp) - 1)) {
+            printf("CPXgetx() in benders loop error\n");
+            return;
+        }
+
+        adjlist_free(l);
+        return perform_BENDERS(env, lp, inst, xstar, s, e, 2);
     }
 
     /* save the now complete model */
@@ -70,9 +116,10 @@ void perform_BENDERS(CPXENVptr env, CPXLPptr lp, instance inst, double* xstar,
     CPXwriteprob(env, lp, filename, NULL);
     free(folder);
     free(filename);
+    adjlist_free(l);
 }
 
-void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {
+int add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {
     /* add
      * sum i in V, j in V x_ij <= |V| - 1 for each V subtour of actual solution
      * to the model
@@ -124,6 +171,8 @@ void add_BENDERS_sec(CPXENVptr env, CPXLPptr lp, adjlist l) {
 
     free(cname[0]);
     free(cname);
+
+    return nsubtours;
 }
 
 int CPXPUBLIC add_BENDERS_sec_callback_driver(CPXCALLBACKCONTEXTptr context,
@@ -165,7 +214,7 @@ int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,
     CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &zbest);
     CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &incumbent);
     if (VERBOSE && !SUPPRESS_CALLBACK) {
-        printf("node information:\n");
+        printf("node information (candidate):\n");
         printf("- node index: %d\n", mynode);
         printf("- thread index: %d\n", mythread);
         printf("- zbest: %lf\n", zbest);
@@ -233,12 +282,47 @@ int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr context,
         printf("[VERBOSE] num subtour BENDERS (callback) %d\n", nsubtours);
     }
 
+    free(xstar);
+    adjlist_free(l);
+
     return 0;
 }
 
 int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr context,
                                                   solution sol) {
     int nedges = sol->nedges;
+
+    /* get node informations */
+    int node_idx = -1;
+    int thread_idx = -1;
+    double zbest;
+    double incumbent = CPX_INFBOUND;
+    CPXcallbackgetinfoint(context, CPXCALLBACKINFO_NODECOUNT, &node_idx);
+    CPXcallbackgetinfoint(context, CPXCALLBACKINFO_THREADID, &thread_idx);
+    CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &zbest);
+    CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &incumbent);
+    if (VERBOSE && !SUPPRESS_CALLBACK) {
+        printf("node information (relaxation):\n");
+        printf("- node index: %d\n", node_idx);
+        printf("- thread index: %d\n", thread_idx);
+        printf("- zbest: %lf\n", zbest);
+        printf("- incumbent: %lf\n", incumbent);
+    }
+
+#ifdef BENDERSCALLBACK_RANDOMPERC
+    if (rand() % 100 < BENDERSCALLBACK_RANDOMPERC) {
+        if (VERBOSE && !SUPPRESS_CALLBACK) printf("drop user cut (random)\n");
+        return 0;
+    }
+#endif
+#ifdef BENDERSCALLBACK_NODELIM
+    if (node_idx > (1 << BENDERSCALLBACK_NODELIM)) {
+        if (VERBOSE && !SUPPRESS_CALLBACK) {
+            printf("drop user cut (depth, %d)\n", node_idx);
+        }
+        return 0;
+    }
+#endif
 
     /* struct to pass info to doit_fn_callback */
     doit_fn_input data =
@@ -256,27 +340,6 @@ int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr context,
     if (CPXcallbackgetrelaxationpoint(context, xstar, 0, ncols - 1, &objval)) {
         print_error("CPXcallbackgetcandidatepoint error");
     }
-
-    /* get node informations */
-    int mynode = -1;
-    int mythread = -1;
-    double zbest;
-    double incumbent = CPX_INFBOUND;
-    CPXcallbackgetinfoint(context, CPXCALLBACKINFO_NODECOUNT, &mynode);
-    CPXcallbackgetinfoint(context, CPXCALLBACKINFO_THREADID, &mythread);
-    CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &zbest);
-    CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &incumbent);
-    if (VERBOSE && !SUPPRESS_CALLBACK) {
-        printf("node information:\n");
-        printf("- node index: %d\n", mynode);
-        printf("- thread index: %d\n", mythread);
-        printf("- zbest: %lf\n", zbest);
-        printf("- incumbent: %lf\n", incumbent);
-    }
-
-    /* random discard the cut with 90% probability */
-    // TODO(lugot): TUNE 90% hyperparameter
-    if (mythread % 10 == 9) return 0;
 
     /* elist specify the vertices */
     int* elist = (int*)malloc(2 * ncols * sizeof(int));

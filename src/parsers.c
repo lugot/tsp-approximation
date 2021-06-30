@@ -62,7 +62,12 @@ void print_usage() {
         "  --memory <integer>        Max memory in MB used by CPLEX "
         "computation\n");
     printf("  --integer_costs           Consider integer costs only\n");
-    // TODO(lugot): ADAPT
+    printf("  models:\n");
+    for (int i = 0; i < 23; i++) {
+        char* model_type_str = model_type_tostring(i);
+        printf("\t%s: %d %d\n", model_type_str, 1 << i, (1 << (i + 1)) - 1);
+        free(model_type_str);
+    }
 }
 
 void parse_command_line(int argc, char** argv, cplex_params params,
@@ -79,6 +84,7 @@ void parse_command_line(int argc, char** argv, cplex_params params,
         {"generate", required_argument, NULL, 'g'},
         {"load_directory", required_argument, NULL, 'l'},
         {"tests", required_argument, NULL, 'W'},
+        {"optimal", required_argument, NULL, 'O'},
         {"time_limit", required_argument, NULL, 't'},
         {"cplex_seed", required_argument, NULL, 's'},
         {"threads", required_argument, NULL, 'T'},
@@ -89,8 +95,8 @@ void parse_command_line(int argc, char** argv, cplex_params params,
 
     int long_index, opt;
     long_index = opt = 0;
-    while ((opt = getopt_long(argc, argv, "VESN:m:g:l:W:b:t:s:T:M:i:h", long_options,
-                              &long_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "VESON:m:g:l:W:b:t:s:T:M:i:h",
+                              long_options, &long_index)) != -1) {
         switch (opt) {
             case 'V':
                 VERBOSE = 1;
@@ -123,11 +129,13 @@ void parse_command_line(int argc, char** argv, cplex_params params,
                     options->folder = GENERATED;
                 else
                     print_error("wrong folder");
-
                 break;
             case 'W':
                 options->tests = atoi(optarg);
                 assert(GEN_NNODES > 5);
+                break;
+            case 'O':
+                options->load_optimal = 1;
                 break;
             case 't':
                 params->timelimit = atof(optarg);

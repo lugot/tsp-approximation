@@ -62,7 +62,8 @@ int main(int argc, char** argv) {
             /* generate and solve the instances */
             instance* insts =
                 generate_random_instances(options->battery_test, GEN_NNODES);
-            for (int i = 0; i < options->battery_test; i++) {
+
+            for (int i = 0; i < options->battery_test && ntests != 0; i++) {
                 printf("battery %d:\n", i + 1);
 
                 instance inst = insts[i];
@@ -83,9 +84,9 @@ int main(int argc, char** argv) {
                     plot_graphviz(sol, NULL, j);
                 }
 
-                if (VERBOSE) print_instance(inst, 1);
+                if (EXTRA) print_instance(inst, 1);
             }
-            plot_profiler(insts, options->battery_test);
+            plot_profiler(insts, options->battery_test, 0);
 
             for (int i = 0; i < options->battery_test; i++) {
                 free_instance(insts[i]);
@@ -115,8 +116,8 @@ int main(int argc, char** argv) {
             fclose(emergency_res);
 
             int ninstances;
-            instance* insts =
-                parse_input_dir(options->folder, "tsp", &ninstances, 0, 4000);
+            instance* insts = parse_input_dir(options->folder, "tsp",
+                                              &ninstances, 0, 9999999);
 
             for (int i = 0; i < ninstances; i++) {
                 instance inst = insts[i];
@@ -154,9 +155,29 @@ int main(int argc, char** argv) {
                     fclose(emergency_res);
 
                     if (EXTRA) plot_graphviz(sol, NULL, j);
+
+                    add_solution(inst, sol);
+                }
+
+                if (options->load_optimal) {
+                    instance optimal_tour = parse_input_file(
+                        inst->model_name, "opt.tour", options->folder);
+
+                    double zbest = optimal_tour->sols[0]->zstar;
+
+                    int nmult = 3;
+                    double mult[] = {1.03, 1.10, 1.50};
+
+                    for (int m = 0; m < nmult; m++) {
+                        for (int j = 0; j < ntests; j++) {
+                            inst->sols[j]->heur_time[m] =
+                                tracker_find(inst->sols[j]->t, zbest * mult[m]);
+                        }
+                    }
                 }
             }
-            plot_profiler(insts, ninstances);
+            plot_profiler(insts, ninstances, 0);
+            plot_profiler(insts, ninstances, 1);
 
             for (int i = 0; i < ninstances; i++) {
                 free_instance(insts[i]);
