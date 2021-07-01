@@ -99,11 +99,9 @@ solution solve(instance inst, enum model_types model_type) {
 solution TSPopt(instance inst, enum model_types model_type) {
     assert(inst != NULL);
     assert(inst->params != NULL && "no CPLEX params found");
-    assert(inst->instance_type == TSP && "need TSP instance");
 
     /* create and populate solution */
     solution sol = create_solution(inst, model_type, inst->nnodes);
-    sol->distance_time = compute_distmatrix(inst);
 
     /* open CPLEX model */
     int error;
@@ -135,7 +133,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
     int bufsize = 100;
     char* logfile = (char*)malloc(bufsize * sizeof(char));
     char* model_type_str = model_type_tostring(model_type);
-    snprintf(logfile, bufsize, "execution_%s_%s.log", inst->model_name,
+    snprintf(logfile, bufsize, "execution_%s_%s.log", inst->instance_name,
              model_type_str);
     CPXsetlogfilename(env, logfile, "a");
     free(model_type_str);
@@ -300,7 +298,6 @@ solution TSPopt(instance inst, enum model_types model_type) {
 
 solution TSPminspantree(instance inst) {
     assert(inst != NULL);
-    assert(inst->instance_type == TSP && "need TSP instance");
 
     int nnodes = inst->nnodes;
     int nedges = nnodes * (nnodes - 1) / 2;
@@ -363,7 +360,7 @@ solution TSPminspantree(instance inst) {
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
 
-    if (EXTRA) {
+    if (EXTRA_VERBOSE) {
         /* add the spanning tree to the solution */
 
         /* tree has nnodes -1 edges, realloc */
@@ -412,7 +409,6 @@ solution TSPminspantree(instance inst) {
 
 solution TSPgreedy(instance inst) {
     assert(inst != NULL);
-    assert(inst->instance_type == TSP && "need TSP instance");
 
     int nnodes = inst->nnodes;
 
@@ -436,7 +432,7 @@ solution TSPgreedy(instance inst) {
         /* reset succ: -1 means not visited*/
         memset(succ, -1, nnodes * sizeof(int));
 
-        if (VERBOSE) printf("[VERBOSE] greedy start %d\n", start + 1);
+        if (EXTRA_VERBOSE) printf("[VERBOSE] greedy start %d\n", start + 1);
 
         /* add starting point to the actual tour */
         int act, next;
@@ -464,7 +460,7 @@ solution TSPgreedy(instance inst) {
             succ[act] = next;
             obj += weight;
 
-            if (EXTRA) printf("\tnext: %d, obj: %lf\n", next + 1, obj);
+            if (EXTRA_VERBOSE) printf("\tnext: %d, obj: %lf\n", next + 1, obj);
 
             act = next;
         }
@@ -473,7 +469,7 @@ solution TSPgreedy(instance inst) {
         succ[next] = start;
         obj += dist(next, start, inst);
 
-        if (VERBOSE) printf("\tfinish selecting, obj: %lf\n", obj);
+        if (EXTRA_VERBOSE) printf("\tfinish selecting, obj: %lf\n", obj);
 
         /* select best tour */
         if (obj < sol->zstar) {
@@ -496,7 +492,6 @@ solution TSPgreedy(instance inst) {
 
 solution TSPgrasp(instance inst) {
     assert(inst != NULL);
-    assert(inst->instance_type == TSP && "need TSP instance");
     assert(inst->params != NULL);
 
     int nnodes = inst->nnodes;
@@ -529,7 +524,7 @@ solution TSPgrasp(instance inst) {
         start = act = rand_r(&seedp) % nnodes;
         double obj = 0.0;
 
-        if (VERBOSE) printf("[VERBOSE] grasp start %d\n", start + 1);
+        if (EXTRA_VERBOSE) printf("[VERBOSE] grasp start %d\n", start + 1);
 
         /* loop over nodes to visit: nodes -1 for start */
         int nunvisited = nnodes - 1;
@@ -548,7 +543,7 @@ solution TSPgrasp(instance inst) {
             succ[act] = next;
             obj += dist(act, next, inst);
 
-            if (EXTRA) printf("\tnext: %d, obj: %lf\n", next + 1, obj);
+            if (EXTRA_VERBOSE) printf("\tnext: %d, obj: %lf\n", next + 1, obj);
 
             act = next;
         }
@@ -556,7 +551,7 @@ solution TSPgrasp(instance inst) {
         succ[next] = start;
         obj += dist(next, start, inst);
 
-        if (VERBOSE) printf(" -> obj: %lf\n", obj);
+        if (EXTRA_VERBOSE) printf(" -> obj: %lf\n", obj);
 
         /* select best tour */
         if (obj < sol->zstar) {
@@ -580,7 +575,6 @@ solution TSPgrasp(instance inst) {
 
 solution TSPextramileage(instance inst) {
     assert(inst != NULL);
-    assert(inst->instance_type == TSP && "need TSP instance");
 
     int nnodes = inst->nnodes;
 
@@ -679,7 +673,7 @@ solution TSPextramileage(instance inst) {
     /* add the solution to the pool associated with it's instance */
     add_solution(inst, sol);
 
-    if (EXTRA) {
+    if (EXTRA_VERBOSE) {
         /* add the convex hull to the solution */
         sol->nedges += nhull - 1;
         sol->edges =
@@ -711,7 +705,6 @@ solution TSPextramileage(instance inst) {
 
 solution TSPvns(instance inst, int* succ) {
     assert(inst != NULL);
-    assert(inst->instance_type == TSP && "need TSP instance");
 
     int nnodes = inst->nnodes;
     srand(time(NULL));
@@ -738,7 +731,7 @@ solution TSPvns(instance inst, int* succ) {
         s.tv_sec = e.tv_sec = -1;
         stopwatch(&s, &e);
 
-        if (EXTRA) printf("[VERBOSE] kick size: %d\n", k);
+        if (EXTRA_VERBOSE) printf("[VERBOSE] kick size: %d\n", k);
 
         /* perturbe solution temp solution */
         kick(succ, nnodes, k);
@@ -746,7 +739,7 @@ solution TSPvns(instance inst, int* succ) {
         double obj = 0.0;
         for (int i = 0; i < nnodes; i++) obj += dist(i, succ[i], inst);
 
-        if (EXTRA) printf("[VERBOSE] kicked objective: %lf\n", obj);
+        if (EXTRA_VERBOSE) printf("[VERBOSE] kicked objective: %lf\n", obj);
 
         /* find local optimum */
         printf("%lf\n", timeleft);
@@ -755,7 +748,7 @@ solution TSPvns(instance inst, int* succ) {
         obj += threeopt_refinement(inst, succ, nnodes);
         printf("%lf\n", timeleft);
 
-        if (EXTRA) printf("[VERBOSE] refined objective: %lf\n", obj);
+        if (EXTRA_VERBOSE) printf("[VERBOSE] refined objective: %lf\n", obj);
 
         if (obj < sol->zstar) {
             /* store the succ as usual edges array */
@@ -763,7 +756,7 @@ solution TSPvns(instance inst, int* succ) {
                 sol->edges[i] = (edge){i, succ[i]};
             }
 
-            if (EXTRA) {
+            if (EXTRA_VERBOSE) {
                 printf("\n[VERBOSE] Improved solution!\n");
                 printf("[VEROBSE] -last opt: %lf, -new opt: %lf\n", sol->zstar,
                        obj);
@@ -794,7 +787,6 @@ solution TSPvns(instance inst, int* succ) {
 
 solution TSPtabusearch(instance inst, int* succ) {
     assert(inst != NULL);
-    assert(inst->instance_type == TSP && "need TSP instance");
 
     int nnodes = inst->nnodes;
     srand(time(NULL));
@@ -832,8 +824,8 @@ solution TSPtabusearch(instance inst, int* succ) {
         int a, b;
         double delta =
             twoopt_tabu_pick(inst, succ, tabu_nodes, tenure, k, &a, &b);
-        if (EXTRA) {
-            printf("[EXTRA] iteration %d: delta %lf\n", k, delta);
+        if (EXTRA_VERBOSE) {
+            printf("[VERBOSE] iteration %d: delta %lf\n", k, delta);
         }
 
         /* actually perform the move, even if delta positive */
@@ -852,7 +844,7 @@ solution TSPtabusearch(instance inst, int* succ) {
                     sol->edges[i] = (edge){i, succ[i]};
                 }
 
-                if (EXTRA) {
+                if (EXTRA_VERBOSE) {
                     printf(
                         "[VERBOSE] Improved solution! last opt: %lf -> new "
                         "opt: %lf\n",

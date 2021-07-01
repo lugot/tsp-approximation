@@ -1,5 +1,6 @@
 #include "../include/tracker.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "../include/globals.h"
@@ -29,11 +30,17 @@ void tracker_add(tracker t, double time, double obj) {
 }
 
 double tracker_find(tracker t, double obj) {
-    for (int i = 0; i < t->size; t++) {
+    for (int i = 0; i < t->size; i++) {
         if (t->objs[i] < obj) return t->times[i];
     }
 
     return -1.0;
+}
+
+void tracker_print(tracker t) {
+    for (int i = 0; i < t->size; i++) {
+        printf("%3.2lf %lf\n", t->times[i], t->objs[i]);
+    }
 }
 
 void tracker_free(tracker t) {

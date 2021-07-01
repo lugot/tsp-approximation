@@ -19,7 +19,6 @@ cplex_params create_params() {
     params->num_threads = -1;
     params->timelimit = CPX_INFBOUND;
     params->available_memory = 4096;
-    params->cost = REAL;
 
     return params;
 }
@@ -31,7 +30,6 @@ void add_params(instance inst, cplex_params params) {
     inst->params->num_threads = params->num_threads;
     inst->params->timelimit = params->timelimit;
     inst->params->available_memory = params->available_memory;
-    inst->params->cost = params->cost;
 
     /* memcpy(inst->params, params, sizeof(struct cplex_params_t)); */
 }
@@ -50,6 +48,7 @@ instance create_instance(cplex_params params) {
     instance inst = (instance)calloc(1, sizeof(struct instance_t));
     /* initializing with passed parameters */
     inst->params = params;
+    inst->zbest = -1.0;
 
     return inst;
 }
@@ -64,22 +63,18 @@ instance generate_random_instance(int id, int nnodes) {
     nnodes += (int)random_fluctuation;
 
     printf("Number of nodes %d\n", nnodes);
-    char* buf;
-    int bufsize = 100;
-    buf = (char*)calloc(bufsize, sizeof(char));
+    int bsize = 100;
 
-    snprintf(buf, bufsize, "random%d", id);
-    inst->model_name = (char*)calloc(1 + strlen(buf), sizeof(char));
-    snprintf(inst->model_name, bufsize, "%s", buf);
+    inst->instance_name = (char*)calloc(bsize, sizeof(char));
+    snprintf(inst->instance_name, bsize, "rand%d", id);
 
-    snprintf(buf, bufsize, "random generated with id %d", id);
-    inst->model_comment = (char*)calloc(1 + strlen(buf), sizeof(char));
-    snprintf(inst->model_comment, bufsize, "%s", buf);
+    inst->instance_comment = (char*)calloc(bsize, sizeof(char));
+    snprintf(inst->instance_comment, bsize, "random generated with id %d", id);
 
-    inst->model_folder = GENERATED;
-    inst->instance_type = TSP;
+    inst->instance_folder = (char*)calloc(bsize, sizeof(char));
+    snprintf(inst->instance_folder, bsize, "generated");
 
-    inst->weight_type = ATT;
+    inst->weight_type = EUC_2D;
     inst->nnodes = nnodes;
 
     int box_size = 40.0;
@@ -88,8 +83,6 @@ instance generate_random_instance(int id, int nnodes) {
         inst->nodes[i].x = (double)rand() / ((double)RAND_MAX / box_size);
         inst->nodes[i].y = (double)rand() / ((double)RAND_MAX / box_size);
     }
-
-    free(buf);
 
     return inst;
 }
@@ -115,9 +108,9 @@ void save_instance(instance inst) {
     assert(inst != NULL);
 
     int bufsize = 100;
-    char* folder = model_folder_tostring(inst->model_folder);
     char* dirname = (char*)calloc(bufsize, sizeof(char));
-    snprintf(dirname, bufsize, "../data_%s/%s", folder, inst->model_name);
+    snprintf(dirname, bufsize, "../data/%s/%s", inst->instance_folder,
+             inst->instance_name);
 
     /* create the directory if not exists */
     struct stat st = {0};
@@ -129,15 +122,15 @@ void save_instance(instance inst) {
     char* fname;
     fname = (char*)calloc(bufsize, sizeof(char));
 
-    snprintf(fname, bufsize, "../data_%s/%s/%s.tsp", folder, inst->model_name,
-             inst->model_name);
+    snprintf(fname, bufsize, "../data/%s/%s/%s.tsp", inst->instance_folder,
+             inst->instance_name, inst->instance_name);
 
     FILE* fp;
     fp = fopen(fname, "w");
     assert(fp != NULL && "file not found while saving .tsp");
 
-    fprintf(fp, "NAME : %s\n", inst->model_name);
-    fprintf(fp, "COMMENT: %s\n", inst->model_comment);
+    fprintf(fp, "NAME : %s\n", inst->instance_name);
+    fprintf(fp, "COMMENT: %s\n", inst->instance_comment);
     fprintf(fp, "TYPE : TSP\n");
     fprintf(fp, "DIMENSION : %d\n", inst->nnodes);
     fprintf(fp, "EDGE_WEIGHT_TYPE : EUC_2D\n");
@@ -149,20 +142,16 @@ void save_instance(instance inst) {
 
     fclose(fp);
     free(fname);
-    free(folder);
     free(dirname);
 }
 void free_instance(instance inst) {
-    free(inst->model_name);
-    free(inst->model_comment);
+    free(inst->instance_name);
+    free(inst->instance_comment);
+    free(inst->instance_folder);
 
     free(inst->params);
 
     free(inst->nodes);
-    if (inst->adjmatrix != NULL) {
-        for (int i = 0; i < inst->nnodes; i++) free(inst->adjmatrix[i]);
-        free(inst->adjmatrix);
-    }
 
     for (int i = 0; i < inst->nsols; i++) free_solution(inst->sols[i]);
     free(inst->sols);
@@ -193,8 +182,6 @@ void add_solution(instance inst, solution sol) {
     inst->nsols++;
 }
 void free_solution(solution sol) {
-    char* model_type_str = model_type_tostring(sol->model_type);
-    free(model_type_str);
     free(sol->edges);
 
     tracker_free(sol->t);
@@ -206,20 +193,8 @@ void print_instance(instance inst, int print_data) {
     int nnodes = inst->nnodes;
     int nsols = inst->nsols;
 
-    printf("\ninfos:\nmodel: %s\n", inst->model_name);
-    printf("comment: %s\n", inst->model_comment);
-    printf("- model type: ");
-    switch (inst->instance_type) {
-        case TSP:
-            printf("TSP\n");
-            break;
-        case TOUR:
-            printf("(solution only)\n");
-            break;
-        default:
-            printf("\n");
-            break;
-    }
+    printf("\ninfos:\nmodel: %s\n", inst->instance_name);
+    printf("comment: %s\n", inst->instance_comment);
 
     print_cplex_params(inst->params);
 
@@ -243,33 +218,6 @@ void print_instance(instance inst, int print_data) {
     }
     printf("- number of nodes: %d\n", nnodes);
     if (print_data) {
-        printf("- weights:\n");
-        if (inst->adjmatrix != NULL && EXTRA) {
-            /* compute numof figures for spacing */
-            int column_width = 0;
-            for (int i = 0; i < nnodes; i++)
-                for (int j = 0; j <= i; j++) {
-                    column_width = max(column_width,
-                                       1 + (int)log10(inst->adjmatrix[i][j]));
-                }
-            column_width = 2 + max(column_width, 1 + (int)log10(nnodes));
-
-            /* figures.ab so max 1 decimal figures */
-            char* buf = (char*)calloc(1 + column_width, sizeof(char));
-
-            for (int i = 0; i < nnodes; i++) {
-                snprintf(buf, 1 + column_width, "%d | ", i + 1);
-                printf("%*s", 1 + column_width, buf);
-
-                for (int j = 0; j <= i; j++) {
-                    snprintf(buf, 1 + column_width, "%.1lf ",
-                             inst->adjmatrix[i][j]);
-                    printf("%*s", 1 + column_width, buf);
-                }
-                printf("\n");
-            }
-            free(buf);
-        }
         printf("- nodes:\n");
         if (inst->nodes != NULL) {
             int column_width = 0;
@@ -298,6 +246,7 @@ void print_instance(instance inst, int print_data) {
         }
     }
 
+    printf("- zbest: %lf\n", inst->zbest);
     printf("solutions:\n");
     printf("- num of solutions: %d\n", nsols);
     for (int i = 0; i < nsols; i++) {
@@ -315,14 +264,6 @@ void print_cplex_params(cplex_params params) {
     printf("- time limit: %lf\n", params->timelimit);
     printf("- available memory: %d MB\n", params->available_memory);
     printf("- costs type: ");
-    switch (params->cost) {
-        case REAL:
-            printf("real\n");
-            break;
-        case INTEGER:
-            printf("integer\n");
-            break;
-    }
 }
 void print_solution(solution sol, int print_data) {
     int nedges = sol->nedges;
@@ -354,6 +295,10 @@ void print_solution(solution sol, int print_data) {
     printf("- distance time: %lf ms\n", sol->distance_time);
     printf("- build time: %lf ms\n", sol->build_time);
     printf("- solve time: %lf s\n", sol->solve_time / 1000.0);
+    if (print_data) {
+        printf("- tracker:\n");
+        tracker_print(sol->t);
+    }
 }
 
 /* plotters */
@@ -373,18 +318,15 @@ void plot_graphviz(solution sol, int* edgecolors, int version) {
 
     int bsize = 100;
     char* fname = (char*)calloc(bsize, sizeof(char));
-    char* folder = model_folder_tostring(inst->model_folder);
 
-    snprintf(fname, bsize, "../data_%s/%s/%s.%d.dot", folder, inst->model_name,
-             inst->model_name, version);
-
-    free(folder);
+    snprintf(fname, bsize, "../data/%s/%s/%s.%d.dot", inst->instance_folder,
+             inst->instance_name, inst->instance_name, version);
 
     FILE* fp;
     fp = fopen(fname, "w");
     assert(fp != NULL && "file not found while saving .dot");
 
-    fprintf(fp, "graph %s {\n", inst->model_name);
+    fprintf(fp, "graph %s {\n", inst->instance_name);
     if (inst->nnodes < 100) {
         fprintf(fp, "\tnode [shape=circle fillcolor=white]\n");
     } else {
@@ -417,20 +359,20 @@ void plot_graphviz(solution sol, int* edgecolors, int version) {
     fclose(fp);
     free(fname);
 }
-void plot_profiler(instance* insts, int ninstances, int optdist) {
+void plot_profiler(instance* insts, int ninstances) {
     assert(insts != NULL);
     assert(insts[0] != NULL);
 
     char* filepath;
     int bsize = 100;
     filepath = (char*)calloc(bsize, sizeof(char));
-    snprintf(filepath, bsize, "../results/results%d.csv", optdist);
+    snprintf(filepath, bsize, "../results/results.csv");
 
     /* remove and create new fresh csv */
     remove(filepath);
     FILE* fp;
     fp = fopen(filepath, "w");
-    assert(fp != NULL && "file not found while saving .csv");
+    assert(fp != NULL && "file not found while saving time .csv");
 
     /* save the data */
     int nmodels = insts[0]->nsols;
@@ -453,22 +395,72 @@ void plot_profiler(instance* insts, int ninstances, int optdist) {
 
     for (int i = 0; i < ninstances; i++) {
         instance inst = insts[i];
-        fprintf(fp, "%s,", inst->model_name);
+        fprintf(fp, "%s,", inst->instance_name);
 
         assert(inst->nsols == nmodels && "missing some solutions");
 
         for (int j = 0; j < nmodels; j++) {
             assert(inst->sols[j]->model_type == insts[0]->sols[j]->model_type);
 
-            double time;
-            switch (optdist) {
-                case 0:
-                    time = inst->sols[j]->solve_time;
-                    break;
-                default:
-                    time = inst->sols[j]->heur_time[optdist - 1];
-                    break;
+            if (j < nmodels - 1) {
+                fprintf(fp, "%lf,", inst->sols[j]->solve_time);
+            } else {
+                fprintf(fp, "%lf\n", inst->sols[j]->solve_time);
             }
+        }
+    }
+
+    fclose(fp);
+    free(filepath);
+}
+
+void plot_tracking(instance* insts, int ninstances, int dist) {
+    assert(insts != NULL);
+    assert(insts[0] != NULL);
+    assert(insts[0]->zbest != -1.0);
+
+    char* filepath;
+    int bsize = 100;
+    filepath = (char*)calloc(bsize, sizeof(char));
+    snprintf(filepath, bsize, "../results/heur%d.csv", dist);
+
+    /* remove and create new fresh csv */
+    remove(filepath);
+    FILE* fp;
+    fp = fopen(filepath, "w");
+    assert(fp != NULL && "file not found while saving heur .csv");
+
+    /* save the data */
+    int nmodels = insts[0]->nsols;
+    fprintf(fp, "%d,", nmodels);
+
+    for (int i = 0; i < nmodels; i++) {
+        enum model_types model_type = insts[0]->sols[i]->model_type;
+        assert(model_type != NOSEC && model_type != OPTIMAL_TOUR);
+
+        char* model_name_str = model_type_tostring(model_type);
+        fprintf(fp, "%s", model_name_str);
+        free(model_name_str);
+
+        if (i < nmodels - 1) {
+            fprintf(fp, ",");
+        } else {
+            fprintf(fp, "\n");
+        }
+    }
+
+    for (int i = 0; i < ninstances; i++) {
+        instance inst = insts[i];
+        fprintf(fp, "%s,", inst->instance_name);
+
+        assert(inst->nsols == nmodels && "missing some solutions");
+
+        for (int j = 0; j < nmodels; j++) {
+            assert(inst->sols[j]->model_type == insts[0]->sols[j]->model_type);
+
+            double objtarget = inst->zbest * (1.0 + dist / 100.0);
+            double time = tracker_find(inst->sols[j]->t, objtarget);
+            if (time == -1.0) time = 1000 * inst->params->timelimit;
 
             if (j < nmodels - 1) {
                 fprintf(fp, "%lf,", time);
@@ -479,4 +471,5 @@ void plot_profiler(instance* insts, int ninstances, int optdist) {
     }
 
     fclose(fp);
+    free(filepath);
 }

@@ -41,33 +41,41 @@ enum weight_types weight_type_enumerator(char* section_param);
 run_options create_options() {
     run_options options = (run_options)calloc(1, sizeof(struct run_options_t));
     options->mode = NOT_SPECIFIED;
+    options->tests = -1;
 
     return options;
 }
 void free_options(run_options options) {
-    free(options->model_name);
+    free(options->instance_name);
+    free(options->instance_folder);
+
     free(options);
 }
 
 void print_usage() {
     printf("Usage: ./<name_executable> [options]\n");
-    printf("Options:\n");
-    printf("  --verbose                 Display more informations\n");
-    printf(
-        "  --model_name <model_name> Model name present in data subfolder\n");
-    printf("  --time_limit <integer>    Max timelimit for CPLEX computation\n");
-    printf("  --seed <integer>          Randomness seed used in computation\n");
-    printf("  --threads <integer>       Max number of threads\n");
-    printf(
-        "  --memory <integer>        Max memory in MB used by CPLEX "
-        "computation\n");
-    printf("  --integer_costs           Consider integer costs only\n");
-    printf("  models:\n");
-    for (int i = 0; i < 23; i++) {
+    printf("  -v --verbose\n");
+    printf("  -e --extra_verbose\n");
+    printf("  -c --callback_verbose\n");
+    printf("  -n --instance_name <instance_name>\n");
+    printf("  -l --load_directory <subfolder in ./data>\n");
+    printf("  -o --load_optimal\n");
+    printf("  -g --generate <number of instance to generate>\n");
+    printf("  -N --nnodes <number of nodes of generated instances>\n");
+    printf("  -m --models <execute models>\n");
+    printf("  -T --time_limit <time limit in seconds>\n");
+    printf("  -S --cplex_seed <cplex seed>\n");
+    printf("  -C --threads <threads to use>\n");
+    printf("  -M --memory <max memory usage in MB>\n");
+    printf("  -h --help\n");
+    printf("  avaiable models:\n");
+    for (int i = 0; i < 24; i++) {
         char* model_type_str = model_type_tostring(i);
-        printf("\t%s: %d %d\n", model_type_str, 1 << i, (1 << (i + 1)) - 1);
+        printf("\t%s: %d\n", model_type_str, 1 << i);
         free(model_type_str);
     }
+
+    exit(EXIT_SUCCESS);
 }
 
 void parse_command_line(int argc, char** argv, cplex_params params,
@@ -76,123 +84,129 @@ void parse_command_line(int argc, char** argv, cplex_params params,
     assert(options != NULL);
 
     static struct option long_options[] = {
-        {"verbose", no_argument, NULL, 'V'},
-        {"extra", no_argument, NULL, 'E'},
-        {"suppress", no_argument, NULL, 'S'},
-        {"gen_nnodes", no_argument, NULL, 'N'},
-        {"model_name", required_argument, NULL, 'm'},
-        {"generate", required_argument, NULL, 'g'},
+        {"verbose", no_argument, NULL, 'v'},
+        {"extra_verbose", no_argument, NULL, 'e'},
+        {"callback_verbose", no_argument, NULL, 'c'},
+        {"instance_name", required_argument, NULL, 'n'},
         {"load_directory", required_argument, NULL, 'l'},
-        {"tests", required_argument, NULL, 'W'},
-        {"optimal", required_argument, NULL, 'O'},
-        {"time_limit", required_argument, NULL, 't'},
-        {"cplex_seed", required_argument, NULL, 's'},
-        {"threads", required_argument, NULL, 'T'},
+        {"load_optimal", no_argument, NULL, 'o'},
+        {"generate", required_argument, NULL, 'g'},
+        {"nnodes", required_argument, NULL, 'N'},
+        {"models", required_argument, NULL, 'm'},
+        {"time_limit", required_argument, NULL, 'T'},
+        {"cplex_seed", required_argument, NULL, 'S'},
+        {"threads", required_argument, NULL, 'C'},
         {"memory", required_argument, NULL, 'M'},
-        {"integer_costs", no_argument, NULL, 'i'},
         {"help", no_argument, NULL, 'h'},
         {0, 0, NULL, 0}};
 
     int long_index, opt;
     long_index = opt = 0;
-    while ((opt = getopt_long(argc, argv, "VESON:m:g:l:W:b:t:s:T:M:i:h",
+    while ((opt = getopt_long(argc, argv, "vecn:l:og:N:m:T:S:C:M:h",
                               long_options, &long_index)) != -1) {
         switch (opt) {
-            case 'V':
+            case 'v':
                 VERBOSE = 1;
                 break;
-            case 'E':
-                EXTRA = 1;
+            case 'e':
+                EXTRA_VERBOSE = 1;
                 break;
-            case 'S':
-                SUPPRESS_CALLBACK = 0;
+            case 'c':
+                CALLBACK_VERBOSE = 1;
                 break;
-            case 'N':
-                GEN_NNODES = atoi(optarg);
-                assert(GEN_NNODES > 5);
-                break;
-            case 'm':
-                options->mode = SINGLE_MODEL;
-                options->model_name =
+            case 'n':
+                if (options->mode != NOT_SPECIFIED) {
+                    print_error("cannot mix execution modes!");
+                }
+                options->mode = SINGLE_INSTANCE;
+                options->instance_name =
                     (char*)calloc(1 + strlen(optarg), sizeof(char));
-                snprintf(options->model_name, 1 + strlen(optarg), "%s", optarg);
+                snprintf(options->instance_name, 1 + strlen(optarg), "%s",
+                         optarg);
+                break;
+            case 'l':
+                if (options->mode != NOT_SPECIFIED) {
+                    print_error("cannot mix execution modes!");
+                }
+                options->mode = LOAD_DIR;
+                options->instance_folder =
+                    (char*)calloc(1 + strlen(optarg), sizeof(char));
+                snprintf(options->instance_folder, 1 + strlen(optarg), "%s",
+                         optarg);
+                break;
+            case 'o':
+                options->load_optimal = 1;
                 break;
             case 'g':
+                if (options->mode != NOT_SPECIFIED) {
+                    print_error("cannot mix execution modes!");
+                }
                 options->mode = GENERATE;
                 options->battery_test = atoi(optarg);
                 break;
-            case 'l':
-                options->mode = LOAD_DIR;
-                if (!strcmp(optarg, "tsplib"))
-                    options->folder = TSPLIB;
-                else if (!strcmp(optarg, "generated"))
-                    options->folder = GENERATED;
-                else
-                    print_error("wrong folder");
+            case 'N':
+                GEN_NNODES = atoi(optarg);
+                assert(GEN_NNODES > 3);
                 break;
-            case 'W':
+            case 'm':
                 options->tests = atoi(optarg);
-                assert(GEN_NNODES > 5);
-                break;
-            case 'O':
-                options->load_optimal = 1;
-                break;
-            case 't':
-                params->timelimit = atof(optarg);
-                break;
-            case 's':
-                params->randomseed = abs(atoi(optarg));
                 break;
             case 'T':
+                params->timelimit = atof(optarg);
+                break;
+            case 'S':
+                params->randomseed = abs(atoi(optarg));
+                break;
+            case 'C':
                 params->num_threads = atoi(optarg);
                 break;
             case 'M':
                 params->available_memory = atoi(optarg);
                 break;
-            case 'c':
-                params->cost = INTEGER;
+            case 'h':
+                print_usage();
                 break;
             case '?':
-                print_usage();
                 printf("opt: %c, optarg: %s\n", opt, optarg);
-                assert(opt != '?' && "unknown option");
+                print_usage();
         }
     }
-    if (options->mode == NOT_SPECIFIED) {
+    if (options->mode == NOT_SPECIFIED ||
+        (options->mode != GENERATE && options->tests == -1)) {
         print_usage();
-        printf("opt: %c, optarg: %s\n", opt, optarg);
-        assert(options->mode != NOT_SPECIFIED && "use a mode");
     }
 }
 
-instance parse_input_file(char* model_name, char* file_extension,
-                          enum model_folders folder) {
+instance parse_input_file(char* instance_name, char* file_extension,
+                          char* instance_folder) {
     /* create instance from params */
     instance inst = create_empty_instance();
 
-    assert(model_name != NULL &&
+    assert(instance_name != NULL &&
            "dont know what to parse, wrong execution mode");
 
-    inst->model_name = (char*)calloc(1 + strlen(model_name), sizeof(char));
-    snprintf(inst->model_name, 1 + strlen(model_name), "%s", model_name);
+    inst->instance_name =
+        (char*)calloc(1 + strlen(instance_name), sizeof(char));
+    snprintf(inst->instance_name, 1 + strlen(instance_name), "%s",
+             instance_name);
 
-    inst->model_folder = folder;
-
-    if (VERBOSE) printf("[VERBOSE] reading input file %s\n", inst->model_name);
+    inst->instance_folder =
+        (char*)calloc(1 + strlen(instance_folder), sizeof(char));
+    snprintf(inst->instance_folder, 1 + strlen(instance_folder), "%s",
+             instance_folder);
 
     /* build filename depending on folder, model name and extention (tour or
      * tsp) */
     char* fname;
     int bufsize = 100;
     fname = (char*)calloc(bufsize, sizeof(char));
-    if (folder == TSPLIB)
-        snprintf(fname, bufsize, "../data_tsplib/%s/%s.", inst->model_name,
-                 inst->model_name);
-    if (folder == GENERATED)
-        snprintf(fname, bufsize, "../data_generated/%s/%s.", inst->model_name,
-                 inst->model_name);
-    snprintf(fname + strlen(fname), bufsize - strlen(fname), "%s",
-             file_extension);
+
+    snprintf(fname, bufsize, "../data/%s/%s/%s.%s", instance_folder,
+             instance_name, instance_name, file_extension);
+
+    if (VERBOSE) {
+        printf("[VERBOSE] reading input file %s\n", instance_name);
+    }
 
     FILE* fp;
     fp = fopen(fname, "r");
@@ -244,16 +258,14 @@ instance parse_input_file(char* model_name, char* file_extension,
                 break;
 
             case TYPE:
-                inst->instance_type = instance_type_enumerator(section_param);
-                assert(inst->instance_type != UNHANDLED_INSTANCE_TYPE &&
-                       "able to handly TPS or TOUR");
+                /* not handled */
                 break;
 
             case COMMENT:
-                inst->model_comment =
+                inst->instance_comment =
                     (char*)calloc(1 + strlen(section_param), sizeof(char));
-                snprintf(inst->model_comment, 1 + strlen(section_param), "%s",
-                         section_param);
+                snprintf(inst->instance_comment, 1 + strlen(section_param),
+                         "%s", section_param);
                 break;
 
             case DIMENSION:
@@ -302,13 +314,10 @@ instance parse_input_file(char* model_name, char* file_extension,
             case TOUR_SECTION: {
                 /* a tour is managed by creating an empty instance with a single
                  * solution (the tour) */
-                solution sol = (solution)calloc(1, sizeof(struct solution_t));
-                sol->model_type = OPTIMAL_TOUR;
+                solution sol =
+                    create_solution(inst, OPTIMAL_TOUR, inst->nnodes);
                 /* the tour does not provide the min cost */
                 sol->zstar = DBL_MAX;
-
-                int nedges = sol->nedges = inst->nnodes;
-                sol->edges = (edge*)calloc(nedges, sizeof(struct edge_t));
 
                 int prev, first;
                 assert(getline(&line, &len, fp) != -1 &&
@@ -332,37 +341,6 @@ instance parse_input_file(char* model_name, char* file_extension,
                 break;
             }
 
-            case EDGE_WEIGHT_SECTION: {
-                int nnodes = inst->nnodes;
-                int nweights = nnodes + nnodes * (nnodes - 1) / 2;
-                double* weights = (double*)calloc(nweights, sizeof(double));
-
-                int k = 0;
-                while (getline(&line, &len, fp) && strcmp(line, "EOF\n")) {
-                    char* weight_str;
-                    weight_str = strtok_r(line, " ", &saveptr);
-
-                    weights[k++] = atof(weight_str);
-
-                    while ((weight_str = strtok_r(NULL, " ", &saveptr)) !=
-                           NULL) {
-                        weights[k++] = atof(weight_str);
-                    }
-                }
-
-                k = 0;
-                inst->adjmatrix = (double**)calloc(nnodes, sizeof(double*));
-                for (int i = 0; i < nnodes; i++) {
-                    inst->adjmatrix[i] = (double*)calloc(i + 1, sizeof(double));
-
-                    for (int j = 0; j <= i; j++)
-                        inst->adjmatrix[i][j] = weights[k++];
-                }
-                free(weights);
-
-                break;
-            }
-
             default:
             case END_OF_FILE:
                 break;
@@ -379,29 +357,43 @@ instance parse_input_file(char* model_name, char* file_extension,
     return inst;
 }
 
-instance* parse_input_dir(enum model_folders folder, char* file_extension,
-                          int* ninstances, int nodes_lb, int nodes_ub) {
+instance* parse_input_dir(char* instance_folder, char* file_extension,
+                          int* ninstances, int load_optimal) {
+    return parse_input_dir_bounded(instance_folder, file_extension, ninstances,
+                                   load_optimal, 0, 10000000);
+}
+instance* parse_input_dir_bounded(char* instance_folder, char* file_extension,
+                                  int* ninstances, int load_optimal,
+                                  int nodes_lb, int nodes_ub) {
     assert(nodes_lb >= 0);
     assert(nodes_ub > 0);
     assert(nodes_lb < nodes_ub);
-    char** model_names = list_files(folder, ninstances);
+    char** instance_names = list_files(instance_folder, ninstances);
 
     instance* insts = (instance*)calloc(*ninstances, sizeof(struct instance_t));
 
     int nmodels = *ninstances;
     *ninstances = 0;
     for (int i = 0; i < nmodels; i++) {
-        instance inst =
-            parse_input_file(model_names[i], file_extension, folder);
+        instance inst = parse_input_file(instance_names[i], file_extension,
+                                         instance_folder);
+
+        if (load_optimal) {
+            instance opt = parse_input_file(instance_names[i], "opt.tour",
+                                            instance_folder);
+
+            inst->zbest = compute_zstar(inst, opt->sols[0]);
+            free_instance(opt);
+        }
 
         if (nodes_lb <= inst->nnodes && inst->nnodes < nodes_ub) {
             insts[*ninstances] = inst;
             *ninstances = *ninstances + 1;
         }
 
-        free(model_names[i]);
+        free(instance_names[i]);
     }
-    free(model_names);
+    free(instance_names);
 
     instance* tmp =
         (instance*)realloc(insts, (*ninstances) * sizeof(struct instance_t));
@@ -436,25 +428,13 @@ enum sections section_enumerator(char* section_name) {
         "FIXED_EDGE_SECTION",
         "DISPLAY_DATA_SECTION",
         "TOUR_SECTION",
-        "EDGE_WEIGHT_SECTION",
     };
 
-    for (int i = NAME; i <= EDGE_WEIGHT_SECTION; i++) {
+    for (int i = NAME; i <= TOUR_SECTION; i++) {
         if (!strcmp(section_name, sections[i])) return i;
     }
 
     return UNHANDLED_SECTION;
-}
-enum instance_types instance_type_enumerator(char* section_param) {
-    char* instance_types[] = {
-        "TSP",
-        "TOUR",
-    };
-
-    for (int i = TSP; i <= TOUR; i++) {
-        if (!strcmp(section_param, instance_types[i])) return i;
-    }
-    return UNHANDLED_INSTANCE_TYPE;
 }
 enum weight_types weight_type_enumerator(char* section_param) {
     char* weight_types[] = {"ATT", "EUC_2D", "GEO", "EXPLICIT"};

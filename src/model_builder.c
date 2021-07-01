@@ -11,8 +11,8 @@
 
 #include "../include/adjlist.h"
 #include "../include/globals.h"
-#include "../include/models/mtz.h"
 #include "../include/models/gg.h"
+#include "../include/models/mtz.h"
 #include "../include/solvers.h"
 #include "../include/tsp.h"
 #include "../include/union_find.h"
@@ -24,18 +24,10 @@ void add_asymm_variables(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_symm_constraints(CPXENVptr env, CPXLPptr lp, instance inst);
 void add_asymm_constraints(CPXENVptr env, CPXLPptr lp, instance inst);
 
+typedef enum modes_t { STATIC, LAZY } modes;
+
 void add_deg2_sec(CPXENVptr env, CPXLPptr lp, instance inst, modes mode);
 void add_deg3_sec(CPXENVptr env, CPXLPptr lp, instance inst, modes mode);
-
-/* void add_GGlit_static_deg2_sec(CPXENVptr env, CPXLPptr lp, instance inst); */
-/*  */
-/* int CPXPUBLIC add_BENDERS_sec_callback_candidate(CPXCALLBACKCONTEXTptr
- * context, */
-/*                                                  solution sol); */
-/* int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr
- * context, */
-/*                                                   solution sol); */
-/* int doit_fn_concorde(double cutval, int cutcount, int* cut, void* in); */
 
 double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
                        enum model_types model_type) {
@@ -148,14 +140,8 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
     char* filename;
     int bufsize = 100;
     filename = (char*)calloc(bufsize, sizeof(char));
-    if (inst->model_folder == TSPLIB) {
-        snprintf(filename, bufsize, "../data_tsplib/%s/%s.", inst->model_name,
-                 inst->model_name);
-    }
-    if (inst->model_folder == GENERATED) {
-        snprintf(filename, bufsize, "../data_generated/%s/%s.",
-                 inst->model_name, inst->model_name);
-    }
+    snprintf(filename, bufsize, "../data/%s/%s/%s.", inst->instance_folder,
+             inst->instance_name, inst->instance_name);
 
     /* filename depend on model type */
     char* model_type_str = model_type_tostring(model_type);

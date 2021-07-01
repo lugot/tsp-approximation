@@ -32,18 +32,26 @@ int main(int argc, char** argv) {
     printf("execution on:\n");
     for (int i = 0; i < ntests; i++) {
         char* model_type_str = model_type_tostring(tests[i]);
-        printf("\t%s\n", model_type_tostring(tests[i]));
+        printf("\t%s\n", model_type_str);
         free(model_type_str);
     }
 
     switch (options->mode) {
-        case SINGLE_MODEL: {
+        case SINGLE_INSTANCE: {
             printf("model name provided, execution on model %s\n",
-                   options->model_name);
+                   options->instance_name);
 
             instance inst =
-                parse_input_file(options->model_name, "tsp", TSPLIB);
+                parse_input_file(options->instance_name, "tsp", "tsplib");
             add_params(inst, params);
+
+            if (options->load_optimal) {
+                instance opt = parse_input_file(inst->instance_name, "opt.tour",
+                                                inst->instance_folder);
+
+                inst->zbest = compute_zstar(inst, opt->sols[0]);
+                free(opt);
+            }
 
             print_instance(inst, 1);
             solution sol = solve(inst, tests[0]);
@@ -64,29 +72,11 @@ int main(int argc, char** argv) {
                 generate_random_instances(options->battery_test, GEN_NNODES);
 
             for (int i = 0; i < options->battery_test && ntests != 0; i++) {
-                printf("battery %d:\n", i + 1);
+                add_params(insts[i], params);
+                save_instance(insts[i]);
 
-                instance inst = insts[i];
-                add_params(inst, params);
-                save_instance(inst);
-
-                for (int j = 0; j < ntests; j++) {
-                    /* solve! */
-                    inst->params->timelimit = params->timelimit;
-                    solution sol = solve(inst, tests[j]);
-
-                    char* model_type_str = model_type_tostring(tests[j]);
-                    printf("\tsolving %s on instance %s: %lf %lf\n",
-                           model_type_str, inst->model_name, sol->zstar,
-                           sol->solve_time);
-                    free(model_type_str);
-
-                    plot_graphviz(sol, NULL, j);
-                }
-
-                if (EXTRA) print_instance(inst, 1);
+                if (EXTRA_VERBOSE) print_instance(insts[i], 1);
             }
-            plot_profiler(insts, options->battery_test, 0);
 
             for (int i = 0; i < options->battery_test; i++) {
                 free_instance(insts[i]);
@@ -95,7 +85,7 @@ int main(int argc, char** argv) {
             break;
         }
         case LOAD_DIR: {
-            printf("loading from directory\n");
+            printf("loading from directory %s\n", options->instance_folder);
 
             FILE* emergency_res;
             emergency_res = fopen("emergency_res.csv", "a");
@@ -116,20 +106,21 @@ int main(int argc, char** argv) {
             fclose(emergency_res);
 
             int ninstances;
-            instance* insts = parse_input_dir(options->folder, "tsp",
-                                              &ninstances, 0, 9999999);
+            instance* insts =
+                parse_input_dir(options->instance_folder, "tsp", &ninstances,
+                                options->load_optimal);
 
             for (int i = 0; i < ninstances; i++) {
                 instance inst = insts[i];
                 add_params(inst, params);
-                printf("instance %s:\n", inst->model_name);
+                printf("instance %s:\n", inst->instance_name);
 
                 FILE* emergency_res;
                 emergency_res = fopen("emergency_res.csv", "a");
                 assert(emergency_res != NULL &&
                        "file not found while saving emer");
 
-                fprintf(emergency_res, "%s,", inst->model_name);
+                fprintf(emergency_res, "%s,", inst->instance_name);
                 fclose(emergency_res);
 
                 for (int j = 0; j < ntests; j++) {
@@ -138,7 +129,7 @@ int main(int argc, char** argv) {
 
                     char* model_type_str = model_type_tostring(tests[j]);
                     printf("\tsolving %s on instance %s: %lf %lf\n",
-                           model_type_str, inst->model_name, sol->zstar,
+                           model_type_str, inst->instance_name, sol->zstar,
                            sol->solve_time);
                     free(model_type_str);
 
@@ -154,30 +145,13 @@ int main(int argc, char** argv) {
                     }
                     fclose(emergency_res);
 
-                    if (EXTRA) plot_graphviz(sol, NULL, j);
-
-                    add_solution(inst, sol);
-                }
-
-                if (options->load_optimal) {
-                    instance optimal_tour = parse_input_file(
-                        inst->model_name, "opt.tour", options->folder);
-
-                    double zbest = optimal_tour->sols[0]->zstar;
-
-                    int nmult = 3;
-                    double mult[] = {1.03, 1.10, 1.50};
-
-                    for (int m = 0; m < nmult; m++) {
-                        for (int j = 0; j < ntests; j++) {
-                            inst->sols[j]->heur_time[m] =
-                                tracker_find(inst->sols[j]->t, zbest * mult[m]);
-                        }
-                    }
+                    if (EXTRA_VERBOSE) plot_graphviz(sol, NULL, j);
                 }
             }
-            plot_profiler(insts, ninstances, 0);
-            plot_profiler(insts, ninstances, 1);
+            plot_profiler(insts, ninstances);
+            if (options->load_optimal) plot_tracking(insts, ninstances, 50);
+            if (options->load_optimal) plot_tracking(insts, ninstances, 10);
+            if (options->load_optimal) plot_tracking(insts, ninstances, 3);
 
             for (int i = 0; i < ninstances; i++) {
                 free_instance(insts[i]);

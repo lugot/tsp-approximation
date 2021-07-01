@@ -97,8 +97,9 @@ double l2dist(size_t i, size_t j, instance inst) {
     double dx = inst->nodes[i].x - inst->nodes[j].x;
     double dy = inst->nodes[i].y - inst->nodes[j].y;
 
-    if (inst->params->cost == REAL) return sqrt(dx * dx + dy * dy);
-    return 0.0 + (int)(sqrt(dx * dx + dy * dy) + 0.499999999);
+    return sqrt(dx * dx + dy * dy);
+    /* if (inst->params->cost == REAL) return sqrt(dx * dx + dy * dy); */
+    /* return 0.0 + (int)(sqrt(dx * dx + dy * dy) + 0.499999999); */
 }
 double geodist(size_t i, size_t j, instance inst) {
     // TODO(lugot): NOT CHECKED FOR FLOATING POINT SAFETY
@@ -110,14 +111,11 @@ double geodist(size_t i, size_t j, instance inst) {
     double distance =
         RRR * acos(0.5 * ((1.0 + q1) * q2 - (1.0 - q1) * q3)) + 1.0;
 
-    if (inst->params->cost == REAL) return distance;
-    return 0.0 + (int)distance;
+    return distance;
+    /* if (inst->params->cost == REAL) return distance; */
+    /* return 0.0 + (int)distance; */
 }
 double dist(int i, int j, instance inst) {
-    if (inst->adjmatrix != NULL) {
-        return i > j ? inst->adjmatrix[i][j] : inst->adjmatrix[j][i];
-    }
-
     switch (inst->weight_type) {
         case ATT:
         case EUC_2D:
@@ -135,49 +133,14 @@ double dist(int i, int j, instance inst) {
 
     return 0.0; /* warning suppressor */
 }
-double compute_distmatrix(instance inst) {
-    if (inst->adjmatrix != NULL) return 0.0;
-
-    /* initialize wall clock time */
-    struct timespec s, e;
-    s.tv_sec = e.tv_sec = -1;
-    stopwatch(&s, &e);
-
-    inst->adjmatrix = (double**)calloc(inst->nnodes, sizeof(double*));
-    for (int i = 0; i < inst->nnodes; i++) {
-        /* allocate the lower row only */
-        inst->adjmatrix[i] = (double*)calloc(i + 1, sizeof(double));
-
-        for (int j = 0; j <= i; j++) {
-            switch (inst->weight_type) {
-                case ATT:
-                case EUC_2D:
-                    inst->adjmatrix[i][j] = l2dist(i, j, inst);
-                    break;
-
-                case GEO:
-                    inst->adjmatrix[i][j] = geodist(i, j, inst);
-                    break;
-
-                default:
-                    inst->adjmatrix[i][j] = 0.0;
-                    assert(0 && "unhandeled distance function");
-                    break;
-            }
-        }
-    }
-
-    return stopwatch(&s, &e);
-}
 double compute_zstar(instance inst, solution sol) {
-    assert(inst->adjmatrix != NULL && "distances not computed yet");
     int nedges = sol->nedges;
 
     double zstar = 0.0;
     for (int i = 0; i < nedges; i++) {
         edge e = sol->edges[i];
 
-        zstar += inst->adjmatrix[maxi(e.i, e.j)][mini(e.i, e.j)];
+        zstar += dist(e.i, e.j, inst);
     }
 
     sol->zstar = zstar;
@@ -486,16 +449,10 @@ void print_error(const char* err, ...) {
 
     exit(EXIT_FAILURE);
 }
-char** list_files(enum model_folders folder, int* nmodels) {
-    char* path;
-    switch (folder) {
-        case TSPLIB:
-            path = "../data_tsplib";
-            break;
-        case GENERATED:
-            path = "../data_generated";
-            break;
-    }
+char** list_files(char* instance_folder, int* nmodels) {
+    int bsize = 100;
+    char* path = (char*)calloc(bsize, sizeof(char));
+    snprintf(path, bsize, "../data/%s", instance_folder);
 
     /* first count nfiles */
     DIR* dp = opendir(path);
@@ -526,6 +483,8 @@ char** list_files(enum model_folders folder, int* nmodels) {
     closedir(dp);
 
     qsort(model_names, *nmodels, sizeof(char*), stringcmp);
+
+    free(path);
 
     return model_names;
 }

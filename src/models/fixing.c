@@ -77,7 +77,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
         }
 
         /* save the model for analysis */
-        if (EXTRA) CPXwriteprob(env, lp, "./hard_fixing", "LP");
+        if (EXTRA_VERBOSE) CPXwriteprob(env, lp, "./hard_fixing", "LP");
 
         /* reset the timelimit: fraction of number of iterations */
         CPXsetdblparam(env, CPX_PARAM_TILIM,
@@ -104,7 +104,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
             prev_obj = best_obj;
         }
 
-        if (EXTRA) {
+        if (EXTRA_VERBOSE) {
             /* create a solution for the plot */
             solution sol = create_solution(inst, HARD_FIXING, nedges);
             sol->inst = inst;

@@ -24,7 +24,7 @@ double twoopt_refinement(instance inst, int* succ, int nnodes) {
 
     /* iterate over 2opt moves until not improvable */
     while ((delta = twoopt_pick(inst, succ, &a, &b)) < EPSILON) {
-        if (EXTRA) {
+        if (EXTRA_VERBOSE) {
             printf("[VERBOSE] refinement on %d, %d delta %lf\n", a, b, delta);
         }
 
@@ -110,7 +110,7 @@ double threeopt_refinement(instance inst, int* succ, int nnodes) {
 
     /* iterate over 2opt moves until not improvable */
     while ((delta = threeopt_pick(inst, succ, &a, &b, &c)) != 0.0) {
-        if (EXTRA) {
+        if (EXTRA_VERBOSE) {
             printf("[VERBOSE] refinement on %d, %d, %d delta %lf\n", a, b, c,
                    delta);
         }
@@ -394,7 +394,7 @@ void kick(int* succ, int nnodes, int strength) {
         b = buffer[rand() % k];
         target[b] = 0;
 
-        if (EXTRA) {
+        if (EXTRA_VERBOSE) {
             printf("[VERBOSE] random selected %d(%d) -> %d(%d)\n", map[a] + 1,
                    a, map[a] + 1, b);
         }
