@@ -1,4 +1,4 @@
-OBJS = globals.o main.o tsp.o parsers.o utils.o solvers.o union_find.o model_builder.o models/mtz.o models/gg.o models/benders.o models/fixing.o adjlist.o pqueue.o refinements.o tracker.o
+OBJS = globals.o main.o tsp.o parsers.o utils.o solvers.o union_find.o model_builder.o models/mtz.o models/gg.o models/benders.o models/fixing.o adjlist.o pqueue.o refinements.o tracker.o approximations.o constructives.o metaheuristics.o
 HEADERS =
 EXE = tsp_approx
 all: $(EXE)

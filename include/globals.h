@@ -7,7 +7,7 @@
 
 #define BENDERS2P_PHASE2PERC 80
 #define BENDERS2P_NODELIM 3
-#define BENDERSCALLBACK_RANDOMPERC 50
+// #define BENDERSCALLBACK_RANDOMPERC 50
 // #define BENDERSCALLBACK_NODELIM 6
 
 #define HF_PERCENTAGE 80
@@ -19,7 +19,8 @@
 #define SF_K_STEP 2
 #define SF_INITIAL_PERC_TIME 0.2
 
-#define GRASP_K 4
+#define GRASP_K 3
+
 #define GRASP_VNS_PERC_TIME 0.3
 
 #define VNS_K_START 5
@@ -30,8 +31,8 @@
 #define TS_MIN_TENURE 20
 
 extern int VERBOSE;
-extern int EXTRA;
-extern int SUPPRESS_CALLBACK;
+extern int EXTRA_VERBOSE;
+extern int CALLBACK_VERBOSE;
 extern int GEN_NNODES;
 
 extern int hook;

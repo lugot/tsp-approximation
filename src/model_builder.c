@@ -125,11 +125,12 @@ double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
             add_deg2_sec(env, lp, inst, STATIC);
             break;
 
+        case OPTIMAL_TOUR:
         case MST:
         case GRASP:
         case GREEDY:
         case EXTRA_MILEAGE:
-        case OPTIMAL_TOUR:
+        case TWOOPT_MULTISTART:
         case VNS_RANDOM:
         case VNS_GREEDY:
         case TABU_SEACH:

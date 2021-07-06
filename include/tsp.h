@@ -7,14 +7,11 @@
 
 struct solution_t;
 
-enum instance_types { TSP, TOUR, UNHANDLED_INSTANCE_TYPE };
-enum costs { INTEGER, REAL };
 typedef struct cplex_params_t {
     int randomseed;
     int num_threads;
     double timelimit;
     int available_memory;
-    enum costs cost;
 } * cplex_params;
 
 enum model_folders { TSPLIB, GENERATED };
@@ -31,10 +28,9 @@ typedef struct wedge_t {
 } wedge;
 typedef struct instance_t {
     /* model infos */
-    char* model_name;
-    char* model_comment;
-    enum model_folders model_folder;
-    enum instance_types instance_type;
+    char* instance_name;
+    char* instance_comment;
+    char* instance_folder;
 
     /* parameters */
     cplex_params params;
@@ -44,17 +40,13 @@ typedef struct instance_t {
     int nnodes;
     int ncols;
     node* nodes;
-    double** adjmatrix;
 
     /* solutions */
+    double zbest;
     int nsols;
     struct solution_t** sols;
 } * instance;
 
-typedef struct doit_fn_input_t {
-    int nedges;
-    CPXCALLBACKCONTEXTptr context;
-} * doit_fn_input;
 
 enum model_types {
     OPTIMAL_TOUR,
@@ -78,6 +70,7 @@ enum model_types {
     GREEDY,
     GRASP,
     EXTRA_MILEAGE,
+    TWOOPT_MULTISTART,
     VNS_RANDOM,
     VNS_GREEDY,
     TABU_SEACH
@@ -97,7 +90,6 @@ typedef struct solution_t {
     double solve_time;
 
     tracker t;
-    double heur_time[3];
 } * solution;
 
 /* cplex param manipulators */
@@ -126,6 +118,7 @@ void print_solution(solution sol, int print_data);
 
 /* plotters */
 void plot_graphviz(solution sol, int* edgecolors, int version);
-void plot_profiler(instance* insts, int ninstances, int optdist);
+void plot_profiler(instance* insts, int ninstances, int plot_obj);
+void plot_tracking(instance* insts, int ninstances, int dist);
 
 #endif  // INCLUDE_TSP_H_

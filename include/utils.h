@@ -12,7 +12,6 @@ edge xpos_inverse(int pos, int nnodes);
 
 /* compute distances and zstar from tour */
 double dist(int i, int j, instance inst);
-double compute_distmatrix(instance inst);
 double compute_zstar(instance inst, solution sol);
 
 /* graphs utils */
@@ -52,6 +51,6 @@ int mini(int a, int b);
 void swap(int* x, int* y);
 void* intset(int* arr, int c, int n);
 void print_error(const char* err, ...);
-char** list_files(enum model_folders folder, int* nmodels);
+char** list_files(char* instance_folder, int* nmodels);
 
 #endif  // INCLUDE_UTILS_H_

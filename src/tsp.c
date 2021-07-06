@@ -77,7 +77,7 @@ instance generate_random_instance(int id, int nnodes) {
     inst->weight_type = EUC_2D;
     inst->nnodes = nnodes;
 
-    int box_size = 40.0;
+    int box_size = 5.0;
     inst->nodes = (node*)calloc(nnodes, sizeof(struct node_t));
     for (int i = 0; i < nnodes; i++) {
         inst->nodes[i].x = (double)rand() / ((double)RAND_MAX / box_size);
@@ -359,14 +359,15 @@ void plot_graphviz(solution sol, int* edgecolors, int version) {
     fclose(fp);
     free(fname);
 }
-void plot_profiler(instance* insts, int ninstances) {
+void plot_profiler(instance* insts, int ninstances, int plot_obj) {
     assert(insts != NULL);
     assert(insts[0] != NULL);
 
     char* filepath;
     int bsize = 100;
     filepath = (char*)calloc(bsize, sizeof(char));
-    snprintf(filepath, bsize, "../results/results.csv");
+    snprintf(filepath, bsize, "../results/results_%s.csv",
+             insts[0]->instance_folder);
 
     /* remove and create new fresh csv */
     remove(filepath);
@@ -400,13 +401,13 @@ void plot_profiler(instance* insts, int ninstances) {
         assert(inst->nsols == nmodels && "missing some solutions");
 
         for (int j = 0; j < nmodels; j++) {
-            assert(inst->sols[j]->model_type == insts[0]->sols[j]->model_type);
+            solution sol = inst->sols[j];
+            assert(sol->model_type == sol->model_type);
 
-            if (j < nmodels - 1) {
-                fprintf(fp, "%lf,", inst->sols[j]->solve_time);
-            } else {
-                fprintf(fp, "%lf\n", inst->sols[j]->solve_time);
-            }
+            double toprint = plot_obj ? sol->zstar : sol->solve_time;
+            fprintf(fp, "%lf,", toprint);
+
+            if (j == nmodels - 1) fprintf(fp, "\n");
         }
     }
 
@@ -422,7 +423,8 @@ void plot_tracking(instance* insts, int ninstances, int dist) {
     char* filepath;
     int bsize = 100;
     filepath = (char*)calloc(bsize, sizeof(char));
-    snprintf(filepath, bsize, "../results/heur%d.csv", dist);
+    snprintf(filepath, bsize, "../results/track_%s%d.csv",
+             insts[0]->instance_folder, dist);
 
     /* remove and create new fresh csv */
     remove(filepath);

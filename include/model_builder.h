@@ -6,11 +6,6 @@
 #include "../include/tsp.h"
 #include "../include/adjlist.h"
 
-typedef enum modes_t {
-    STATIC,
-    LAZY
-} modes;
-
 double build_tsp_model(CPXENVptr env, CPXLPptr lp, instance inst,
                        enum model_types model_type);
 

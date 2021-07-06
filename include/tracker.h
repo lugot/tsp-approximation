@@ -14,6 +14,7 @@ tracker tracker_create();
 void tracker_add(tracker t, double time, double obj);
 double tracker_find(tracker t, double obj);
 void tracker_free(tracker t);
+void tracker_print(tracker t);
 
 #endif  // INCLUDE_TRACKER_H_
 

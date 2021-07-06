@@ -304,7 +304,7 @@ int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr context,
     CPXcallbackgetinfoint(context, CPXCALLBACKINFO_THREADID, &thread_idx);
     CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &zbest);
     CPXcallbackgetinfodbl(context, CPXCALLBACKINFO_BEST_SOL, &incumbent);
-    if (VERBOSE && !CALLBACK_VERBOSE) {
+    if (VERBOSE && CALLBACK_VERBOSE) {
         printf("node information (relaxation):\n");
         printf("- node index: %d\n", node_idx);
         printf("- thread index: %d\n", thread_idx);
@@ -312,20 +312,23 @@ int CPXPUBLIC add_BENDERS_sec_callback_relaxation(CPXCALLBACKCONTEXTptr context,
         printf("- incumbent: %lf\n", incumbent);
     }
 
+
 #ifdef BENDERSCALLBACK_RANDOMPERC
     if (rand() % 100 < BENDERSCALLBACK_RANDOMPERC) {
-        if (VERBOSE && !CALLBACK_VERBOSE) printf("drop user cut (random)\n");
+        if (VERBOSE && CALLBACK_VERBOSE) printf("drop user cut (random)\n");
         return 0;
     }
 #endif
 #ifdef BENDERSCALLBACK_NODELIM
     if (node_idx > (1 << BENDERSCALLBACK_NODELIM)) {
-        if (VERBOSE && !SUPPRESS_CALLBACK) {
+        if (VERBOSE && CALLBACK_VERBOSE) {
             printf("drop user cut (depth, %d)\n", node_idx);
         }
         return 0;
     }
 #endif
+    hook++;
+    printf("nodes: %d\n", hook);
 
     /* struct to pass info to doit_fn_callback */
     doit_fn_input data =

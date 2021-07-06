@@ -19,7 +19,7 @@ double twoopt_refinement(instance inst, int* succ, int nnodes) {
     double improvement = 0.0;
 
     int a, b;
-    double delta = 1.0; /* using 0.0 as sentinel */
+    double delta = 1.0;
     a = b = 0;
 
     /* iterate over 2opt moves until not improvable */
