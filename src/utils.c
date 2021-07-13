@@ -370,14 +370,23 @@ char* model_type_tostring(enum model_types model_type) {
         case TWOOPT_MULTISTART:
             snprintf(ans, bufsize, "twoopt_multistart");
             break;
+        case THREEOPT_MULTISTART:
+            snprintf(ans, bufsize, "threeopt_multistart");
+            break;
         case VNS_RANDOM:
             snprintf(ans, bufsize, "vns_randomstart");
             break;
-        case VNS_GREEDY:
-            snprintf(ans, bufsize, "vns_greedystart");
+        case VNS_GRASP:
+            snprintf(ans, bufsize, "vns_grasp");
             break;
-        case TABU_SEACH:
+        case TABU_SEACH_RANDOMSTART:
             snprintf(ans, bufsize, "tabu_search_randomstart");
+            break;
+        case TABU_SEACH_GRASP:
+            snprintf(ans, bufsize, "tabu_search_grasp");
+            break;
+        case GENETIC:
+            snprintf(ans, bufsize, "genetic_algorithm");
             break;
     }
 

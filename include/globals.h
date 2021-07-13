@@ -19,16 +19,19 @@
 #define SF_K_STEP 2
 #define SF_INITIAL_PERC_TIME 0.2
 
-#define GRASP_K 3
+#define GRASP_K 5
 
 #define GRASP_VNS_PERC_TIME 0.3
+
+#define TWOOPT_NINITIALSOL 500
 
 #define VNS_K_START 5
 #define VNS_K_MAX 20
 #define VNS_K_STEP 1
 
-#define TS_MAX_TENURE 100
+#define TS_MAX_TENURE 120
 #define TS_MIN_TENURE 20
+#define TS_PHASEDURATION 1000
 
 extern int VERBOSE;
 extern int EXTRA_VERBOSE;

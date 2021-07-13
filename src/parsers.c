@@ -69,7 +69,7 @@ void print_usage() {
     printf("  -M --memory <max memory usage in MB>\n");
     printf("  -h --help\n");
     printf("  avaiable models:\n");
-    for (int i = 0; i < 24; i++) {
+    for (int i = 0; i < 28; i++) {
         char* model_type_str = model_type_tostring(i);
         printf("\t%s: %d\n", model_type_str, 1 << i);
         free(model_type_str);

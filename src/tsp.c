@@ -77,7 +77,7 @@ instance generate_random_instance(int id, int nnodes) {
     inst->weight_type = EUC_2D;
     inst->nnodes = nnodes;
 
-    int box_size = 5.0;
+    int box_size = 1000.0;
     inst->nodes = (node*)calloc(nnodes, sizeof(struct node_t));
     for (int i = 0; i < nnodes; i++) {
         inst->nodes[i].x = (double)rand() / ((double)RAND_MAX / box_size);

@@ -1,15 +1,16 @@
 #include "../include/solvers.h"
 
 #include <assert.h>
+
+#include "../include/approximations.h"
+#include "../include/constructives.h"
 #include "../include/globals.h"
+#include "../include/metaheuristics.h"
 #include "../include/model_builder.h"
 #include "../include/models/benders.h"
 #include "../include/models/fixing.h"
-#include "../include/utils.h"
-#include "../include/approximations.h"
-#include "../include/constructives.h"
 #include "../include/refinements.h"
-#include "../include/metaheuristics.h"
+#include "../include/utils.h"
 
 void assert_correctness(solution sol);
 solution TSPopt(instance inst, enum model_types model_type);
@@ -59,20 +60,59 @@ solution solve(instance inst, enum model_types model_type) {
             break;
 
         case TWOOPT_MULTISTART:
-            sol = NULL;
-            // TODO(lugot): IMPLEMENT
+            sol = TSPtwoopt_multistart(inst);
+            break;
+
+        case THREEOPT_MULTISTART:
+            sol = TSPthreeopt_multistart(inst);
             break;
 
         case VNS_RANDOM:
             sol = TSPvns(inst, NULL);
             break;
 
-        case VNS_GREEDY:
-            sol = TSPvns(inst, NULL);
+        case VNS_GRASP: {
+            struct timespec a, b;
+            a.tv_sec = b.tv_sec = -1;
+            stopwatch(&a, &b);
+
+            sol = TSPgrasp(inst, 500);
+            int* succ = edges_tosucc(sol->edges, sol->nedges);
+            free_solution(sol);
+
+            double original_timelim = inst->params->timelimit;
+            inst->params->timelimit -= stopwatch(&a, &b) / 1000.0;
+            sol = TSPvns(inst, succ);
+            inst->params->timelimit = original_timelim;
+
+            free(succ);
+            break;
+        }
+
+        case TABU_SEACH_RANDOMSTART:
+            sol = TSPtabusearch(inst, NULL);
             break;
 
-        case TABU_SEACH:
-            sol = TSPtabusearch(inst, NULL);
+        case TABU_SEACH_GRASP: {
+            struct timespec a, b;
+            a.tv_sec = b.tv_sec = -1;
+            stopwatch(&a, &b);
+
+            sol = TSPgrasp(inst, 500);
+            int* succ = edges_tosucc(sol->edges, sol->nedges);
+            free_solution(sol);
+
+            double original_timelim = inst->params->timelimit;
+            inst->params->timelimit -= stopwatch(&a, &b) / 1000.0;
+            sol = TSPtabusearch(inst, succ);
+            inst->params->timelimit = original_timelim;
+
+            free(succ);
+            break;
+        }
+
+        case GENETIC:
+            sol = TSPgenetic(inst);
             break;
 
         case OPTIMAL_TOUR:
@@ -82,6 +122,9 @@ solution solve(instance inst, enum model_types model_type) {
             break;
     }
     sol->solve_time = stopwatch(&s, &e);
+
+    /* add solution to the pool */
+    add_solution(inst, sol);
 
     return sol;
 }
@@ -260,9 +303,12 @@ solution TSPopt(instance inst, enum model_types model_type) {
         case GRASP:
         case EXTRA_MILEAGE:
         case TWOOPT_MULTISTART:
+        case THREEOPT_MULTISTART:
         case VNS_RANDOM:
-        case VNS_GREEDY:
-        case TABU_SEACH:
+        case VNS_GRASP:
+        case TABU_SEACH_RANDOMSTART:
+        case TABU_SEACH_GRASP:
+        case GENETIC:
             assert(0 == 1 && "tried to solve a metaheuristic");
             break;
     }

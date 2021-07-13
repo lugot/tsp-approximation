@@ -71,9 +71,12 @@ enum model_types {
     GRASP,
     EXTRA_MILEAGE,
     TWOOPT_MULTISTART,
+    THREEOPT_MULTISTART,
     VNS_RANDOM,
-    VNS_GREEDY,
-    TABU_SEACH
+    VNS_GRASP,
+    TABU_SEACH_RANDOMSTART,
+    TABU_SEACH_GRASP,
+    GENETIC
 };
 typedef struct solution_t {
     struct instance_t* inst;

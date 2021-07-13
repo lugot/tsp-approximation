@@ -102,9 +102,14 @@ int main(int argc, char** argv) {
                     solution sol = solve(inst, tests[j]);
 
                     char* model_type_str = model_type_tostring(tests[j]);
-                    printf("\tsolving %s on instance %s: %lf %lf\n",
+                    printf("\tsolving %s on instance %s: %lf %lf",
                            model_type_str, inst->instance_name, sol->zstar,
                            sol->solve_time);
+                    if (options->load_optimal) {
+                        printf(" (zbest: %lf)", inst->zbest);
+                    }
+                    printf("\n");
+
                     free(model_type_str);
 
                     if (EXTRA_VERBOSE) plot_graphviz(sol, NULL, j);
@@ -114,7 +119,10 @@ int main(int argc, char** argv) {
                 plot_profiler(insts, i + 1, 1);
                 if (options->load_optimal) plot_tracking(insts, i + 1, 50);
                 if (options->load_optimal) plot_tracking(insts, i + 1, 10);
+                if (options->load_optimal) plot_tracking(insts, i + 1, 5);
                 if (options->load_optimal) plot_tracking(insts, i + 1, 3);
+                if (options->load_optimal) plot_tracking(insts, i + 1, 2);
+                if (options->load_optimal) plot_tracking(insts, i + 1, 1);
             }
 
             for (int i = 0; i < ninstances; i++) {

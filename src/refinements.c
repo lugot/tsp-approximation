@@ -3,27 +3,163 @@
 #include "../include/refinements.h"
 
 #include <assert.h>
+#include <float.h>
 #include <stdlib.h>
 #include <time.h>
 
+#include "../include/constructives.h"
 #include "../include/globals.h"
 #include "../include/union_find.h"
 #include "../include/utils.h"
+
+solution TSPtwoopt_multistart(instance inst) {
+    assert(inst != NULL);
+    assert(inst->params != NULL);
+
+    int nnodes = inst->nnodes;
+
+    /* track the best solution up to this point */
+    solution sol = create_solution(inst, TWOOPT_MULTISTART, nnodes);
+    sol->distance_time = 0.0;
+    sol->zstar = DBL_MAX;
+
+    /* initialize total wall-clock time */
+    struct timespec s, e;
+    s.tv_sec = e.tv_sec = -1;
+    stopwatch(&s, &e);
+
+    int k = 0;
+    while (stopwatch(&s, &e) / 1000.0 < inst->params->timelimit) {
+        /* generate initial grasp solution */
+        solution start = TSPgrasp(inst, TWOOPT_NINITIALSOL);
+        if (VERBOSE) {
+            printf("[VERBOSE] start obj: %lf (%d grasp starts)\n", start->zstar,
+                   TWOOPT_NINITIALSOL);
+        }
+        if (stopwatch(&s, &e) / 1000.0 > inst->params->timelimit) break;
+
+        int* succ;
+        if ((succ = edges_tosucc(start->edges, nnodes)) == NULL) {
+            print_error("no solution found!");
+        }
+
+        /* refine */
+        start->zstar += twoopt_refinement(inst, succ, nnodes, &s, &e);
+
+        if (VERBOSE) {
+            printf("[VERBOSE] refined solution: %lf \n", start->zstar);
+        }
+
+        /* select best tour */
+        if (start->zstar < sol->zstar) {
+            for (int i = 0; i < nnodes; i++) {
+                sol->edges[i] = (edge){i, succ[i]};
+            }
+            sol->zstar = start->zstar;
+
+            tracker_add(sol->t, stopwatch(&s, &e), sol->zstar);
+        }
+
+        k++;
+    }
+
+    return sol;
+}
+
+solution TSPthreeopt_multistart(instance inst) {
+    assert(inst != NULL);
+    assert(inst->params != NULL);
+
+    int nnodes = inst->nnodes;
+
+    /* track the best solution up to this point */
+    solution sol = create_solution(inst, THREEOPT_MULTISTART, nnodes);
+    sol->distance_time = 0.0;
+    sol->zstar = DBL_MAX;
+
+    /* initialize total wall-clock time */
+    struct timespec s, e;
+    s.tv_sec = e.tv_sec = -1;
+    stopwatch(&s, &e);
+
+    int k = 0;
+    while (stopwatch(&s, &e) / 1000.0 < inst->params->timelimit) {
+        /* generate initial grasp solution */
+        solution start = TSPgrasp(inst, TWOOPT_NINITIALSOL);
+        if (VERBOSE) {
+            printf("[VERBOSE] start obj: %lf (%d grasp starts)\n", start->zstar,
+                   TWOOPT_NINITIALSOL);
+        }
+        if (stopwatch(&s, &e) / 1000.0 > inst->params->timelimit) break;
+
+        int* succ;
+        if ((succ = edges_tosucc(start->edges, nnodes)) == NULL) {
+            print_error("no solution found!");
+        }
+
+        /* refine */
+        start->zstar += threeopt_refinement(inst, succ, nnodes, &s, &e);
+        start->zstar += twoopt_refinement(inst, succ, nnodes, &s, &e);
+
+        if (VERBOSE) {
+            printf("[VERBOSE] refined solution: %lf \n", start->zstar);
+        }
+
+        /* select best tour */
+        if (start->zstar < sol->zstar) {
+            for (int i = 0; i < nnodes; i++) {
+                sol->edges[i] = (edge){i, succ[i]};
+            }
+            sol->zstar = start->zstar;
+
+            tracker_add(sol->t, stopwatch(&s, &e), sol->zstar);
+        }
+
+        k++;
+    }
+
+    return sol;
+}
 
 double twoopt_delta(instance inst, int* succ, int i, int j) {
     return dist(i, j, inst) + dist(succ[i], succ[j], inst) -
            (dist(i, succ[i], inst) + dist(j, succ[j], inst));
 }
 
-double twoopt_refinement(instance inst, int* succ, int nnodes) {
+double twoopt_refinement_notimelim(instance inst, int* succ, int nnodes) {
+                         
     double improvement = 0.0;
 
     int a, b;
-    double delta = 1.0;
+    double delta;
     a = b = 0;
 
     /* iterate over 2opt moves until not improvable */
-    while ((delta = twoopt_pick(inst, succ, &a, &b)) < EPSILON) {
+    while ((delta = twoopt_pick(inst, succ, &a, &b)) != 0.0) {
+        if (EXTRA_VERBOSE) {
+            printf("[VERBOSE] refinement on %d, %d delta %lf\n", a, b, delta);
+        }
+
+        /* actually perform the move */
+        twoopt_move(succ, nnodes, a, b);
+        /* update the objective */
+        improvement += delta; /* delta should be negative */
+    }
+
+    return improvement;
+}
+
+double twoopt_refinement(instance inst, int* succ, int nnodes,
+                         struct timespec* s, struct timespec* e) {
+    double improvement = 0.0;
+
+    int a, b;
+    double delta;
+    a = b = 0;
+
+    /* iterate over 2opt moves until not improvable */
+    while ((delta = twoopt_pick(inst, succ, &a, &b)) != 0.0 &&
+           stopwatch(s, e) / 1000.0 < inst->params->timelimit) {
         if (EXTRA_VERBOSE) {
             printf("[VERBOSE] refinement on %d, %d delta %lf\n", a, b, delta);
         }
@@ -43,7 +179,7 @@ double twoopt_pick(instance inst, int* succ, int* a, int* b) {
     nnodes = nedges = inst->nnodes;
 
     double deltabest;
-    deltabest = INF; /* select also positive delta */
+    deltabest = 0.0; /* select also positive delta */
     *a = *b = 0;
 
     for (int i = 0; i < nnodes; i++) {
@@ -74,6 +210,7 @@ double twoopt_tabu_pick(instance inst, int* succ, int* tabu_nodes, int tenure,
         if (k <= tabu_nodes[i] + tenure) continue;
         for (int j = i + 1; j < nnodes; j++) {
             if (k <= tabu_nodes[j] + tenure) continue;
+            if (succ[i] == j || succ[j] == i) continue;
 
             double delta = twoopt_delta(inst, succ, i, j);
 
@@ -101,7 +238,8 @@ void twoopt_move(int* succ, int nnodes, int a, int b) {
     {}
 }
 
-double threeopt_refinement(instance inst, int* succ, int nnodes) {
+double threeopt_refinement(instance inst, int* succ, int nnodes,
+                           struct timespec* s, struct timespec* e) {
     double improvement = 0.0;
 
     int a, b, c;
@@ -109,11 +247,13 @@ double threeopt_refinement(instance inst, int* succ, int nnodes) {
     a = b = c = 0;
 
     /* iterate over 2opt moves until not improvable */
-    while ((delta = threeopt_pick(inst, succ, &a, &b, &c)) != 0.0) {
+    while (stopwatch(s, e) / 1000.0 < inst->params->timelimit &&
+           (delta = threeopt_pick(inst, succ, &a, &b, &c, s, e)) != 0.0) {
         if (EXTRA_VERBOSE) {
             printf("[VERBOSE] refinement on %d, %d, %d delta %lf\n", a, b, c,
                    delta);
         }
+        printf("time: %ld\n", stopwatch(s, e) / 1000);
 
         /* actually perform the move */
         threeopt_move(succ, nnodes, a, b, c, inst);
@@ -125,7 +265,8 @@ double threeopt_refinement(instance inst, int* succ, int nnodes) {
     return improvement;
 }
 
-double threeopt_pick(instance inst, int* succ, int* a, int* b, int* c) {
+double threeopt_pick(instance inst, int* succ, int* a, int* b, int* c,
+                     struct timespec* s, struct timespec* e) {
     assert(inst != NULL);
     int nnodes, nedges;
     nnodes = nedges = inst->nnodes;
@@ -140,6 +281,10 @@ double threeopt_pick(instance inst, int* succ, int* a, int* b, int* c) {
                 if (i == succ[j] || i == succ[k]) continue;
                 if (j == succ[i] || j == succ[k]) continue;
                 if (k == succ[i] || k == succ[j]) continue;
+
+                if (stopwatch(s, e) / 1000.0 > inst->params->timelimit) {
+                    goto end_pick;
+                }
 
                 double delta[4];
                 for (int n = 0; n < 4; n++)
@@ -193,6 +338,7 @@ double threeopt_pick(instance inst, int* succ, int* a, int* b, int* c) {
         }
     }
 
+end_pick:
     return deltabest;
 }
 

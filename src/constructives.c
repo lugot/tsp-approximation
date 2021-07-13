@@ -89,7 +89,7 @@ solution TSPgreedy(instance inst) {
     return sol;
 }
 
-solution TSPgrasp(instance inst, int onesolution) {
+solution TSPgrasp(instance inst, int niterations) {
     assert(inst != NULL);
     assert(inst->params != NULL);
 
@@ -114,6 +114,7 @@ solution TSPgrasp(instance inst, int onesolution) {
     stopwatch(&s, &e);
 
     /* iterate over staring point (randomly) until timelimit */
+    int k = 0;
     while (stopwatch(&s, &e) / 1000.0 < inst->params->timelimit) {
         /* reset succ */
         memset(succ, -1, nnodes * sizeof(int));
@@ -142,7 +143,7 @@ solution TSPgrasp(instance inst, int onesolution) {
             succ[act] = next;
             obj += dist(act, next, inst);
 
-            if (EXTRA_VERBOSE) printf("\tnext: %d, obj: %lf\n", next + 1, obj);
+            /* if (EXTRA_VERBOSE) printf("\tnext: %d, obj: %lf\n", next + 1, obj); */
 
             act = next;
         }
@@ -162,7 +163,8 @@ solution TSPgrasp(instance inst, int onesolution) {
             tracker_add(sol->t, stopwatch(&s, &e), obj);
         }
 
-        if (onesolution) break;
+        if (k == niterations) break;
+        k++;
     }
 
     topkqueue_free(tk);

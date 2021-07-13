@@ -5,6 +5,7 @@
 
 solution TSPvns(instance inst, int* succ);
 solution TSPtabusearch(instance inst, int* succ);
+solution TSPgenetic(instance inst);
 
 #endif  // INCLUDE_METAHEURISTICS_H_
 
