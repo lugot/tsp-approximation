@@ -5,6 +5,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "../include/constructives.h"
 #include "../include/globals.h"
 #include "../include/refinements.h"
 #include "../include/utils.h"
@@ -74,8 +75,10 @@ solution TSPvns(instance inst, int* succ) {
             /* update objective */
             sol->zstar = obj;
 
+            tracker_add(sol->t, stopwatch(&s, &e), sol->zstar);
+
             /* restart k from initial value */
-            k = VNS_K_MAX;
+            k = VNS_K_START;
 
         } else {
             /* update k: increase kick strenght */
@@ -95,7 +98,7 @@ solution TSPtabusearch(instance inst, int* succ) {
     unsigned int seedp = time(NULL);
 
     /* track the best solution up to this point */
-    solution sol = create_solution(inst, TABU_SEACH_RANDOMSTART, nnodes);
+    solution sol = create_solution(inst, TABU_SEACH_RANDOM, nnodes);
     sol->distance_time = 0.0;
     sol->zstar = DBL_MAX;
 
@@ -216,193 +219,169 @@ solution TSPgenetic(instance inst) {
         printf("[VERBOSE] Solving using genetic algorithm!\n");
     }
 
+    srand(time(NULL));
+
     /* initialize total wall-clock time of execution time */
     struct timespec s, e;
     s.tv_sec = e.tv_sec = -1;
     stopwatch(&s, &e);
 
     int nnodes = inst->nnodes;
-    solution best = create_solution(inst, GENETIC, nnodes);
+    solution sol = create_solution(inst, GENETIC, nnodes);
+    sol->zstar = DBL_MAX;
+    solution champion;
 
-    double timeleft = inst->params->timelimit;
+    solution* population = (solution*)calloc(GENETIC_N, sizeof(solution));
+    solution* offspring = (solution*)calloc(GENETIC_K, sizeof(solution));
 
-    int n, k;
-    if (nnodes < 100) {
-        n = 1000;
-        k = 100;
-    } else if (nnodes < 400) {
-        n = 600;
-        k = 60;
-    } else if (nnodes < 750) {
-        n = 120;
-        k = 40;
-    } else {
-        /* no refinement for larger instances */
-        n = 1000;
-        k = 100;
-        timeleft *= 0.9;
-        /* time for final refinement on very big instance */
+    /* generate initial populaiton */
+    for (int i = 0; i < GENETIC_N; i++) {
+        if ((double)rand() / (double)RAND_MAX < GENETIC_PERC_LUCKYCHILDREN) {
+            population[i] = TSPgrasp(inst, 1);
+            population[i]->model_type = GENETIC;
+        } else {
+            population[i] = TSPrandom(inst);
+        }
     }
-
-    solution* population = (solution*)calloc(n + k, sizeof(solution));
-    int* alive = (int*)calloc(n + k, sizeof(int));
-
-    /* track the time for the current iteration */
-    struct timespec s_left, e_left;
-    s_left.tv_sec = e_left.tv_sec = -1;
-    stopwatch(&s_left, &e_left);
-
-    for (int i = 0; i < n; i++) {
-        population[i] = TSPrandom(inst);
-        alive[i] = 1;
-    }
+    if (VERBOSE) printf("[VERBOSE] done generating population\n");
 
     /* update timelimit */
-    timeleft -= stopwatch(&s_left, &e_left) / 1000.0;
+    double timelimit = inst->params->timelimit;
+    inst->params->timelimit = timelimit *= GENETIC_PERC_TIME;
+    while (stopwatch(&s, &e) / 1000.0 < inst->params->timelimit) {
+        /* pick randomly two parents */
+        for (int i = 0; i < GENETIC_K; i++) {
+            int parent1_idx, parent2_idx;
 
-    if (EXTRA_VERBOSE) printf("[VERBOSE] population created!\n");
+            parent1_idx = rand() % GENETIC_N;
+            parent2_idx = rand() % GENETIC_N;
+            while (parent2_idx == parent1_idx) parent2_idx = rand() % GENETIC_N;
 
-    while (timeleft > 0) {
-        s_left.tv_sec = e_left.tv_sec = -1;
-        stopwatch(&s_left, &e_left);
+            offspring[i] =
+                child(inst, population[parent1_idx], population[parent2_idx]);
+        }
+        if (stopwatch(&s, &e) / 1000.0 > inst->params->timelimit) {
+            break;
+        }
+        if (VERBOSE) printf("[VERBOSE] done generating children\n");
 
-        // not needed: All become 1 at the
-        // end of the children creation
-        int* indexes = (int*)calloc(k, sizeof(int));
+        /* insert randomly the offspring in the population and kill parents but
+         * keep the best ones*/
+        int* best_sols = (int*)calloc(GENETIC_N, sizeof(int));
+        pair* objs = (pair*)calloc(GENETIC_N, sizeof(pair));
+        for (int i = 0; i < GENETIC_N; i++) {
+            objs[i] = (pair){population[i]->zstar, i};
+        }
+        qsort(objs, GENETIC_N, sizeof(pair), paircmp);
 
-        int index = 0;
-        int current = 0;
+        for (int i = 0; i < GENETIC_NBESTSOLS; i++) {
+            best_sols[objs[i].x] = 1;
+        }
 
-        // create k children
-        while (current < n + k) {
-            if (alive[current] == 0) {
-                // select randomly 2 parents
-                solution parent1, parent2;
-                int done = 0;
+        for (int i = 0; i < GENETIC_K; i++) {
+            int parent = rand() % GENETIC_N;
+            while (best_sols[parent]) parent = rand() % GENETIC_N;
 
-                int parent1_idx;
-                while (!done) {
-                    int pick = rand() % (n + k);
-                    if (pick == current) continue;
-                    if (alive[pick] == 1) {
-                        parent1 = population[pick];
-                        parent1_idx = pick;
-                        done = 1;
-                    }
-                }
+            free_solution(population[parent]);
+            population[parent] = offspring[i];
+        }
+        if (VERBOSE) printf("[VERBOSE] done killing\n");
 
-                done = 0;
-                while (!done) {
-                    int pick = rand() % (n + k);
-                    if (pick == current) continue;
-                    if (pick == parent1_idx) continue;
-                    /* non oso immaginare i casini in caso di collisione */
+        /* mutate the population */
+        int timelimit_reached = 0;
+        for (int i = 0; i < GENETIC_NMUTATIONS; i++) {
+            if (timelimit_reached) break;
 
-                    if (alive[pick] == 1) {
-                        parent2 = population[pick];
-                        done = 1;
-                    }
-                }
-
-                indexes[index] = current;
-                /* free_solution(population[current]); */
-                population[current] = child(inst, parent1, parent2);
-
-                index++;
+            int tomutate = rand() % GENETIC_N;
+            int* succ;
+            if ((succ = edges_tosucc(population[tomutate]->edges, nnodes)) ==
+                NULL) {
+                print_error("no solution found!");
             }
 
-            current++;
-        }
+            for (int j = 0; j < GENETIC_NMOVES; j++) {
+                int a, b;
+                double delta;
+                a = b = 0;
 
-        for (int j = 0; j < k; j++) {
-            alive[indexes[j]] = 1;
-        }
-
-        double min = DBL_MAX;
-        int min_idx;
-        for (int x = 0; x < n + k; x++) {
-            if (population[x]->zstar < min) {
-                if (EXTRA_VERBOSE) printf("Best solution: %lf\n", min);
-                min = population[x]->zstar;
-                min_idx = x;
-            }
-        }
-
-        tracker_add(best->t, stopwatch(&s, &e), population[min_idx]->zstar);
-
-        // keep best n solutions
-        for (int j = 0; j < k; j++) {
-            double max = -1;
-            int pick = -1;
-
-            for (int x = 0; x < n + k; x++) {
-                if (population[x]->zstar > max) {
-                    max = population[x]->zstar;
-                    pick = x;
+                delta = twoopt_pick(inst, succ, &a, &b);
+                if (stopwatch(&s, &e) / 1000.0 > inst->params->timelimit) {
+                    timelimit_reached = 1;
+                    break;
                 }
+                if (delta == 0.0) break; /* no more moves possible */
+
+                if (EXTRA_VERBOSE) {
+                    printf("[VERBOSE] refinement on %d, %d delta %lf\n", a, b,
+                           delta);
+                }
+
+                /* actually perform the move */
+                twoopt_move(succ, nnodes, a, b);
+                /* update the objective */
+                population[tomutate]->zstar += delta;
             }
 
-            alive[pick] = 0;
+            for (int i = 0; i < nnodes; i++) {
+                population[tomutate]->edges[i] = (edge){i, succ[i]};
+            }
+
+            free(succ);
+        }
+        if (VERBOSE) printf("[VERBOSE] done mutating\n");
+
+        /* track champion */
+        double best_zstar = DBL_MAX;
+        for (int i = 0; i < GENETIC_N; i++) {
+            if (population[i]->zstar < best_zstar) {
+                best_zstar = population[i]->zstar;
+
+                champion = population[i];
+            }
         }
 
-        /* update timelimit */
-        timeleft -= stopwatch(&s_left, &e_left) / 1000.0;
-        free(indexes);
+        if (VERBOSE) {
+            printf("[VERBOSE] champion zstar: %lf\n", champion->zstar);
+        }
+
+        if (champion->zstar < sol->zstar) {
+            sol->zstar = champion->zstar;
+            tracker_add(sol->t, stopwatch(&s, &e), sol->zstar);
+        }
     }
 
-    // return best solution
-    double min = DBL_MAX;
-    int pick = -1;
-
-    for (int i = 0; i < n + k; i++) {
-        if (population[i]->zstar < min) {
-            min = population[i]->zstar;
-            pick = i;
-        }
+    /* last champion becames the solution returned */
+    sol->zstar = champion->zstar;
+    for (int i = 0; i < nnodes; i++) {
+        sol->edges[i] = (edge){champion->edges[i].i, champion->edges[i].j};
     }
 
-    best = population[pick];
-
-    /*if never refined, refine it! */
-    if (nnodes >= 750) {
-        int* succ = (int*)calloc(nnodes, sizeof(int));
-        if ((succ = edges_tosucc(best->edges, nnodes)) == NULL) {
-            print_error("solver didnt produced a tour");
-        }
-
-        s.tv_sec = e.tv_sec = -1;
-        stopwatch(&s, &e);
-        inst->params->timelimit *= 0.1;
-
-        best->zstar += twoopt_refinement(inst, succ, nnodes, &s, &e);
-        inst->params->timelimit /= 0.1;
-
-        /* store the succ as usual edges array */
-        for (int i = 0; i < nnodes; i++) {
-            best->edges[i] = (edge){i, succ[i]};
-        }
-        free(succ);
+    /* refine best solution if we have time! */
+    int* succ = (int*)calloc(nnodes, sizeof(int));
+    if ((succ = edges_tosucc(sol->edges, nnodes)) == NULL) {
+        print_error("solver didnt produced a tour");
     }
 
-    /* track the solve time */
-    best->solve_time = stopwatch(&s, &e);
+    /* reset times */
+    inst->params->timelimit = timelimit * (1 - GENETIC_PERC_TIME);
+    s.tv_sec = e.tv_sec = -1;
+    stopwatch(&s, &e);
 
-    /* add the solution to the pool associated with it's instance */
-    add_solution(inst, best);
+    sol->zstar += twoopt_refinement(inst, succ, nnodes, &s, &e);
+    free(succ);
 
-    free(alive);
-    for (int i = 0; i < n + k; i++) {
-        if (i == pick) continue;
-        /* free_solution(population[i]); */
+    for (int i = 0; i < GENETIC_N; i++) {
+        free_solution(population[i]);
     }
     free(population);
+    free(offspring);
 
-    return best;
+    return sol;
 }
 
 solution child(instance inst, solution parent1, solution parent2) {
-    if (EXTRA_VERBOSE) {
-        printf("[VERBOSE] creating children!\n");
+    if (VERBOSE) {
+        printf("[VERBOSE] creating children!\n\n");
     }
 
     int nnodes = inst->nnodes;
@@ -508,7 +487,7 @@ solution child(instance inst, solution parent1, solution parent2) {
 
         child->zstar += best_extra_milage;
 
-        if (VERBOSE) {
+        if (EXTRA_VERBOSE) {
             printf("[VERBOSE] next: %d, break (%d, %d)\n", next + 1, oldi + 1,
                    oldj + 1);
         }
@@ -519,8 +498,9 @@ solution child(instance inst, solution parent1, solution parent2) {
         print_error("solver didnt produced a tour");
     }
 
-    if (nnodes < 750)
-        child->zstar += twoopt_refinement_notimelim(inst, succ, nnodes);
+    /* if (nnodes < 750) */
+    /*     child->zstar += twoopt_refinement_notimelim(inst, succ, nnodes);
+     */
 
     /* store the succ as usual edges array */
     for (int i = 0; i < nnodes; i++) {
@@ -536,33 +516,39 @@ solution child(instance inst, solution parent1, solution parent2) {
 solution TSPrandom(instance inst) {
     int nnodes = inst->nnodes;
 
+    unsigned int seedp = rand();
     solution sol = create_solution(inst, GENETIC, nnodes);
 
-    int* tour = (int*)calloc(nnodes, sizeof(int));
-    int* succ = (int*)calloc(nnodes, sizeof(int));
-
-    int permutation_steps = 2 * nnodes;
-
-    for (int i = 0; i < nnodes; i++) tour[i] = i;
-
-    for (int i = 0; i < permutation_steps; i++) {
-        swap(&tour[rand() % nnodes], &tour[rand() % nnodes]);
-    }
-
+    int* succ = randomtour(nnodes, seedp);
     for (int i = 0; i < nnodes; i++) {
-        sol->zstar += dist(tour[i], tour[(i + 1) % nnodes], inst);
-        succ[tour[i]] = tour[(i + 1) % nnodes];
-    }
-
-    if (nnodes < 200) {
-        sol->zstar += twoopt_refinement_notimelim(inst, succ, nnodes);
-    }
-    /* store the succ as usual edges array */
-    for (int j = 0; j < nnodes; j++) {
-        sol->edges[j] = (edge){j, succ[j]};
+        sol->edges[i] = (edge){i, succ[i]};
+        sol->zstar += dist(i, succ[i], inst);
     }
     free(succ);
-    free(tour);
 
     return sol;
 }
+
+/* OLD TSPrandom */
+/* int* tour = (int*)calloc(nnodes, sizeof(int)); */
+/* int* succ = (int*)calloc(nnodes, sizeof(int)); */
+/*  */
+/* int permutation_steps = 2 * nnodes; */
+/*  */
+/* for (int i = 0; i < nnodes; i++) tour[i] = i; */
+/*  */
+/* for (int i = 0; i < permutation_steps; i++) { */
+/*     swap(&tour[rand() % nnodes], &tour[rand() % nnodes]); */
+/* } */
+/*  */
+/* for (int i = 0; i < nnodes; i++) { */
+/*     sol->zstar += dist(tour[i], tour[(i + 1) % nnodes], inst); */
+/*     succ[tour[i]] = tour[(i + 1) % nnodes]; */
+/* } */
+/*  */
+/* #<{(| store the succ as usual edges array |)}># */
+/* for (int j = 0; j < nnodes; j++) { */
+/*     sol->edges[j] = (edge){j, succ[j]}; */
+/* } */
+/* free(succ); */
+/* free(tour); */

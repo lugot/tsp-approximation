@@ -1,0 +1,91 @@
+%% Benjamin Williams <bwilliams@lincoln.ac.uk>
+%% Get in touch if you have any questions or problems!
+%% University of Lincoln Computer Science Thesis Template
+
+%% @version     1.0.7
+%% @lastchanged 26/04/2021
+
+% The document class -- remove [harvard] if you want
+% numeric-style referencing.
+\documentclass{lincolncsthesis}
+\renewcommand{\baselinestretch}{1} 
+
+% Custom packages that you need to include
+\input{preamble/packages.tex}
+
+% Your thesis details -- edit the file at the path below
+% so it shows your name, title, etc. 
+\input{preamble/thesis-details.tex}
+
+% Set up the bib files which are gonna be used
+% throughout this document
+\input{preamble/bib-setup.tex}
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{claim}{Claim}
+
+\usepackage{biblatex}
+\usepackage{MnSymbol}
+\addbibresource{sample.bib}
+\usepackage[ruled,vlined]{algorithm2e}
+
+\usepackage{units}
+
+\begin{document}
+
+% start of document
+% --------------------------
+
+% Make the title. You can pass an option to this
+% to render the title differently, like so:
+%\maketitle[logo-first]
+\maketitle
+
+% Print out the table of tables and table of figures and
+% tell the template we're about to start the body of the
+% thesis.
+\thesisTables
+\thesisBodyStart
+
+
+% start of thesis body
+% ---------------------------
+
+% Include introduction
+\chapter{Introduction}
+\input{chapters/introduction.tex}
+
+% Related work 
+\chapter{Compact Models}
+\input{chapters/compactmodels.tex}
+
+\chapter{Benders Method}
+\input{chapters/benders.tex}
+
+\chapter{Matheuristics}
+\label{chap:Matheuristics}
+\input{chapters/matheuristics.tex}
+
+\chapter{Approximation algorithms}
+\input{chapters/approximations.tex}
+
+\chapter{Heuristics}
+\label{chap:Heuristics}
+\input{chapters/heuristics.tex}
+
+\chapter{Metaheuristics}
+\label{chap:metaheuristics}
+\input{chapters/metaheuristics.tex}
+
+% Conclusions
+% \chapter{Conclusions}
+% \input{chapters/conclusions.tex}
+
+\appendix
+\chapter{Appendix}
+\input{chapters/appendix}
+
+\printReferences
+
+\end{document}

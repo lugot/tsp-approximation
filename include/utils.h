@@ -26,10 +26,15 @@ int* edges_tosucc(edge* edges, int nnodes);
 int* randomtour(int nnodes, unsigned int seedp);
 
 /* compare functions */
+typedef struct pair_t {
+    double w;
+    int x;
+} pair;
 int wedgecmp(const void* a, const void* b);
 int nodelexcmp(const void* a, const void* b);
 int pathcmp(const void* a, const void* b, void* data);
-int stringcmp(const void* p1, const void* p2);
+int stringcmp(const void* a, const void* b);
+int paircmp(const void* a, const void* b);
 
 /* computational geometry helpers */
 double cross(node a, node b);

@@ -288,6 +288,12 @@ int pathcmp(const void* a, const void* b, void* data) {
 int stringcmp(const void* p1, const void* p2) {
     return strcmp(*(const char**)p1, *(const char**)p2);
 }
+int paircmp(const void* a, const void* b) {
+    double wa = ((pair*)a)->w;
+    double wb = ((pair*)b)->w;
+
+    return wa - wb < EPSILON ? -1 : +1;
+}
 
 /* computational geometry helpers */
 double cross(node a, node b) { return a.x * b.y - a.y * b.x; }
@@ -379,7 +385,7 @@ char* model_type_tostring(enum model_types model_type) {
         case VNS_GRASP:
             snprintf(ans, bufsize, "vns_grasp");
             break;
-        case TABU_SEACH_RANDOMSTART:
+        case TABU_SEACH_RANDOM:
             snprintf(ans, bufsize, "tabu_search_randomstart");
             break;
         case TABU_SEACH_GRASP:

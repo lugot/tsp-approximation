@@ -237,15 +237,12 @@ solution TSPextramileage(instance inst) {
         int next;  /* next unvisited node to pick */
         int edgei; /* edge index */
 
-        int kk = 0;
-
         /* iterate over unvisited nodes */
         for (int i = 0; i < nnodes; i++) {
             if (visited[i]) continue;
 
             /* iterate over saved edges */
             for (int j = 0; j < k; j++) {
-                kk++;
                 double extra_milage =
                     dist(i, sol->edges[j].i, inst) +
                     dist(i, sol->edges[j].j, inst) -

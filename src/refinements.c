@@ -127,7 +127,6 @@ double twoopt_delta(instance inst, int* succ, int i, int j) {
 }
 
 double twoopt_refinement_notimelim(instance inst, int* succ, int nnodes) {
-                         
     double improvement = 0.0;
 
     int a, b;
@@ -275,15 +274,19 @@ double threeopt_pick(instance inst, int* succ, int* a, int* b, int* c,
     deltabest = 0.0;
     *a = *b = *c = 0;
 
+    int timelimit_reached = 0;
     for (int i = 0; i < nnodes; i++) {
+        if (timelimit_reached) break;
         for (int j = i + 1; j < nnodes; j++) {
+            if (timelimit_reached) break;
             for (int k = j + 1; k < nnodes; k++) {
                 if (i == succ[j] || i == succ[k]) continue;
                 if (j == succ[i] || j == succ[k]) continue;
                 if (k == succ[i] || k == succ[j]) continue;
 
                 if (stopwatch(s, e) / 1000.0 > inst->params->timelimit) {
-                    goto end_pick;
+                    timelimit_reached = 1;
+                    break;
                 }
 
                 double delta[4];
@@ -338,7 +341,6 @@ double threeopt_pick(instance inst, int* succ, int* a, int* b, int* c,
         }
     }
 
-end_pick:
     return deltabest;
 }
 

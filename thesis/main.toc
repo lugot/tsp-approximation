@@ -1,0 +1,99 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\babel@toc {UKenglish}{}
+\babel@toc {UKenglish}{}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.1}Problem definition and history}{1}{section.1.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.2}Mathematical Model}{2}{section.1.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {2}Compact Models}{4}{chapter.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.1}Miller-Tucker-Zemlin}{4}{section.2.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Miller-Tucker-Zemlin model}{5}{figure.caption.5}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{CPLEX implementations}{6}{theorem.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Speeding up the model}{8}{table.caption.7}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{Note:}{9}{figure.caption.8}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.2}Gavish and Graves}{10}{section.2.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Gavish-Graves model, lecture}{11}{figure.caption.9}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Gavish-Graves model, literature}{12}{section*.10}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{CPLEX implementations}{12}{section*.10}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.3}Compact models comparison}{14}{section.2.3}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {3}Benders Method}{16}{chapter.3}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.1}The Loop method}{16}{section.3.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Implementation details}{17}{figure.caption.15}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.2}The Two-phase Loop method}{17}{section.3.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.3}Callbacks method}{19}{section.3.3}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {4}Matheuristics}{21}{chapter.4}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.1}Hard Fixing}{21}{section.4.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.1}Implementation details}{22}{subsection.4.1.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.2}Soft Fixing}{22}{section.4.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.1}Implementation Details}{23}{subsection.4.2.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {5}Approximation algorithms}{24}{chapter.5}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.1}$2$-approximation algorithm}{24}{section.5.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Implementation details}{25}{figure.caption.18}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.2}$\nicefrac {3}{2}$-approximation algorithm}{25}{section.5.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {6}Heuristics}{26}{chapter.6}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6.1}Constructive Heuristics}{26}{section.6.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.1.1}Greedy}{26}{subsection.6.1.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.1.2}GRASP}{27}{subsection.6.1.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Implementation details}{27}{section*.19}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.1.3}Extra Mileage}{27}{subsection.6.1.3}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Implementation details}{28}{figure.caption.20}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6.2}Refinement heuristics}{29}{section.6.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.2.1}$k$-opt moves}{29}{subsection.6.2.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{$2$-opt moves}{30}{section*.22}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{$3$-opt moves}{31}{equation.6.2.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Implementation details}{31}{equation.6.2.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {7}Metaheuristics}{33}{chapter.7}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.1}Variable Neighborhood Search}{33}{section.7.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Implementation details}{34}{algocf.4}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.2}Tabu Search}{34}{section.7.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Implementation details}{35}{algocf.5}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.3}Genetic algorithm}{36}{section.7.3}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Implementation details}{37}{algocf.6}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {A}Appendix}{39}{appendix.A}%

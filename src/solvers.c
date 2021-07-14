@@ -83,13 +83,14 @@ solution solve(instance inst, enum model_types model_type) {
             double original_timelim = inst->params->timelimit;
             inst->params->timelimit -= stopwatch(&a, &b) / 1000.0;
             sol = TSPvns(inst, succ);
+            sol->model_type = VNS_GRASP;
             inst->params->timelimit = original_timelim;
 
             free(succ);
             break;
         }
 
-        case TABU_SEACH_RANDOMSTART:
+        case TABU_SEACH_RANDOM:
             sol = TSPtabusearch(inst, NULL);
             break;
 
@@ -105,6 +106,7 @@ solution solve(instance inst, enum model_types model_type) {
             double original_timelim = inst->params->timelimit;
             inst->params->timelimit -= stopwatch(&a, &b) / 1000.0;
             sol = TSPtabusearch(inst, succ);
+            sol->model_type = TABU_SEACH_GRASP;
             inst->params->timelimit = original_timelim;
 
             free(succ);
@@ -306,7 +308,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
         case THREEOPT_MULTISTART:
         case VNS_RANDOM:
         case VNS_GRASP:
-        case TABU_SEACH_RANDOMSTART:
+        case TABU_SEACH_RANDOM:
         case TABU_SEACH_GRASP:
         case GENETIC:
             assert(0 == 1 && "tried to solve a metaheuristic");
