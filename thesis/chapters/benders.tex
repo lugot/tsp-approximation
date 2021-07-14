@@ -33,9 +33,8 @@ Since it uses a MIP solver as a black box inside a loop, we will refer to it as
 the \emph{Loop method} or, improperly since it is its generalization,
 \emph{Benders method}.
 
-There's no reason to use an asymmetric version of the problem, the direct
-version of the problem. Danzing's SEC that will be added at each iteration
-became:
+There's no reason to use an asymmetric version of the problem, the symmetric one will works well. Danzing's SEC
+that will be added at each iteration became:
 
 \begin{equation*} 
     \begin{array}{rrlr} 
@@ -46,7 +45,7 @@ became:
 Notice that the number of non-zero on the left-hand side of the constraint is
 ${|S|\choose 2} \in \mathcal{O}(|S|^2)$ and that we are considering subset $S$
 of at least dimension 3: for dimension 2 the constraint is clearly absorbed in
-the variable's bounds ($x_ij \le 1$).
+the variable's bounds ($x_{ij} \le 1$).
 
 \begin{figure}[h]
     \centering
@@ -70,13 +69,13 @@ the variable's bounds ($x_ij \le 1$).
 
 One thing that's important to keep in mind is that, during iterations, there's
 no guarantee that the number of subtours is monotone nor decreasing. After some
-iterations, let's say when such number are less than 5, we can have lot's of
+iterations, let's say when such number are less than 5, we can have lots of
 variability and the convergence to a single tour can be pretty slow. Also,
 there's no thing such as subtours merging: adding two SEC doesn't mean that
 those subtours will be merged in a single one, they can also form subtours in
 other ways.
 
-\subsubsection{Implementation details}
+\subsection{Implementation details}
 The last thing to specify are some details left behind. The MIP solver
 that we will use is CPLEX. We can have more freedom in the connected component
 algorithm, necessary for the creation of the constraints. We need both fast
@@ -129,12 +128,13 @@ the maximum number of branching nodes. We are not going to perfectly tune those
 parameters, because performance variability will destroy our analysis, so,
 after some tests on a validation set trying different parameters, we will fix
 those to reasonable values: phase 1 will take 50\% of the time available,
-during which only 3 nodes will be processed.\\ The difference is negligible,
-considering the very short time ratio, the two methods can be considered
-equally valid.\\ Another reasonable strategy is to leave phase 2 the shortest
-amount of time to solve to optimum the problem while using the remaining time
-on phase 1. This strategy is better than the pure Loop method, but the
-fifty-fifty split of time between phases seems the best.
+during which only 3 nodes will be processed. More important details on
+parameters tuning in appendix \ref{appendix:tuning}\\ The difference is
+negligible, considering the very short time ratio, the two methods can be
+considered equally valid.\\ Another reasonable strategy is to leave phase 2 the
+shortest amount of time to solve to optimum the problem while using the
+remaining time on phase 1. This strategy is better than the pure Loop method,
+but the fifty-fifty split of time between phases seems the best.
 
 \section{Callbacks method}
 An adaptation of Benders method can be achieved using CPLEX's features:

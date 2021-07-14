@@ -1,6 +1,0 @@
-*.o
-src/.cache/*
-src/*.log
-src/vgcore.*
-./.cache/*
-./tags

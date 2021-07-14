@@ -105,6 +105,8 @@ Andrew's Monotone chain algorithm, bases on counter-clockwise turn substructure
 property that runs on $\mathcal{O}(nlogn)$, anyway absorbed in the
 $\mathcal{O}(n^3)$ total complexity.
 
+\subsection{Constructive heuristics comparison}
+
 \begin{claim}
     Extra milage and greedy are good algorithms, leaving aside the computational
     cost. GRASP have the same performance as greedy. 2-approx, despite the
@@ -243,7 +245,7 @@ multiple cheap operations are preferred to few, costly, ones. And so $2$-opt mov
 and $3$-opt moves are preferred over $k$-opt moves with $k$ elevated, since it will run
 in $\mathcal{O}(n^k)$
 
-\subsubsection{Implementation details}
+\subsection{Implementation details}
 Multi-start refinements with moves lead to lots of possibilities in terms of
 tuning, that take shape in form of time limit management. The first, obvious,
 thing to test is how far we can move in term of neighborhood size. In case of

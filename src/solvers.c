@@ -201,7 +201,7 @@ solution TSPopt(instance inst, enum model_types model_type) {
             /* CPXsetintparam(env, CPX_PARAM_NODELIM, 10); */
 
             /* recompute timelimit considering time spent on intial solution */
-            inst->params->timelimit *= (1 - HF_INITIAL_PERC_TIME);
+            //inst->params->timelimit *= (1 - HF_INITIAL_PERC_TIME);
 
             /* set benders callbacks as blackbox for matheuristic */
             CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;
@@ -217,10 +217,10 @@ solution TSPopt(instance inst, enum model_types model_type) {
             CPXsetdblparam(env, CPX_PARAM_TILIM,
                            inst->params->timelimit * SF_INITIAL_PERC_TIME);
             /* alternative: work on branching node limit */
-            CPXsetintparam(env, CPX_PARAM_NODELIM, 10);
+            CPXsetintparam(env, CPX_PARAM_NODELIM, 200000);
 
             /* recompute timelimit considering time spent on intial solution */
-            inst->params->timelimit *= (1 - SF_INITIAL_PERC_TIME);
+            //inst->params->timelimit *= (1 - SF_INITIAL_PERC_TIME);
 
             /* set benders callbacks as blackbox for matheuristic */
             CPXLONG contextid = CPX_CALLBACKCONTEXT_CANDIDATE;

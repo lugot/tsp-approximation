@@ -15,6 +15,9 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
     int nedges = inst->nnodes;
     int ncols = inst->ncols;
 
+    double original_timelimit = inst->params->timelimit;
+    inst->params->timelimit *= (1 - HF_INITIAL_PERC_TIME);
+
     /* TODO(lugot): FIX */
     srand(0);
     unsigned int seedp = 0L;
@@ -32,7 +35,12 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
     /* perform HARD FIXING:
      * for each iteration fix randomly some edges, solve the model and release
      * the nodes fixed in order to warm start the next iteration */
-    for (int iter = 0; iter < HF_ITERATIONS; iter++) {
+    int iter = 0;
+    while (inst->params->timelimit > 0) {
+        struct timespec s, e;
+        s.tv_sec = e.tv_sec = -1;
+        stopwatch(&s, &e);
+
         /* create an adjacency to track the fixed edges */
         adjlist l = adjlist_create(nedges);
 
@@ -81,7 +89,7 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
 
         /* reset the timelimit: fraction of number of iterations */
         CPXsetdblparam(env, CPX_PARAM_TILIM,
-                       inst->params->timelimit / HF_ITERATIONS);
+                       inst->params->timelimit);
         /* alternative: set the nodelimit */
         /* CPXsetintparam(env, CPX_PARAM_NODELIM, 100); */
 
@@ -96,10 +104,10 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
             CPXgetobjval(env, lp, &best_obj);
 
             printf(
-                "[VERBOSE]: hard fixing status (iter %d out of %d)\n"
+                "[VERBOSE]: hard fixing status (timelimit %lf)\n"
                 "\tprev_obj: %.20lf\n"
                 "\t act_obj: %.20lf\n",
-                iter, HF_ITERATIONS, prev_obj, best_obj);
+                inst->params->timelimit, prev_obj, best_obj);
 
             prev_obj = best_obj;
         }
@@ -130,10 +138,13 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
         /* free the adjlist, do it not for additional plot option */
         adjlist_free(l);
 
+        /* update timelimit */
+        inst->params->timelimit -= stopwatch(&s, &e) / 1000.0;
+        iter++;
         /* relax the fixing: no need to check because most of the nodes are
          * fixed. Just checking if this is not the last iteration to provide a
          * coeherent model */
-        if (iter != HF_ITERATIONS - 1) {
+        if (inst->params->timelimit > 0) {
             for (int col = 0; col < ncols; col++) {
                 CPXchgbds(env, lp, 1, &col, &lbc, &zero);
                 CPXchgbds(env, lp, 1, &col, &ubc, &one);
@@ -148,6 +159,8 @@ void perform_HARD_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
             "\t act_obj: %.20lf\n",
             prev_obj, best_obj);
     }
+
+    inst->params->timelimit = original_timelimit;
 }
 
 void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
@@ -155,7 +168,12 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
     int nedges = inst->nnodes;
     int ncols = inst->ncols;
 
-    double k = SF_INITIAL_K;
+
+    double original_timelimit = inst->params->timelimit;
+    inst->params->timelimit *= (1 - SF_INITIAL_PERC_TIME);
+    double iter_time_limit = inst->params->timelimit / 20;
+
+    double k = SF_INITIAL_K*2;
     double best_obj, prev_obj;
     CPXgetobjval(env, lp, &prev_obj);
 
@@ -166,7 +184,7 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
         stopwatch(&s, &e);
 
         /* set the new timelimit and perform another resolution */
-        CPXsetdblparam(env, CPX_PARAM_TILIM, inst->params->timelimit);
+        CPXsetdblparam(env, CPX_PARAM_TILIM, iter_time_limit);
 
         char** cname = (char**)calloc(1, sizeof(char*));
         cname[0] = (char*)calloc(100, sizeof(char));
@@ -217,7 +235,7 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
         /* if no improvment enlarge neigborhood size */
         if (fabs(prev_obj - best_obj) < EPSILON) k += SF_K_STEP;
         /* cut the computation if k too high */
-        if (k >= SF_MAX_K) break;
+        if (k >= 2*SF_MAX_K) break;
         /* and update the objective */
         prev_obj = best_obj;
 
@@ -237,4 +255,6 @@ void perform_SOFT_FIXING(CPXENVptr env, CPXLPptr lp, instance inst,
             "\t act_obj: %.20lf\n",
             inst->params->timelimit, k, best_obj);
     }
+
+    inst->params->timelimit = original_timelimit;
 }

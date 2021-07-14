@@ -15,7 +15,7 @@ The \emph{Miller-Tucker-Zemlin} model
 \citep{miller1960integer}\citep{sawik2016note} (MTZ from now on) is defined as a
 sequential formulation and it is because that the idea upon the model is to
 introduce a new continuous variable $u_i$ for each node $i \in V \setminus
-\{1\}$ (except the starting node). The meaning behind these $u_i$'s variables is
+\{1\}$ (except the starting node). The meaning behind these $u$ variables is
 to represent the order of visit of the nodes considering an optimal tour. It's
 possible to define such an order because the asymmetric version of the problem
 is considered. An example of such new variables is shown in figure
@@ -24,7 +24,7 @@ is considered. An example of such new variables is shown in figure
 \begin{figure}
     \centering
     \includegraphics[width=0.43\textwidth]{figures/mtz}
-    \caption{Variables $u$ represent the tour visit order.}
+    \caption[MTZ example]{Variables $u$ represent the tour visit order}
     \label{fig:MTZ_example}
 \end{figure}
 
@@ -64,9 +64,9 @@ value large enough to trivially truly evaluate the inequality if the arc is not
 selected and considering the bounds on $u$ variables, but tight enough to
 prevent numerical difficulties
 \footnote{\href{https://www.ibm.com/docs/en/icos/20.1.0?topic=optimization-best-practices-indicator-constraints}{https://www.ibm.com/docs/en/icos/20.1.0?topic=optimization-best-practices-indicator-constraints}}.
-The smalles (and best) value for $M$ considering the formulation is $n - 1$.
+The smallest (and best) value for $M$ considering the formulation is $n - 1$.
 
-\subsubsection{Miller-Tucker-Zemlin model}
+\subsection{Miller-Tucker-Zemlin model}
 \begin{equation*}
     \begin{array}{lrllr}
         \textrm{minimize}   & \displaystyle\sum_{(i, j) \in A} c_{ij}  x_{ij} \\
@@ -81,7 +81,7 @@ The smalles (and best) value for $M$ considering the formulation is $n - 1$.
 We have to verify that any tour in which node 1 is not present violates the
 constraint and that the tour with node 1 does not. It would led to a solution
 with only one complete tour. 
-We first deal with a subtour of k elements not passing through node 1.
+We first deal with a subtour of $k$ elements not passing through node 1.
 
 \begin{theorem} 
     Given the two degree constraints, the inequalities $u_{i} -
@@ -112,7 +112,7 @@ We first deal with a subtour of k elements not passing through node 1.
     2$.
 \end{proof}
 
-\subsubsection{CPLEX implementations}
+\subsection{CPLEX implementations}
 MTZ implementation using CPLEX can be done using different techniques. Besides
 the straightforward implementation of the degree constraints, MTZ's subtour
 elimination constraints can be implemented in different ways. \\ One of CPLEX's
@@ -156,7 +156,7 @@ constraints is faster than the other two. We can also assert that the static
 model is faster than the one which uses indicator constraints.\\
 Since the results allow us to and bearing in mind that correlation does not
 imply causality, we can carefully assert that the smallness of the model makes
-it faster. This is true lots of constraints are not violated (then not added to the
+it faster. This is true if lots of constraints are not violated (then not added to the
 model), while on the static all of the constraints are present at starting time.
 This is also true considering the static model versus the one with indicator
 constraints, which is a comparison between formulations. In fact, after an
@@ -197,7 +197,7 @@ that those advice on indicator constraints are given to prevent a poor choice
 of $M$ and, consequently, a hard time debugging numerical issues, which can be
 difficult to exploits.
 
-\subsubsection{Speeding up the model}
+\subsection{Speeding up the model}
 The model we presented is correct, in the sense that solves the problem for a
 reasonable amount of time up to a certain number of nodes. The performance of
 the model, however, can be improved by adding some constraints that tight the LP
@@ -225,7 +225,7 @@ and as \emph{SECs of degreee 3}:
 
 This will prevent subtours of size 2 and size 3 to form. We have to keep in mind
 that the total number of constraints added is not that negligible: for degree 2
-SECs they are ${n \choose 2} \in \mathcal{O}(N^2)$ while for degree 3 they are
+SECs they are ${n \choose 2} \in \mathcal{O}(n^2)$ while for degree 3 they are
 $2 \cdot {n \choose 3} \in \mathcal{O}(n^3)$. Note that for degree 3, we have to
 consider both circular paths due to asymmetry (for example, considering node 2,
 5 and 8, we have to add both $x_{25} + x_{58} + x_{85} \leq 2$ and $x_{28} +
@@ -288,7 +288,7 @@ example.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.43\textwidth]{figures/gg}
-    \caption{Variables $y$ represent flow quantity.}
+    \caption[GG example]{Variables $y$ represent flow quantity}
     \label{fig:GG_example}
 \end{figure}
 
@@ -353,7 +353,7 @@ solver is always a good practice.\\
 Since this formulation was presented in class, we will refer to
 it as \emph{lecture model}, which is summarised below:
 
-\subsubsection{Gavish-Graves model, lecture}
+\subsection{Gavish-Graves model, lecture}
 \begin{equation*}
     \begin{array}{lrllr}
         \textrm{minimize}   & \displaystyle\sum_{(i, j) \in A} c_{ij}  x_{ij} \\
@@ -400,7 +400,7 @@ unaltered.
 Since this model is the most frequent in literature, we will refer to it as
 \emph{literature model}, which is summarised below:
 
-\subsubsection{Gavish-Graves model, literature}
+\subsection{Gavish-Graves model, literature}
 \begin{equation*}
     \begin{array}{lrllr}
         \textrm{minimize}   & \displaystyle\sum_{(i, j) \in A} c_{ij}  x_{ij} \\
@@ -415,7 +415,7 @@ Since this model is the most frequent in literature, we will refer to it as
     \end{array}
 \end{equation*}
 
-\subsubsection{CPLEX implementations}
+\subsection{CPLEX implementations}
 Both formulation allows an implementation that uses lazy constraints, so
 everything will be tested. The model, anyway, it's different from MTZ by the
 number of variables, which is $\mathcal{O}(n^2)$. If we exclude
@@ -452,9 +452,9 @@ nodes).
 While keeping in mind that the number of constraints is quadratic in number of
 nodes, we can observe that the number of lazy violations in MTZ (blue line) is
 decreasing (and independent in the number of nodes) so, roughly, constant in
-absolute number, while in both formulation of GG  (orange and green lines),
+absolute values, while in both formulation of GG  (orange and green lines),
 almost all constraints are violated. That makes the implementation through lazy
-constraints ideal for MTZ and useless for GG, because of model reshapes during
+constraints ideal for MTZ and costrly for GG, because of model reshapes during
 executions.\\
 
 Both static models are quite good, with the literature formulation that performs
