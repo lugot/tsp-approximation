@@ -88,7 +88,7 @@ determines whether an arc $(i,j)$ has to be selected as being part of the tour.
         \textrm{minimize}   & \displaystyle\sum_{(i, j) \in A} c_{ij}  x_{ij} \\
         \textrm{subject to} & \displaystyle\sum\limits_{(i, j) \in \delta^-(j)}  x_{ij} & = & 1 & \forall j \in V\\
                             & \displaystyle\sum\limits_{(i, j) \in \delta^+(i)}  x_{ij} & = & 1 & \forall i \in V\\
-                            & \displaystyle\sum\limits_{(i, j) \in \delta^+(S)}  x_{ij} & = & 1 & \forall S \subset V : 1 \in S\\
+                            & \displaystyle\sum\limits_{(i, j) \in \delta^+(S)}  x_{ij} & \ge & 1 & \forall S \subset V : 1 \in S\\
                             & x_{ij} & \in & \{0,1\} & \forall (i,j) \in A \\
     \end{array}
 \end{equation*}
@@ -111,7 +111,7 @@ reason, we impose reachability from 1 constraint, aka subtour elimination
 constraint, which prevents subtours (which don't involve 1) to form. The SEC
 can be also expressed in this way:
 \begin{align*} 
-    \sum_{(i,j) \in (S)} x_{ij} & \le |S|-1 & \forall S \subset V: |S| \ge 2,\ {1} \notin S 
+    \sum_{i,j \in S,\ i \neq j} x_{ij} & \le |S|-1 & \forall S \subset V: |S| \ge 2
 \end{align*}
 that explicitly express to eliminate subtours.
 The formulation above is easy to write in a solver and it is correct, but it
